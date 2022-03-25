@@ -33,7 +33,14 @@ namespace WikiProxy.API
                 var url = $"https://en.wikipedia.org/w/api.php?action=parse&page={WebUtility.UrlEncode(title)}&prop=text&format=json";
 
                 var json = client.DownloadString(url);
+                
                 var resp = JObject.Parse(json);
+
+                if(resp["error"] != null)
+                {
+                    //error loading page!
+                    return null;
+                }
 
                 var model = new ParseResponse
                 {
