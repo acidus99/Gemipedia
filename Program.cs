@@ -36,6 +36,7 @@ namespace WikiProxy
             router.OnRequest("/search", Search);
             router.OnRequest("/view", ViewArticle);
             router.OnRequest("/media", ProxyMedia);
+            router.OnRequest("/lucky", Lucky);
             router.OnRequest("", Welcome);
             router.ProcessRequest();
 
@@ -45,13 +46,16 @@ namespace WikiProxy
         {
             cgi.Success();
             cgi.Writer.WriteLine("# Gemipedia");
-            cgi.Writer.WriteLine("Welcome to Gemipedia. A Gemini proxy to Wikipedia, focused on providing a 1st class reading experience.");
+            cgi.Writer.WriteLine("Welcome to Gemipedia: A Gemini proxy to Wikipedia, focused on providing a 1st class reading experience.");
+            cgi.Writer.WriteLine("");
+            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/lucky Go to Article");
             cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/search Search");
+            
         }
 
         static void Search(CgiWrapper cgi)
         {
-            if(!cgi.HasQuery)
+            if (!cgi.HasQuery)
             {
                 cgi.Input("Search for an Article");
                 return;
@@ -80,6 +84,15 @@ namespace WikiProxy
         }
 
 
+        static void Lucky(CgiWrapper cgi)
+        {
+            if(!cgi.HasQuery)
+            {
+                cgi.Input("Article Name? (doesn't need to be exact)");
+                return;
+            }
+            cgi.Redirect($"/cgi-bin/wp.cgi/view?{cgi.RawQuery}");
+        }
 
         static void ViewArticle(CgiWrapper cgi)
         {
@@ -117,6 +130,7 @@ namespace WikiProxy
         {
             tw.WriteLine();
             tw.WriteLine("--");
+            tw.WriteLine("=> /cgi-bin/wp.cgi/lucky Go to Article");
             tw.WriteLine("=> /cgi-bin/wp.cgi/search Search Wikipedia");
         }
     }
