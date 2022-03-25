@@ -35,11 +35,18 @@ namespace WikiProxy
             CgiRouter router = new CgiRouter();
             router.OnRequest("/search", Search);
             router.OnRequest("/view", ViewArticle);
-            router.OnRequest("/error", Error);
             router.OnRequest("/media", ProxyMedia);
-
+            router.OnRequest("", Welcome);
             router.ProcessRequest();
 
+        }
+
+        static void Welcome(CgiWrapper cgi)
+        {
+            cgi.Success();
+            cgi.Writer.WriteLine("# Gemipedia");
+            cgi.Writer.WriteLine("Welcome to Gemipedia. A Gemini proxy to Wikipedia, focused on providing a 1st class reading experience.");
+            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/search Search");
         }
 
         static void Search(CgiWrapper cgi)
@@ -72,12 +79,7 @@ namespace WikiProxy
             RenderFooter(cgi.Writer);
         }
 
-        static void Error(CgiWrapper cgi)
-        {
-            cgi.Success();
-            cgi.Writer.WriteLine("We could access that article.");
-            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/search Search for an article");
-        }
+
 
         static void ViewArticle(CgiWrapper cgi)
         {
