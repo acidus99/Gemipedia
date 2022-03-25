@@ -58,6 +58,8 @@ namespace WikiProxy.Converter
             {
                 Writer.WriteLine($"=> {ArticleUrl(linkTitle)} {linkTitle}");
             }
+            Writer.WriteLine();
+            Writer.WriteLine($"=> https://en.wikipedia.org/wiki/{WebUtility.UrlEncode(Title)} View '{title}' on Wikipedia");
             Writer.Flush();
         }
 
