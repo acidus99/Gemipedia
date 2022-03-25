@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Newtonsoft.Json" />
+    <None Remove="Models\" />
+    <None Remove="Clients\" />
+    <None Remove="AngleSharp" />
+    <None Remove="API\Models\" />
+    <None Remove="Converter\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="AngleSharp" Version="0.16.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="API\" />
+    <Folder Include="API\Models\" />
+    <Folder Include="Converter\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Gemini.Cgi\Gemini.Cgi.csproj" />
+  </ItemGroup>
+</Project>
