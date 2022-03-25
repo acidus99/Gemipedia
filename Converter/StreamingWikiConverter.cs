@@ -262,10 +262,10 @@ namespace WikiProxy.Converter
         private void ProcessDiv(HtmlElement element, TextWriter sb)
         {
             //is it a picture?
-            if(element.ClassList.Contains("thumb"))
+            if(element.ClassList.Contains("thumb") && !element.ClassList.Contains("locmap"))
             {
                 var url = element.QuerySelector("img")?.GetAttribute("src") ?? "";
-                var caption = element.QuerySelector("div.thumbcaption")?.TextContent.Trim() ?? "";
+                var caption = PrepareTextContent(element.QuerySelector("div.thumbcaption")?.TextContent ?? "");
                 if(url.Length > 0 && caption.Length > 0)
                 {
                     sb.WriteLine($"=> {RewriteMediaUrl(url)} {caption}");
@@ -283,7 +283,7 @@ namespace WikiProxy.Converter
                     {
                         if (ShouldUseLink(tags[i]))
                         {
-                            sb.WriteLine($"=> {ArticleUrl(tags[i].GetAttribute("title"))} {lines[i].Trim()}.");
+                            sb.WriteLine($"=> {ArticleUrl(tags[i].GetAttribute("title"))} {PrepareTextContent(lines[i])}.");
                         }
                     }
                 }
@@ -355,7 +355,13 @@ namespace WikiProxy.Converter
         }
 
         private string GetHeaderText(HtmlElement element)
-            => element.QuerySelector("span.mw-headline").TextContent.Trim();
+            => PrepareTextContent(element.QuerySelector("span.mw-headline"));
+
+        private string PrepareTextContent(IElement element)
+            => PrepareTextContent(element.TextContent);
+
+        private string PrepareTextContent(string s)
+            => s.Trim().Replace("\n", "");
 
         private void RemoveTags()
         {
