@@ -24,8 +24,6 @@ namespace WikiProxy
             int x = 4;
         }
 
-
-
         static void Main(string[] args)
         {
             if (!CgiWrapper.IsRunningAsCgi)
@@ -53,20 +51,25 @@ namespace WikiProxy
             }
 
             cgi.Success();
+            cgi.Writer.WriteLine($"Results for '{cgi.SantiziedQuery}'.");
             var client = new WikipediaApiClient();
             var searchResults = client.Search(cgi.SantiziedQuery);
             if (searchResults.Count == 0)
             {
-                cgi.Writer.WriteLine($"No results found for '{cgi.SantiziedQuery}'.");
-                cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/search Search Again");
+                //TODO use "suggest API here
+                cgi.Writer.WriteLine("No results found.");
                 return;
             }
-            int counter = 0;
-            foreach(var result in searchResults)
+            else
             {
-                counter++;
-                cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(result.Title)} {counter}. {result.Title}");
+                int counter = 0;
+                foreach (var result in searchResults)
+                {
+                    counter++;
+                    cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(result.Title)} {counter}. {result.Title}");
+                }
             }
+            RenderFooter(cgi.Writer);
         }
 
         static void Error(CgiWrapper cgi)
@@ -81,15 +84,18 @@ namespace WikiProxy
             var client = new WikipediaApiClient();
             var resp = client.GetArticle(cgi.SantiziedQuery);
 
-            if(resp == null)
-            {
-                cgi.Missing("Could not locate article");
-                return;
-            }
             cgi.Success();
-            StreamingWikiConverter converter = new StreamingWikiConverter(cgi.Writer);
-            converter.ParseHtml(resp.Title, resp.HtmlText);
+            if (resp != null)
+            {
+                StreamingWikiConverter converter = new StreamingWikiConverter(cgi.Writer);
+                converter.ParseHtml(resp.Title, resp.HtmlText);
 
+            }
+            else
+            {
+                cgi.Writer.WriteLine("We could not access that article");
+            }
+            RenderFooter(cgi.Writer);
         }
 
         static void ProxyMedia(CgiWrapper cgi)
@@ -103,6 +109,13 @@ namespace WikiProxy
             var client = new WikipediaApiClient();
             cgi.Success("image/jpeg");
             cgi.Out.Write(client.FetchMedia("https:" + url));
+        }
+
+        static void RenderFooter(TextWriter tw)
+        {
+            tw.WriteLine();
+            tw.WriteLine("--");
+            tw.WriteLine("=> /cgi-bin/wp.cgi/search Search Wikipedia");
         }
     }
 }
