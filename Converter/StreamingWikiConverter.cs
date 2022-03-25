@@ -329,13 +329,13 @@ namespace WikiProxy.Converter
         private void ProcessTable(HtmlElement element, TextWriter sb)
         {
 
-            if(element.ClassList.Contains("infobox"))
+            //ignore info boxes and message boxes
+            if (element.ClassList.Contains("infobox") || element.ClassList.Contains("mbox-small"))
             {
                 return;
             }
 
-
-            if(element.GetAttribute("role") == "presentation" && element.ClassList.Contains("multicol"))
+            if (element.GetAttribute("role") == "presentation" && element.ClassList.Contains("multicol"))
             {
                 var rows = element.QuerySelectorAll("tr").ToArray();
                 if(rows.Length == 1)
