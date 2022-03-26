@@ -1,0 +1,17 @@
+Convert control options
+
+- Organize referenced links by section
+
+- Don't show a section if it doesn't have any content
+	(or it only has a navigation link to something else)
+	
+Use the 2x thumbnail?
+
+Title as link sometimes fails for going to wikipedia
+
+"Military+tactics" vs "Military_tactics"
+
+Tables need better parsing. Right now the "TR" query finds tables inside of the table!
+https://en.wikipedia.org/wiki/Desecration_Smile
+
+Tables => ASCII tables
