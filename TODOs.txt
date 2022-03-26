@@ -1,17 +1,24 @@
-Convert control options
+
+- requestor only works on happy path. no HTTP/connection/DNS error handling
+- Converter control options
+- stream media bytes directly to client instead of current "store and forward"
+- caching shim for media/articles
+
+- Use actual MIME type based on file extension, actual filename for proxied media
+
+Better Rendering:
 
 - Organize referenced links by section
 
 - Don't show a section if it doesn't have any content
 	(or it only has a navigation link to something else)
 	
-Use the 2x thumbnail?
+- Use the 2x thumbnail?
 
-Title as link sometimes fails for going to wikipedia
+-Title as link sometimes fails for going to wikipedia
+	e.g. "Military+tactics" vs "Military_tactics"
 
-"Military+tactics" vs "Military_tactics"
-
-Tables need better parsing. Right now the "TR" query finds tables inside of the table!
+- Tables need better parsing. Right now the "TR" query finds tables inside of the table!
 https://en.wikipedia.org/wiki/Desecration_Smile
 
-Tables => ASCII tables
+- Tables => ASCII tables
