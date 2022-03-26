@@ -7,11 +7,9 @@ using AngleSharp.Html.Parser;
 using AngleSharp.Html.Dom;
 using AngleSharp.Dom;
 
-using System.Text;
-
 namespace Gemipedia.Converter
 {
-    public class StreamingWikiConverter
+    public class WikiHtmlConverter
     {
         private TextWriter Writer;
 
@@ -31,7 +29,7 @@ namespace Gemipedia.Converter
 
         private string[] sectionsToExclude = { "bibliography", "citations", "external_links", "notes", "references" };
 
-        public StreamingWikiConverter(TextWriter writer)
+        public WikiHtmlConverter(TextWriter writer)
         {
             linkedArticles = new LinkArticles();
             Writer = writer;
