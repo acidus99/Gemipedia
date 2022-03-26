@@ -18,8 +18,8 @@ namespace Gemipedia
 
             var resp = client.GetArticle(title);
 
-            var newConverter = new StreamingWikiConverter(Console.Out);
-            newConverter.ParseHtml(resp.Title, resp.HtmlText);
+            var newConverter = new WikiHtmlConverter(DefaultSettings);
+            newConverter.Convert(Console.Out, resp.Title, resp.HtmlText);
 
             int x = 4;
         }
@@ -105,8 +105,8 @@ namespace Gemipedia
                 }
 
                 cgi.Success();
-                StreamingWikiConverter converter = new StreamingWikiConverter(cgi.Writer);
-                converter.ParseHtml(resp.Title, resp.HtmlText);
+                WikiHtmlConverter converter = new WikiHtmlConverter(DefaultSettings);
+                converter.Convert(cgi.Writer, resp.Title, resp.HtmlText);
             }
             else
             {
@@ -136,5 +136,13 @@ namespace Gemipedia
             tw.WriteLine("=> /cgi-bin/wp.cgi/lucky Go to Article");
             tw.WriteLine("=> /cgi-bin/wp.cgi/search Search Wikipedia");
         }
+
+        static ConverterSettings DefaultSettings
+            => new ConverterSettings
+            {
+                ArticleUrl = "/cgi-bin/wp.cgi/view",
+                ExcludedSections = new string []{ "bibliography", "citations", "external_links", "notes", "references" },
+                MediaProxyUrl = "/cgi-bin/wp.cgi/media/thumb.jpg",
+            };
     }
 }

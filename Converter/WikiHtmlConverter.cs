@@ -11,33 +11,27 @@ namespace Gemipedia.Converter
 {
     public class WikiHtmlConverter
     {
-        private TextWriter Writer;
-
-        private const string ProxyMediaUrl = "/cgi-bin/wp.cgi/media/thumb.jpg";
-        private const string ViewUrl = "/cgi-bin/wp.cgi/view";
 
         public string Title { get; set; }
-
         public string GemText { get; set; }
 
         IHtmlDocument document;
         LinkArticles linkedArticles;
-
         int ListDepth;
+        ConverterSettings Settings;
+        TextWriter Writer;
 
-        string currentSection = "intro";
-
-        private string[] sectionsToExclude = { "bibliography", "citations", "external_links", "notes", "references" };
-
-        public WikiHtmlConverter(TextWriter writer)
+        public WikiHtmlConverter(ConverterSettings settings)
         {
             linkedArticles = new LinkArticles();
-            Writer = writer;
             ListDepth = 0;
+            Settings = settings;
         }
 
-        public void ParseHtml(string title, string wikiHtml)
+        public void Convert(TextWriter writer, string title, string wikiHtml)
         {
+            Writer = writer;
+
             Title = title;
             var context = BrowsingContext.New(Configuration.Default);
             var parser = context.GetService<IHtmlParser>();
@@ -218,10 +212,10 @@ namespace Gemipedia.Converter
         }
 
         private string RewriteMediaUrl(string url)
-            => ProxyMediaUrl + "?" + WebUtility.UrlEncode(url);
+            => $"{Settings.MediaProxyUrl}?{WebUtility.UrlEncode(url)}";
 
         private string ArticleUrl(string title)
-            => ViewUrl + "?" + WebUtility.UrlEncode(title);
+            => $"{Settings.ArticleUrl}?{WebUtility.UrlEncode(title)}";
 
         /// <summary>
         /// Fast forwards to the next element of the type as the current element
@@ -355,7 +349,7 @@ namespace Gemipedia.Converter
         private bool ShouldBeSkipped(HtmlElement element)
         {
             var id = element.QuerySelector("span.mw-headline").GetAttribute("id")?.ToLower() ?? "";
-            return sectionsToExclude.Contains(id);
+            return Settings.ExcludedSections.Contains(id);
         }
 
         private string GetHeaderText(HtmlElement element)
