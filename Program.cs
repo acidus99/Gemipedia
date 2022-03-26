@@ -12,7 +12,7 @@ namespace WikiProxy
     {
         static void LocalTesting()
         {
-            var title = "Alabama–Florida League";
+            var title = "Desecration_Smile";
 
             var client = new WikipediaApiClient();
 
@@ -99,15 +99,21 @@ namespace WikiProxy
             var client = new WikipediaApiClient();
             var resp = client.GetArticle(cgi.SantiziedQuery);
 
-            cgi.Success();
             if (resp != null)
             {
+                if(RedirectParser.IsArticleRedirect(resp.HtmlText))
+                {
+                    cgi.Redirect($"/cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(RedirectParser.GetRedirectTitle(resp.HtmlText))}");
+                    return;
+                }
+
+                cgi.Success();
                 StreamingWikiConverter converter = new StreamingWikiConverter(cgi.Writer);
                 converter.ParseHtml(resp.Title, resp.HtmlText);
-
             }
             else
             {
+                cgi.Success();
                 cgi.Writer.WriteLine("We could not access that article");
             }
             RenderFooter(cgi.Writer);
