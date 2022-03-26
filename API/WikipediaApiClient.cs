@@ -72,20 +72,6 @@ namespace WikiProxy.API
             return "";
         }
 
-        public ParseResponse GetArticle(long pageID)
-        {
-            var url = $"https://en.wikipedia.org/w/api.php?action=parse&pageid={pageID}&prop=text&format=json";
-
-            var json = client.DownloadString(url);
-            var resp = JObject.Parse(json);
-            return new ParseResponse
-            {
-                Title = Cleanse(resp["parse"]["title"]),
-                PageId = Convert.ToInt64(Cleanse(resp["parse"]["pageid"])),
-                HtmlText = Cleanse(resp["parse"]["text"]["*"]),
-            };
-        }
-
         public List<SearchResult> Search(string query)
         {
             var url = $"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={WebUtility.UrlEncode(query)}&format=json";
