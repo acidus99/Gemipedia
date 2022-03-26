@@ -12,14 +12,24 @@ namespace Gemipedia
     {
         static void LocalTesting()
         {
-            var title = "Desecration_Smile";
+            var title = "McDonnell F-101 Voodoo";
 
             var client = new WikipediaApiClient();
 
             var resp = client.GetArticle(title);
 
-            var newConverter = new WikiHtmlConverter(DefaultSettings);
-            newConverter.Convert(Console.Out, resp.Title, resp.HtmlText);
+            //new output
+            StreamWriter fout = new StreamWriter("/Users/billy/tmp/output-new.gmi");
+            var newConverter = new NewConverter(DefaultSettings);
+            newConverter.Convert(fout, resp.Title, resp.HtmlText);
+            fout.Close();
+
+
+            //legacy output
+            fout = new StreamWriter("/Users/billy/tmp/output-legacy.gmi");
+            var legacyConverter = new WikiHtmlConverter(DefaultSettings);
+            legacyConverter.Convert(fout, resp.Title, resp.HtmlText);
+            fout.Close();
 
             int x = 4;
         }
