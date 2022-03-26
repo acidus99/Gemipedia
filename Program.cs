@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using Gemipedia.API;
 using Gemipedia.Converter;
+using System.Diagnostics;
 
 using Gemini.Cgi;
 
@@ -12,7 +13,8 @@ namespace Gemipedia
     {
         static void LocalTesting()
         {
-            var title = "McDonnell F-101 Voodoo";
+            var title = "Minor League Baseball";
+            //var title = "Pet door";
 
             var client = new WikipediaApiClient();
 
@@ -20,15 +22,21 @@ namespace Gemipedia
 
             //new output
             StreamWriter fout = new StreamWriter("/Users/billy/tmp/output-new.gmi");
+            Stopwatch newTimer = new Stopwatch();
+            newTimer.Start();
             var newConverter = new NewConverter(DefaultSettings);
             newConverter.Convert(fout, resp.Title, resp.HtmlText);
+            newTimer.Stop();
             fout.Close();
 
 
             //legacy output
             fout = new StreamWriter("/Users/billy/tmp/output-legacy.gmi");
+            Stopwatch legacyTimer = new Stopwatch();
+            legacyTimer.Start();
             var legacyConverter = new WikiHtmlConverter(DefaultSettings);
             legacyConverter.Convert(fout, resp.Title, resp.HtmlText);
+            legacyTimer.Stop();
             fout.Close();
 
             int x = 4;

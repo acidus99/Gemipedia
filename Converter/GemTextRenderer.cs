@@ -29,7 +29,10 @@ namespace Gemipedia.Converter
         public void RenderArticle(string title, List<Section> sections)
         {
             RenderArticleTitle(title);
-            RenderSections(sections);
+            foreach(var section in sections)
+            {
+                Writer.Write(RenderSection(section));
+            }
         }
 
         private void RenderArticleTitle(string title)
@@ -38,41 +41,38 @@ namespace Gemipedia.Converter
             Writer.WriteLine();
         }
 
-        private void RenderSections(List<Section> sections)
+        private string RenderSection(Section section)
         {
-            foreach (var section in sections)
+            StringBuilder sb = new StringBuilder();
+            
+            sb.Append(RenderContentNodes(section.ContentNodes));
+            
+            foreach (var subSection in section.SubSections)
             {
-                RenderSection(section);
+                sb.Append(RenderSection(subSection));
             }
-        }
 
-        private void RenderSection(Section section)
-        {
-            //render the title
-            RenderSectionTitle(section);
-
-            //first render the content nodes for the section
-            Writer.Write(RenderContentNodes(section.ContentNodes));
-
-            //render any subsections
-            RenderSections(section.SubSections);
-        }
-
-        private void RenderSectionTitle(Section section)
-        {
-            if(section.IsSpecial)
+            //if a section has no content, don't write anything
+            if(sb.Length == 0)
             {
-                return;
+                return "";
             }
-            if (section.SectionDepth == 2)
+
+            StringBuilder completeSection = new StringBuilder();
+            if (!section.IsSpecial)
             {
-                Writer.WriteLine($"## {section.Title}");
+                if (section.SectionDepth == 2)
+                {
+                    completeSection.AppendLine($"## {section.Title}");
+                }
+                else
+                {
+                    //all other sections are at a level 3
+                    completeSection.AppendLine($"### {section.Title}");
+                }
             }
-            else
-            {
-                //all other sections are at a level 3
-                Writer.WriteLine($"### {section.Title}");
-            }
+            completeSection.Append(sb.ToString());
+            return completeSection.ToString();
         }
 
         private string RenderContentNodes(IEnumerable<INode> nodes)
@@ -247,7 +247,7 @@ namespace Gemipedia.Converter
             //is it a naked div?
             if (element.ClassList.Count() == 0 && element.ChildElementCount == 1)
             {
-                sb.Write(RenderContentNode(element));
+                sb.Write(RenderChildren(element));
                 return;
             }
         }
@@ -304,7 +304,7 @@ namespace Gemipedia.Converter
                 }
                 return;
             }
-            sb.WriteLine("[Unable to render table]");
+            //sb.WriteLine("[Unable to render table]");
         }
 
         private string PrepareTextContent(IElement element)
