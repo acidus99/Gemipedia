@@ -13,6 +13,7 @@
     <None Remove="Converter\" />
     <None Remove=".gitignore" />
     <None Remove=".gitattributes" />
+    <None Remove="Legacy\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -22,6 +23,7 @@
     <Folder Include="API\" />
     <Folder Include="API\Models\" />
     <Folder Include="Converter\" />
+    <Folder Include="Legacy\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gemini.Cgi\Gemini.Cgi.csproj" />
