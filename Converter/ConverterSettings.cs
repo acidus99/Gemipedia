@@ -21,7 +21,7 @@ namespace Gemipedia.Converter
         /// <summary>
         /// Should we convert images/media?
         /// </summary>
-        public bool ShouldConvertMedia { get; set; }
+        public bool ShouldConvertMedia { get; set; } = true;
 
     }
 }
