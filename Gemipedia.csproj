@@ -11,6 +11,8 @@
     <None Remove="AngleSharp" />
     <None Remove="API\Models\" />
     <None Remove="Converter\" />
+    <None Remove=".gitignore" />
+    <None Remove=".gitattributes" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
