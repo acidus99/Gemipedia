@@ -26,7 +26,7 @@ namespace Gemipedia.Converter
             //Make a temp section, containing all of our content nodes
             Section parentSection = new Section
             {
-                Title = "[root section]",
+                IsSpecial = true,
                 SectionDepth = 1,
                 ContentNodes = ContentRoot.ChildNodes.ToList()
             };
@@ -40,7 +40,7 @@ namespace Gemipedia.Converter
 
             Section introSection = new Section
             {
-                Title = "[intro section]",
+                IsSpecial = true,
                 SectionDepth = 2,
                 ContentNodes = parentSection.ContentNodes
             };
