@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+
+using System.Text;
+
 using AngleSharp;
 using AngleSharp.Html.Parser;
 using AngleSharp.Html.Dom;
 using AngleSharp.Dom;
+
 namespace Gemipedia.Converter
 {
     public class GemTextRenderer
@@ -48,7 +52,7 @@ namespace Gemipedia.Converter
             RenderSectionTitle(section);
 
             //first render the content nodes for the section
-            RenderContentNodes(section.ContentNodes);
+            Writer.Write(RenderContentNodes(section.ContentNodes));
 
             //render any subsections
             RenderSections(section.SubSections);
@@ -71,120 +75,131 @@ namespace Gemipedia.Converter
             }
         }
 
-        private void RenderContentNodes(List<INode> nodes)
+        private string RenderContentNodes(IEnumerable<INode> nodes)
         {
-            foreach(INode node in nodes)
+            StringBuilder sb = new StringBuilder();
+
+            foreach(var node in nodes)
             {
-                Writer.Write(RenderContentNode(node));
+                sb.Append(RenderContentNode(node));
             }
+            return sb.ToString();
         }
 
-        private string RenderContentNode(INode node, bool useLocalWriter = true)
+        private string RenderChildren(INode node)
+            => RenderContentNodes(node.ChildNodes);
+
+        private string RenderContentNode(INode current)
         {
             StringWriter sb = new StringWriter();
 
-            var children = node.ChildNodes.ToArray();
-            for (int currIndex = 0; currIndex < children.Length; currIndex++)
+            switch (current.NodeType)
             {
-                var current = children[currIndex];
-                switch (current.NodeType)
-                {
-                    case NodeType.Comment:
-                        break;
+                case NodeType.Comment:
+                    break;
 
-                    case NodeType.Text:
+                case NodeType.Text:
+                    //if its not only whitespace add it.
+                    if (current.TextContent.Trim().Length > 0)
+                    {
                         sb.Write(current.TextContent);
-                        break;
+                    }
+                    //if its whitepsace, but doesn't have a newline
+                    else if (!current.TextContent.Contains("\n"))
+                    {
+                        sb.Write(current.TextContent);
+                    }
+                    break;
 
-                    case NodeType.Element:
+                case NodeType.Element:
+                    {
+                        HtmlElement element = current as HtmlElement;
+                        var nodeName = element.NodeName.ToLower();
+                        switch (nodeName)
                         {
-                            HtmlElement element = current as HtmlElement;
-                            var nodeName = element.NodeName.ToLower();
-                            switch (nodeName)
-                            {
 
-                                case "a":
-                                    //RecordHyperlink(element);
-                                    sb.Write(RenderContentNode(current));
-                                    break;
+                            case "a":
+                                //RecordHyperlink(element);
+                                sb.Write(RenderChildren(current));
+                                break;
 
-                                case "blockquote":
-                                    RenderContentNode(current).Trim().Split("\n").ToList()
-                                        .ForEach(x => sb.WriteLine($">{x}"));
-                                    sb.WriteLine();
-                                    break;
+                            case "blockquote":
+                                RenderContentNodes(current.ChildNodes).Trim().Split("\n").ToList()
+                                    .ForEach(x => sb.WriteLine($">{x}"));
+                                sb.WriteLine();
+                                break;
 
-                                case "br":
-                                    sb.WriteLine();
-                                    break;
+                            case "br":
+                                sb.WriteLine();
+                                break;
 
-                                case "dd":
-                                    sb.Write("* ");
-                                    sb.WriteLine(RenderContentNode(current));
-                                    break;
+                            case "dd":
+                                sb.Write("* ");
+                                sb.WriteLine(RenderChildren(current));
+                                break;
 
-                                case "dt":
-                                    sb.Write(RenderContentNode(current));
-                                    sb.WriteLine(":");
-                                    break;
+                            case "dt":
+                                sb.Write(RenderChildren(current));
+                                sb.WriteLine(":");
+                                break;
 
-                                case "i":
-                                    sb.Write('"');
-                                    sb.Write(RenderContentNode(current));
-                                    sb.Write('"');
-                                    break;
+                            case "i":
+                                sb.Write('"');
+                                sb.Write(RenderChildren(current));
+                                sb.Write('"');
+                                break;
 
-                                case "u":
-                                    sb.Write('_');
-                                    sb.Write(RenderContentNode(current));
-                                    sb.Write('_');
-                                    break;
+                            case "u":
+                                sb.Write('_');
+                                sb.Write(RenderChildren(current));
+                                sb.Write('_');
+                                break;
 
-                                case "ol":
-                                case "ul":
-                                    ListDepth++;
-                                    sb.Write(RenderContentNode(current));
-                                    ListDepth--;
-                                    break;
+                            case "ol":
+                            case "ul":
+                                ListDepth++;
+                                sb.Write(RenderChildren(current));
+                                ListDepth--;
+                                break;
 
-                                case "li":
-                                    ProcessLi(element, sb);
-                                    break;
+                            case "li":
+                                ProcessLi(element, sb);
+                                break;
 
-                                case "p":
+                            case "p":
+                                {
+                                    var innerContent = RenderChildren(current).Trim();
+                                    if (innerContent.Length > 0)
                                     {
-                                        var innerContent = RenderContentNode(current).Trim();
-                                        if (innerContent.Length > 0)
-                                        {
-                                            sb.WriteLine(innerContent);
-                                            sb.WriteLine();
-                                        }
+                                        sb.WriteLine(innerContent);
+                                        sb.WriteLine();
                                     }
-                                    break;
+                                }
+                                break;
 
-                                case "div":
-                                    ProcessDiv(element, sb);
-                                    break;
+                            case "div":
+                                ProcessDiv(element, sb);
+                                break;
 
-                                case "table":
-                                    ProcessTable(element, sb);
-                                    break;
+                            case "table":
+                                ProcessTable(element, sb);
+                                break;
 
-                                //tags to ignore
-                                case "link":
-                                case "style":
-                                    break;
+                            //tags to ignore
+                            case "link":
+                            case "style":
+                                break;
 
-                                default:
-                                    sb.Write(RenderContentNode(current));
-                                    break;
-                            }
+                            default:
+                                sb.Write(RenderChildren(current));
+                                break;
                         }
-                        break;
-                    default:
-                        throw new ApplicationException("Unhandled NODE TYPE!");
-                }
+                    }
+                    break;
+                default:
+                    throw new ApplicationException("Unhandled NODE TYPE!");
             }
+            
             return sb.ToString();
         }
 
@@ -248,19 +263,19 @@ namespace Gemipedia.Converter
                 {
                     sb.Write($"=> {ArticleUrl(links[0].GetAttribute("title"))} ");
                     //process inside the A tag so we don't add this link to our list of references
-                    sb.WriteLine(RenderContentNode(element).Trim());
+                    sb.WriteLine(RenderChildren(element).Trim());
                 }
                 else
                 {
                     sb.Write("* ");
-                    sb.WriteLine(RenderContentNode(element).Trim());
+                    sb.WriteLine(RenderChildren(element).Trim());
                 }
             }
             else
             {
                 sb.WriteLine();
                 sb.Write("* * ");
-                sb.WriteLine(RenderContentNode(element).Trim());
+                sb.WriteLine(RenderChildren(element).Trim());
             }
         }
 
@@ -282,7 +297,7 @@ namespace Gemipedia.Converter
                     {
                         foreach (var col in rows[0].QuerySelectorAll("td"))
                         {
-                            sb.Write(RenderContentNode(col));
+                            sb.Write(RenderChildren(col));
                         }
                         return;
                     }
