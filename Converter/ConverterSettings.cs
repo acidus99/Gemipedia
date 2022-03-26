@@ -4,6 +4,11 @@ namespace Gemipedia.Converter
     public class ConverterSettings
     {
         /// <summary>
+        /// URL to use to view an artical. Actual artical passed via query string
+        /// </summary>
+        public string ArticleUrl { get; set; }
+
+        /// <summary>
         /// Section titles we should exclude from the converted output
         /// </summary>
         public string[] ExcludedSections { get; set; }
@@ -14,8 +19,9 @@ namespace Gemipedia.Converter
         public string MediaProxyUrl { get; set; }
 
         /// <summary>
-        /// URL to use to view an artical. Actual artical passed via query string
+        /// Should we convert images/media?
         /// </summary>
-        public string ArticleUrl { get; set; }
+        public bool ShouldConvertMedia { get; set; }
+
     }
 }

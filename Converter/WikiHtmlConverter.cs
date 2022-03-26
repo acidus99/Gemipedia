@@ -255,14 +255,18 @@ namespace Gemipedia.Converter
 
         private void ProcessDiv(HtmlElement element, TextWriter sb)
         {
-            //is it a picture?
-            if(element.ClassList.Contains("thumb") && !element.ClassList.Contains("locmap"))
+            //is it a media div?
+            if (Settings.ShouldConvertMedia)
             {
-                var url = element.QuerySelector("img")?.GetAttribute("src") ?? "";
-                var caption = PrepareTextContent(element.QuerySelector("div.thumbcaption")?.TextContent ?? "");
-                if(url.Length > 0 && caption.Length > 0)
+                if (element.ClassList.Contains("thumb") && !element.ClassList.Contains("locmap"))
                 {
-                    sb.WriteLine($"=> {RewriteMediaUrl(url)} {caption}");
+                    var url = element.QuerySelector("img")?.GetAttribute("src") ?? "";
+                    var caption = PrepareTextContent(element.QuerySelector("div.thumbcaption")?.TextContent ?? "");
+                    if (url.Length > 0 && caption.Length > 0)
+                    {
+                        sb.WriteLine($"=> {RewriteMediaUrl(url)} {caption}");
+                        return;
+                    }
                 }
             }
 
@@ -278,6 +282,7 @@ namespace Gemipedia.Converter
                         if (ShouldUseLink(tags[i]))
                         {
                             sb.WriteLine($"=> {ArticleUrl(tags[i].GetAttribute("title"))} {PrepareTextContent(lines[i])}.");
+                            return;
                         }
                     }
                 }
@@ -287,15 +292,14 @@ namespace Gemipedia.Converter
             if(element.ClassList.Count() == 0 && element.ChildElementCount == 1)
             {
                 sb.Write(ProcessNode(element));
+                return;
             }
-
         }
 
         private void ProcessLi(HtmlElement element, TextWriter sb)
         {
             if (ListDepth == 1)
             {
-
                 //if the entire item in a line, make it a link line,
                 //otherwise its a bulleted list
                 var links = element.QuerySelectorAll("a").ToList();
