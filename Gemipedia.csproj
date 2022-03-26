@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <None Remove="Newtonsoft.Json" />
-    <None Remove="Models\" />
     <None Remove="Clients\" />
     <None Remove="AngleSharp" />
     <None Remove="API\Models\" />
@@ -18,7 +17,6 @@
     <PackageReference Include="AngleSharp" Version="0.16.1" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
     <Folder Include="API\" />
     <Folder Include="API\Models\" />
     <Folder Include="Converter\" />

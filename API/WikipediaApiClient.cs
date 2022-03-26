@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using System.Net;
 
 using Newtonsoft.Json.Linq;
-using WikiProxy.API.Models;
+using Gemipedia.API.Models;
 
-namespace WikiProxy.API
+namespace Gemipedia.API
 {
-    /// <summary>
-    /// Gets a locale via a free IP 2 location service
-    /// </summary>
+
     public class WikipediaApiClient
     {
         WebClient client;
-
 
         public WikipediaApiClient()
         {

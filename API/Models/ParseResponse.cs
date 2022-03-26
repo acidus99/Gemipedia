@@ -1,5 +1,5 @@
 ﻿using System;
-namespace WikiProxy.API.Models
+namespace Gemipedia.API.Models
 {
     public class ParseResponse
     {

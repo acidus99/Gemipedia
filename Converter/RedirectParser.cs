@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-namespace WikiProxy.Converter
+namespace Gemipedia.Converter
 {
     /// <summary>
     /// Handles redirects via Wikitext
@@ -8,7 +8,7 @@ namespace WikiProxy.Converter
     public static class RedirectParser
     {
 
-       static Regex redirectTitle = new Regex("title=\"([^\\\"]+)", RegexOptions.Compiled);
+        static Regex redirectTitle = new Regex("title=\"([^\\\"]+)", RegexOptions.Compiled);
 
         public static bool IsArticleRedirect(string html)
            => html.Contains("<div class=\"redirectMsg\">");
@@ -22,6 +22,5 @@ namespace WikiProxy.Converter
             }
             return "";
         }
-
     }
 }

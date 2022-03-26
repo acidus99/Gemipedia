@@ -9,7 +9,7 @@ using AngleSharp.Dom;
 
 using System.Text;
 
-namespace WikiProxy.Converter
+namespace Gemipedia.Converter
 {
     public class StreamingWikiConverter
     {
