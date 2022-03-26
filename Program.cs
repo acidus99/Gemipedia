@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using WikiProxy.API;
-using WikiProxy.Converter;
+using Gemipedia.API;
+using Gemipedia.Converter;
 
 using Gemini.Cgi;
 
-namespace WikiProxy
+namespace Gemipedia
 {
     class Program
     {
@@ -39,18 +39,6 @@ namespace WikiProxy
             router.OnRequest("/lucky", Lucky);
             router.OnRequest("", Welcome);
             router.ProcessRequest();
-
-        }
-
-        static void Welcome(CgiWrapper cgi)
-        {
-            cgi.Success();
-            cgi.Writer.WriteLine("# Gemipedia");
-            cgi.Writer.WriteLine("Welcome to Gemipedia: A Gemini proxy to Wikipedia, focused on providing a 1st class reading experience.");
-            cgi.Writer.WriteLine("");
-            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/lucky Go to Article");
-            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/search Search");
-            
         }
 
         static void Search(CgiWrapper cgi)
@@ -83,15 +71,24 @@ namespace WikiProxy
             RenderFooter(cgi.Writer);
         }
 
-
         static void Lucky(CgiWrapper cgi)
         {
-            if(!cgi.HasQuery)
+            if (!cgi.HasQuery)
             {
                 cgi.Input("Article Name? (doesn't need to be exact)");
                 return;
             }
             cgi.Redirect($"/cgi-bin/wp.cgi/view?{cgi.RawQuery}");
+        }
+
+        static void Welcome(CgiWrapper cgi)
+        {
+            cgi.Success();
+            cgi.Writer.WriteLine("# Gemipedia");
+            cgi.Writer.WriteLine("Welcome to Gemipedia: A Gemini proxy to Wikipedia, focused on providing a 1st class reading experience.");
+            cgi.Writer.WriteLine("");
+            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/lucky Go to Article");
+            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/search Search");
         }
 
         static void ViewArticle(CgiWrapper cgi)
