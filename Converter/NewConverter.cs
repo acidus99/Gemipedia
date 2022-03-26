@@ -54,11 +54,8 @@ namespace Gemipedia.Converter
 
         private List<Section> ParseSections(IElement contentRoot)
         {
-            FastSectionizer sectionizer = new FastSectionizer(Settings);
+            Sectionizer sectionizer = new Sectionizer(Settings);
             return sectionizer.ExtractSections(contentRoot);
-
-            //Sectionizer sectionizer = new Sectionizer(Settings);
-            //return sectionizer.ExtractSections(contentRoot);
         }
 
         private void RenderArticle(TextWriter writer, string title, List<Section> sections)
