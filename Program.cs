@@ -123,7 +123,8 @@ namespace Gemipedia
                 }
 
                 cgi.Success();
-                WikiHtmlConverter converter = new WikiHtmlConverter(DefaultSettings);
+                //var converter = new WikiHtmlConverter(DefaultSettings);
+                var converter = new NewConverter(DefaultSettings);
                 converter.Convert(cgi.Writer, resp.Title, resp.HtmlText);
             }
             else
