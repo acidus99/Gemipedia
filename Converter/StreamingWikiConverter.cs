@@ -330,22 +330,26 @@ namespace WikiProxy.Converter
         {
 
             //ignore info boxes and message boxes
-            if (element.ClassList.Contains("infobox") || element.ClassList.Contains("mbox-small"))
+            if (element.ClassList.Contains("infobox"))
             {
                 return;
             }
 
-            if (element.GetAttribute("role") == "presentation" && element.ClassList.Contains("multicol"))
+            if (element.GetAttribute("role") == "presentation")
             {
-                var rows = element.QuerySelectorAll("tr").ToArray();
-                if(rows.Length == 1)
+                if (element.ClassList.Contains("multicol"))
                 {
-                    foreach(var col in rows[0].QuerySelectorAll("td"))
+                    var rows = element.QuerySelectorAll("tr").ToArray();
+                    if (rows.Length == 1)
                     {
-                        sb.Write(ProcessNode(col));
+                        foreach (var col in rows[0].QuerySelectorAll("td"))
+                        {
+                            sb.Write(ProcessNode(col));
+                        }
+                        return;
                     }
-                    return;
                 }
+                return;
             }
             sb.WriteLine("[Unable to render table]");
         }
