@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text.RegularExpressions;
 
 using Newtonsoft.Json.Linq;
 using WikiProxy.API.Models;
@@ -15,7 +14,6 @@ namespace WikiProxy.API
     {
         WebClient client;
 
-        static Regex redirectTitle = new Regex("title=\"([^\\\"]+)");
 
         public WikipediaApiClient()
         {
@@ -25,51 +23,24 @@ namespace WikiProxy.API
 
         public ParseResponse GetArticle(string title)
         {
-            int requests = 0;
-            do
-            {
-                requests++;
+            var url = $"https://en.wikipedia.org/w/api.php?action=parse&page={WebUtility.UrlEncode(title)}&prop=text&format=json";
 
-                var url = $"https://en.wikipedia.org/w/api.php?action=parse&page={WebUtility.UrlEncode(title)}&prop=text&format=json";
-
-                var json = client.DownloadString(url);
+            var json = client.DownloadString(url);
                 
-                var resp = JObject.Parse(json);
+            var resp = JObject.Parse(json);
 
-                if(resp["error"] != null)
-                {
-                    //error loading page!
-                    return null;
-                }
-
-                var model = new ParseResponse
-                {
-                    Title = Cleanse(resp["parse"]["title"]),
-                    PageId = Convert.ToInt64(Cleanse(resp["parse"]["pageid"])),
-                    HtmlText = Cleanse(resp["parse"]["text"]["*"]),
-                };
-
-                if (!IsArticleRedirect(model.HtmlText))
-                {
-                    return model;
-                }
-                title = GetRedirectTitle(model.HtmlText);
-            } while (requests < 4 && title != "");
-
-            return null;
-        }
-
-        private bool IsArticleRedirect(string html)
-            => html.Contains("<div class=\"redirectMsg\">");
-
-        private string GetRedirectTitle(string html)
-        {
-            Match match = redirectTitle.Match(html);
-            if(match.Success)
+            if(resp["error"] != null)
             {
-                return match.Groups[1].Value;
+                //error loading page!
+                return null;
             }
-            return "";
+
+            return new ParseResponse
+            {
+                Title = Cleanse(resp["parse"]["title"]),
+                PageId = Convert.ToInt64(Cleanse(resp["parse"]["pageid"])),
+                HtmlText = Cleanse(resp["parse"]["text"]["*"]),
+            };
         }
 
         public List<SearchResult> Search(string query)
