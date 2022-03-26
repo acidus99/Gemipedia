@@ -17,6 +17,7 @@ namespace Gemipedia.Converter
     {
         ConverterSettings Settings;
         TextWriter Writer;
+        LinkArticles linkedArticles;
 
         int ListDepth = 0;
 
@@ -24,6 +25,7 @@ namespace Gemipedia.Converter
         {
             Settings = settings;
             Writer = writer;
+            linkedArticles = new LinkArticles();
         }
 
         public void RenderArticle(string title, List<Section> sections)
@@ -33,12 +35,25 @@ namespace Gemipedia.Converter
             {
                 Writer.Write(RenderSection(section));
             }
+            RenderIndex(title);
         }
 
         private void RenderArticleTitle(string title)
         {
             Writer.WriteLine($"# {title}");
             Writer.WriteLine();
+        }
+
+        private void RenderIndex(string title)
+        {
+            Writer.WriteLine();
+            Writer.WriteLine("## Index of References");
+            foreach (var linkTitle in linkedArticles.GetLinks())
+            {
+                Writer.WriteLine($"=> {ArticleUrl(linkTitle)} {linkTitle}");
+            }
+            Writer.WriteLine();
+            Writer.WriteLine($"=> https://en.wikipedia.org/wiki/{WebUtility.UrlEncode(title)} View '{title}' on Wikipedia");
         }
 
         private string RenderSection(Section section)
@@ -119,7 +134,7 @@ namespace Gemipedia.Converter
                         {
 
                             case "a":
-                                //RecordHyperlink(element);
+                                RecordHyperlink(element);
                                 sb.Write(RenderChildren(current));
                                 break;
 
@@ -304,7 +319,15 @@ namespace Gemipedia.Converter
                 }
                 return;
             }
-            //sb.WriteLine("[Unable to render table]");
+            sb.WriteLine("[Unable to render table]");
+        }
+
+        private void RecordHyperlink(HtmlElement element)
+        {
+            if (ShouldUseLink(element))
+            {
+                linkedArticles.AddLink(element.GetAttribute("title"));
+            }
         }
 
         private string PrepareTextContent(IElement element)
