@@ -8,10 +8,6 @@
 
 Better Rendering:
 
-- Organize referenced links by section
-
-- Don't show a section if it doesn't have any content
-	(or it only has a navigation link to something else)
 	
 - Use the 2x thumbnail?
 
@@ -22,3 +18,11 @@ Better Rendering:
 https://en.wikipedia.org/wiki/Desecration_Smile
 
 - Tables => ASCII tables
+
+
+COMPLETE:
+- Organize referenced links by section
+	don't show duplicates of links that appear in more than 1 section
+- image gallery
+- Don't show a section if it doesn't have any content
+	(or it only has a navigation link to something else)
