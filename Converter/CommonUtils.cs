@@ -28,6 +28,9 @@ namespace Gemipedia.Converter
         public static string ArticleUrl(string title)
             => $"{Settings.ArticleUrl}?{WebUtility.UrlEncode(title)}";
 
+        public static string ImageGalleryUrl(string title)
+            => $"{Settings.ImageGallerUrl}?{WebUtility.UrlEncode(title)}";
+
         public static string PrepareTextContent(string s)
             => s.Trim().Replace("\n", "");
 

@@ -24,6 +24,8 @@ namespace Gemipedia.Converter
         /// </summary>
         public string MediaProxyUrl { get; set; }
 
+        public string ImageGallerUrl { get; set; }
+
         /// <summary>
         /// Should we convert images/media?
         /// </summary>

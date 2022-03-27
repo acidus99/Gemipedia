@@ -2,10 +2,12 @@
 using System.IO;
 using System.Net;
 using Gemipedia.API;
-using Gemipedia.Converter;
+
 using System.Diagnostics;
 
 using Gemini.Cgi;
+using Gemipedia.Converter;
+using Gemipedia.Converter.Models;
 
 namespace Gemipedia
 {
@@ -44,6 +46,7 @@ namespace Gemipedia
             CgiRouter router = new CgiRouter();
             router.OnRequest("/search", Search);
             router.OnRequest("/view", ViewArticle);
+            router.OnRequest("/images", ViewImages);
             router.OnRequest("/media", ProxyMedia);
             router.OnRequest("/lucky", Lucky);
             router.OnRequest("", Welcome);
@@ -114,9 +117,34 @@ namespace Gemipedia
                 }
 
                 cgi.Success();
-                //var converter = new WikiHtmlConverter(DefaultSettings);
                 var converter = new WikiHtmlConverter(DefaultSettings);
                 converter.Convert(resp.Title, resp.HtmlText, cgi.Writer);
+            }
+            else
+            {
+                cgi.Success();
+                cgi.Writer.WriteLine("We could not access that article");
+            }
+            RenderFooter(cgi.Writer);
+        }
+
+        static void ViewImages(CgiWrapper cgi)
+        {
+            var client = new WikipediaApiClient();
+            var resp = client.GetArticle(cgi.SantiziedQuery);
+
+            if (resp != null)
+            {
+                if (RedirectParser.IsArticleRedirect(resp.HtmlText))
+                {
+                    cgi.Redirect($"/cgi-bin/wp.cgi/images?{WebUtility.UrlEncode(RedirectParser.GetRedirectTitle(resp.HtmlText))}");
+                    return;
+                }
+
+                cgi.Success();
+                //var converter = new WikiHtmlConverter(DefaultSettings);
+                var converter = new WikiHtmlConverter(DefaultSettings);
+                converter.ConvertImageGallery(resp.Title, resp.HtmlText, cgi.Writer);
             }
             else
             {
@@ -150,10 +178,11 @@ namespace Gemipedia
         static ConverterSettings DefaultSettings
             => new ConverterSettings
             {
-                ArticleUrl = "/cgi-bin/wp.cgi/view",
                 ExcludedSections = new string []{ "bibliography", "citations", "external_links", "notes", "references" },
                 ArticleLinkSections = new string[] {"see also"},
+                ArticleUrl = "/cgi-bin/wp.cgi/view",
                 MediaProxyUrl = "/cgi-bin/wp.cgi/media/thumb.jpg",
+                ImageGallerUrl = "/cgi-bin/wp.cgi/images"
             };
     }
 }

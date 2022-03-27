@@ -24,7 +24,7 @@ namespace Gemipedia.Converter
             CommonUtils.Settings = settings;
         }
 
-        public void Convert(string title, string wikiHtml, TextWriter writer)
+        public ParsedPage Parse(string title, string wikiHtml)
         {
             //step 1: scope Html just to article content
             var contentRoot = GetContentRoot(wikiHtml);
@@ -33,10 +33,20 @@ namespace Gemipedia.Converter
             RemoveTags(contentRoot);
 
             //step 3: parse content into model(s)
-            var parsedPage = ParseContent(title, contentRoot);
+            return ParseContent(title, contentRoot);
+        }
 
+        public void Convert(string title, string wikiHtml, TextWriter writer)
+        {
+            var parsedPage = Parse(title, wikiHtml);
             //step 4: render that model as gemtext to a specific TextWriter
             RenderArticle(parsedPage, writer);
+        }
+
+        public void ConvertImageGallery(string title, string wikiHtml, TextWriter writer)
+        {
+            var parsedPage = Parse(title, wikiHtml);
+            RenderGallery(parsedPage, writer);
         }
 
         private IElement GetContentRoot(string wikiHtml)
@@ -69,6 +79,10 @@ namespace Gemipedia.Converter
             renderer.RenderArticle(parsedPage, writer);
         }
 
+        private void RenderGallery(ParsedPage parsedPage, TextWriter writer)
+        {
+            GalleryRenderer renderer = new GalleryRenderer();
+            renderer.RenderGallery(parsedPage, writer);
+        }
     }
-      
 }

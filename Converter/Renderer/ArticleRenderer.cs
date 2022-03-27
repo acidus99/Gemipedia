@@ -13,6 +13,7 @@ namespace Gemipedia.Converter.Renderer
     {
         ConverterSettings Settings;
         TextWriter Writer;
+        ParsedPage Page;
 
         public ArticleRenderer(ConverterSettings settings)
         {
@@ -22,8 +23,8 @@ namespace Gemipedia.Converter.Renderer
         public void RenderArticle(ParsedPage parsedPage, TextWriter writer)
         {
             Writer = writer;
-
-            RenderArticleTitle(parsedPage.Title);
+            Page = parsedPage;
+            RenderArticleTitle();
             foreach(var section in parsedPage.Sections)
             {
                 Writer.Write(RenderSection(section));
@@ -31,9 +32,15 @@ namespace Gemipedia.Converter.Renderer
             RenderIndex(parsedPage);
         }
 
-        private void RenderArticleTitle(string title)
+        private void RenderArticleTitle()
         {
-            Writer.WriteLine($"# {title}");
+            Writer.WriteLine($"# {Page.Title}");
+            int count = Page.GetAllImages().Count;
+            if (count > 0)
+            {
+                Writer.WriteLine($"=> {CommonUtils.ImageGalleryUrl(Page.Title)} Gallery: {count} images");
+            }
+
             Writer.WriteLine();
         }
 
@@ -80,11 +87,18 @@ namespace Gemipedia.Converter.Renderer
         {
             StringBuilder sb = new StringBuilder();
 
-            foreach(SectionItem item in section.GetItems())
+            //render navigation items at top
+            foreach (SectionItem item in section.GetItems().Where(x=>x is NavSuggestionsItem))
             {
                 sb.Append(item.Render());
             }
-            
+
+            //other content below, in order
+            foreach (SectionItem item in section.GetItems().Where(x=> !(x is NavSuggestionsItem)))
+            {
+                sb.Append(item.Render());
+            }
+
             foreach (var subSection in section.SubSections)
             {
                 sb.Append(RenderSection(subSection));
