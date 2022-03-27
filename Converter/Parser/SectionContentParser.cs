@@ -6,6 +6,7 @@ using AngleSharp;
 using AngleSharp.Html.Parser;
 using AngleSharp.Html.Dom;
 using AngleSharp.Dom;
+using System.Text;
 
 using Gemipedia.Converter.Models;
 
@@ -76,12 +77,69 @@ namespace Gemipedia.Converter.Parser
                 }
             }
 
-            //TODO: Handle Table inside naked Div
+            //is it a naked with a table?
+            if (element.ClassList.Count() == 0 &&
+                element.ChildElementCount == 1 &&
+                element.FirstElementChild.NodeName == "TABLE")
+            {
+                return ParseTable(element.FirstElementChild as HtmlElement);
+                
+            }
 
             return null;
         }
 
-        private SectionItem ParseHtmlContent(HtmlElement element)
+        private SectionItem ParseTable(HtmlElement element)
+        {
+            if (element.GetAttribute("role") == "presentation")
+            {
+                if (element.ClassList.Contains("multicol"))
+                {
+                    var rows = element.QuerySelectorAll("tr").ToArray();
+                    if (rows.Length == 1)
+                    {
+                        return ParseHtmlElements(rows[0].QuerySelectorAll("td"));
+                    }
+                }
+                return null;
+            }
+            return new ContentItem
+                {
+                    Content = "[UNABLE TO PARSE TABLE]"
+                };
+        }
+
+        /// <summary>
+        /// Get the content for a collects of elements, aggregated into a ContentItem
+        /// </summary>
+        /// <param name="elements"></param>
+        /// <returns></returns>
+        private ContentItem ParseHtmlElements(IHtmlCollection<IElement> elements)
+        {
+            StringBuilder sb = new StringBuilder();
+            LinkedArticles links = new LinkedArticles();
+
+            foreach(HtmlElement element in elements)
+            {
+                var item = ParseHtmlContent(element);
+                if(item != null)
+                {
+                    sb.Append(item.Content);
+                    links.AddRange(item.LinkedArticles);
+                }
+            }
+            if(sb.Length >0)
+            {
+                return new ContentItem
+                {
+                    Content = sb.ToString(),
+                    LinkedArticles = links.GetLinks()
+                };
+            }
+            return null;
+        }
+
+        private ContentItem ParseHtmlContent(HtmlElement element)
         {
             HtmlTranslater translater = new HtmlTranslater();
 
