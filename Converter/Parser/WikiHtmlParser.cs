@@ -120,18 +120,18 @@ namespace Gemipedia.Converter.Parser
             }
         }
 
-        private void PushNewSection(INode node, int level)
-            => SectionStack.Push(new Section
-            {
-                Title = GetSectionText(node),
-                SectionDepth = level
-            });
-
         private bool IsHeader(INode node)
             => node.NodeType == NodeType.Element &&
                 node.NodeName.Length == 2 &&
                 node.NodeName[0] == 'H' &&
                 char.IsDigit(node.NodeName[1]);
+
+        private void PushNewSection(INode node, int level)
+            => SectionStack.Push(new Section
+            {
+                Title = CommonUtils.GetHeaderText(node),
+                SectionDepth = level
+            });
 
         private bool ShouldAddNode(INode node)
             => (node.NodeType == NodeType.Element);
@@ -162,7 +162,5 @@ namespace Gemipedia.Converter.Parser
             return skipIndex - 1;
         }
 
-        private string GetSectionText(INode node)
-            => ((HtmlElement)node).QuerySelector("span.mw-headline").TextContent.Trim().Replace("\n", "");
     }
 }

@@ -94,6 +94,25 @@ namespace Gemipedia.Converter.Parser
                                 sb.WriteLine(":");
                                 break;
 
+                            //we still have to handle headers here, since headers inside
+                            //of other complex markup, (like tables) will end up being
+                            //rendered here
+
+                            case "h1":
+                                sb.WriteLine($"# {CommonUtils.GetHeaderText(element)}");
+                                break;
+
+                            case "h2":
+                                sb.WriteLine($"## {CommonUtils.GetHeaderText(element)}");
+                                break;
+
+                            case "h3":
+                            case "h4":
+                            case "h5":
+                            case "h6":
+                                sb.WriteLine($"### {CommonUtils.GetHeaderText(element)}");
+                                break;
+
                             case "i":
                                 sb.Write('"');
                                 sb.Write(RenderChildren(current));
