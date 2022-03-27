@@ -47,7 +47,7 @@ namespace Gemipedia.Converter.Renderer
                 RenderIndexForSection(subSection);
             }
             Writer.WriteLine();
-            Writer.WriteLine($"=> https://en.wikipedia.org/wiki/{WebUtility.UrlEncode(parsedPage.Title)} View '{parsedPage.Title}' on Wikipedia");
+            Writer.WriteLine($"=> https://en.wikipedia.org/wiki/{WebUtility.UrlEncode(parsedPage.Title)} Source on Wikipedia");
         }
 
         private void RenderIndexForSection(Section section)
