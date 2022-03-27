@@ -12,19 +12,7 @@ namespace Gemipedia
     {
         static void LocalTesting()
         {
-            var title = "ALOHAnet";
-            //var title = "McDonnell F-101 Voodoo";
-            //var title = "Pet door";
-
-            var client = new WikipediaApiClient();
-
-            var resp = client.GetArticle(title);
-
-            //new output
-            StreamWriter fout = new StreamWriter("/Users/billy/tmp/output-new.gmi");
-            var newConverter = new WikiHtmlConverter(DefaultSettings);
-            newConverter.Convert(resp.Title, resp.HtmlText, fout);
-            fout.Close();
+         
 
             int x = 4;
         }
@@ -41,6 +29,7 @@ namespace Gemipedia
             router.OnRequest("/search", Search);
             router.OnRequest("/view", ViewArticle);
             router.OnRequest("/images", ViewImages);
+            router.OnRequest("/svg", ProxySvg);
             router.OnRequest("/media", ProxyMedia);
             router.OnRequest("/lucky", Lucky);
             router.OnRequest("", Welcome);
@@ -89,14 +78,16 @@ namespace Gemipedia
 
         static void Welcome(CgiWrapper cgi)
         {
+            CommonUtils.Settings = DefaultSettings;
+
             cgi.Success();
             cgi.Writer.WriteLine("# Gemipedia");
             cgi.Writer.WriteLine("Welcome to Gemipedia: A Gemini proxy to Wikipedia, focused on providing a 1st class reading experience.");
             cgi.Writer.WriteLine("");
             cgi.Writer.WriteLine("## Examples:");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("McDonnell F-101 Voodoo")} McDonnell F-101 Voodoo");
-            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("McDonnell F-101 Voodoo")} McDonnell F-101 Voodoo");
-            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("McDonnell F-101 Voodoo")} McDonnell F-101 Voodoo");
+            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Computer network")} Computer network");
+            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Peachtree Road Race")} Peachtree Road Race");
             RenderFooter(cgi);
         }
 
@@ -104,23 +95,33 @@ namespace Gemipedia
         {
             var client = new WikipediaApiClient();
             var resp = client.GetArticle(cgi.SantiziedQuery);
-
-            if (resp != null)
+            try
             {
-                if(RedirectParser.IsArticleRedirect(resp.HtmlText))
+                if (resp != null)
                 {
-                    cgi.Redirect($"/cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(RedirectParser.GetRedirectTitle(resp.HtmlText))}");
-                    return;
-                }
+                    if (RedirectParser.IsArticleRedirect(resp.HtmlText))
+                    {
+                        cgi.Redirect($"/cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(RedirectParser.GetRedirectTitle(resp.HtmlText))}");
+                        return;
+                    }
 
-                cgi.Success();
-                var converter = new WikiHtmlConverter(DefaultSettings);
-                converter.Convert(resp.Title, resp.HtmlText, cgi.Writer);
-            }
-            else
+                    cgi.Success();
+                    var converter = new WikiHtmlConverter(DefaultSettings);
+                    converter.Convert(resp.Title, resp.HtmlText, cgi.Writer);
+                }
+                else
+                {
+                    cgi.Success();
+                    cgi.Writer.WriteLine("We could not access that article");
+                }
+            } catch(Exception ex)
             {
-                cgi.Success();
-                cgi.Writer.WriteLine("We could not access that article");
+                cgi.Writer.WriteLine("Boom! Hit Exception!");
+                cgi.Writer.WriteLine("```");
+                cgi.Writer.WriteLine(ex.Message);
+                cgi.Writer.WriteLine(ex.Source);
+                cgi.Writer.WriteLine(ex.StackTrace);
+                cgi.Writer.WriteLine("```");
             }
             RenderFooter(cgi);
         }
@@ -154,14 +155,47 @@ namespace Gemipedia
         static void ProxyMedia(CgiWrapper cgi)
         {
             var url = cgi.Query;
-            if (!url.StartsWith("//upload.wikimedia.org/"))
+            if (!IsSafeMediaUrl(url))
+            {
+                cgi.Missing("cannot fetch media");
+                return;
+            }
+
+            Console.Error.WriteLine($"fetching '{url}'");
+
+            var client = new WikipediaApiClient();
+            cgi.Success("image/jpeg");
+            cgi.Out.Write(client.FetchMedia(url));
+        }
+
+        static void ProxySvg(CgiWrapper cgi)
+        {
+            var url = cgi.Query;
+            if (!IsSafeMediaUrl(url))
             {
                 cgi.Missing("cannot fetch media");
                 return;
             }
             var client = new WikipediaApiClient();
-            cgi.Success("image/jpeg");
-            cgi.Out.Write(client.FetchMedia("https:" + url));
+            cgi.Success("image/png");
+
+            var svgBytes = client.FetchMedia(url);
+
+            cgi.Out.Write(SvgConverter.ConvertToPng(svgBytes));
+        }
+
+
+        static bool IsSafeMediaUrl(string url)
+        {
+            try
+            {
+                var host = (new Uri(url)).Host; ;
+                return (host == "upload.wikimedia.org" || host == "wikimedia.org");
+            }
+            catch (Exception)
+            { }
+            
+            return false;
         }
 
         static void RenderFooter(CgiWrapper cgi)
@@ -180,7 +214,8 @@ namespace Gemipedia
                 ArticleLinkSections = new string[] {"see also"},
                 ArticleUrl = "/cgi-bin/wp.cgi/view",
                 MediaProxyUrl = "/cgi-bin/wp.cgi/media/thumb.jpg",
-                ImageGallerUrl = "/cgi-bin/wp.cgi/images"
+                ImageGallerUrl = "/cgi-bin/wp.cgi/images",
+                SvgProxyUrl = "/cgi-bin/wp.cgi/svg/image.png"
             };
     }
 }

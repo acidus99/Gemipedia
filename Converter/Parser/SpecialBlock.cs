@@ -19,7 +19,7 @@ namespace Gemipedia.Converter.Parser
             if (url.Length > 0 && caption.Length > 0)
             {
                 //not a media item, since it shouldn't be moved
-                return $"=> {CommonUtils.RewriteMediaUrl(url)} Math: {CommonUtils.PrepareTextContent(caption)}\n";
+                return $"\n=> {CommonUtils.SvgProxyUrl(url)} Math Formula: {CommonUtils.PrepareTextContent(caption)}\n";
             }
             return "";
         }

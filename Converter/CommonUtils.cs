@@ -22,13 +22,15 @@ namespace Gemipedia.Converter
         public static string GetHeaderText(INode node)
             => ((HtmlElement)node).QuerySelector("span.mw-headline").TextContent.Trim().Replace("\n", "");
 
-        public static string RewriteMediaUrl(string url)
+        public static string MediaProxyUrl(string url)
+            => RewriteMediaUrl(url, Settings.MediaProxyUrl);
+
+        public static string SvgProxyUrl(string url)
+            => RewriteMediaUrl(url, Settings.SvgProxyUrl);
+
+        private static string RewriteMediaUrl(string url, string cgiPath)
         {
-            if(!url.StartsWith("https:"))
-            {
-                url += "https:";
-            }
-            return $"{Settings.MediaProxyUrl}?{WebUtility.UrlEncode(url)}";
+            return $"{cgiPath}?{WebUtility.UrlEncode(url)}";
         }
 
         public static string ArticleUrl(string title)

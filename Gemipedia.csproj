@@ -16,10 +16,12 @@
     <None Remove="Converter\Parser\" />
     <None Remove="Converter\Renderer\" />
     <None Remove="Converter\Models\" />
+    <None Remove="Magick.NET-Q8-AnyCPU" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="AngleSharp" Version="0.16.1" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="11.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="API\" />
