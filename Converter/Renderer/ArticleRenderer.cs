@@ -46,18 +46,20 @@ namespace Gemipedia.Converter.Renderer
 
         private void RenderIndex(ParsedPage parsedPage)
         {
+            HashSet<string> alreadyUsed = new HashSet<string>();
+
             Writer.WriteLine();
             Writer.WriteLine("## Index of References");
             Writer.WriteLine("References to other articles, organized by section");
             foreach(var subSection in parsedPage.Sections.Where(x=>!ShouldExcludeSectionIndex(x)))
             {
-                RenderIndexForSection(subSection);
+                RenderIndexForSection(subSection, alreadyUsed);
             }
             Writer.WriteLine();
             Writer.WriteLine($"=> https://en.wikipedia.org/wiki/{WebUtility.UrlEncode(parsedPage.Title)} Source on Wikipedia");
         }
 
-        private void RenderIndexForSection(Section section)
+        private void RenderIndexForSection(Section section, HashSet<String> alreadyUsed)
         {
             //only display the section title if this section has links
             if (section.HasLinks)
@@ -68,14 +70,18 @@ namespace Gemipedia.Converter.Renderer
                 }
                 foreach (var linkTitle in section.LinkedArticles)
                 {
-                    Writer.WriteLine($"=> {CommonUtils.ArticleUrl(linkTitle)} {linkTitle}");
+                    if(!alreadyUsed.Contains(linkTitle))
+                    {
+                        alreadyUsed.Add(linkTitle);
+                        Writer.WriteLine($"=> {CommonUtils.ArticleUrl(linkTitle)} {linkTitle}");
+                    }
                 }
             }
             if(section.HasSubSections)
             {
                 foreach(var subSection in section.SubSections.Where(x => !ShouldExcludeSectionIndex(x)))
                 {
-                    RenderIndexForSection(subSection);
+                    RenderIndexForSection(subSection, alreadyUsed);
                 }
             }
         }
