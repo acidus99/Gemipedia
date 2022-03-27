@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-namespace Gemipedia.Converter
+
+namespace Gemipedia.Converter.Models
 {
-    public class LinkArticles
+    public class LinkedArticles
     {
         List<string> titles = new List<string>();
 

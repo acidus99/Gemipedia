@@ -13,7 +13,6 @@
     <None Remove="Converter\" />
     <None Remove=".gitignore" />
     <None Remove=".gitattributes" />
-    <None Remove="Legacy\" />
     <None Remove="Converter\Parser\" />
     <None Remove="Converter\Renderer\" />
     <None Remove="Converter\Models\" />
@@ -26,7 +25,6 @@
     <Folder Include="API\" />
     <Folder Include="API\Models\" />
     <Folder Include="Converter\" />
-    <Folder Include="Legacy\" />
     <Folder Include="Converter\Parser\" />
     <Folder Include="Converter\Renderer\" />
     <Folder Include="Converter\Models\" />
