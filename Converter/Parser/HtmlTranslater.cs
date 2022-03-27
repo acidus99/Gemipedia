@@ -85,6 +85,7 @@ namespace Gemipedia.Converter.Parser
                                 break;
 
                             case "dd":
+                                sb.Write("* ");
                                 sb.WriteLine(RenderChildren(current));
                                 break;
 
