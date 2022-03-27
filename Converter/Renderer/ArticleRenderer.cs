@@ -42,10 +42,20 @@ namespace Gemipedia.Converter.Renderer
             Writer.WriteLine();
             Writer.WriteLine("## Index of References");
             Writer.WriteLine("References to other articles, organized by section");
-            foreach(Section section in parsedPage.Sections
-                .Where(x=>x.LinkedArticles.Count > 0 && !Settings.ArticleLinkSections.Contains(x.Title?.ToLower())))
+            foreach(var subSection in parsedPage.Sections.Where(x=>!ShouldExcludeSectionIndex(x)))
             {
-                if(!section.IsSpecial)
+                RenderIndexForSection(subSection);
+            }
+            Writer.WriteLine();
+            Writer.WriteLine($"=> https://en.wikipedia.org/wiki/{WebUtility.UrlEncode(parsedPage.Title)} View '{parsedPage.Title}' on Wikipedia");
+        }
+
+        private void RenderIndexForSection(Section section)
+        {
+            //only display the section title if this section has links
+            if (section.HasLinks)
+            {
+                if (!section.IsSpecial)
                 {
                     Writer.WriteLine($"### {section.Title}");
                 }
@@ -54,9 +64,17 @@ namespace Gemipedia.Converter.Renderer
                     Writer.WriteLine($"=> {CommonUtils.ArticleUrl(linkTitle)} {linkTitle}");
                 }
             }
-            Writer.WriteLine();
-            Writer.WriteLine($"=> https://en.wikipedia.org/wiki/{WebUtility.UrlEncode(parsedPage.Title)} View '{parsedPage.Title}' on Wikipedia");
+            if(section.HasSubSections)
+            {
+                foreach(var subSection in section.SubSections.Where(x => !ShouldExcludeSectionIndex(x)))
+                {
+                    RenderIndexForSection(subSection);
+                }
+            }
         }
+
+        private bool ShouldExcludeSectionIndex(Section section)
+            => Settings.ArticleLinkSections.Contains(section.Title?.ToLower());
 
         private string RenderSection(Section section)
         {

@@ -6,6 +6,10 @@ namespace Gemipedia.Converter.Models
 {
     public class Section :ILinkedArticles
     {
+
+        public bool HasLinks => links.HasLinks;
+        public bool HasSubSections => (SubSections.Count > 0);
+
         public List<Section> SubSections { get; set; }=  new List<Section>();
 
         List<SectionItem> items = new List<SectionItem>();

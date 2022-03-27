@@ -8,6 +8,8 @@ namespace Gemipedia.Converter.Models
     {
         List<string> titles = new List<string>();
 
+        public bool HasLinks => (titles.Count > 0);
+
         public void AddRange(List<string> links)
             => links.ForEach(x => AddLink(x));
 

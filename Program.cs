@@ -13,7 +13,7 @@ namespace Gemipedia
     {
         static void LocalTesting()
         {
-            var title = "Minor League Baseball";
+            var title = "World War II";
             //var title = "McDonnell F-101 Voodoo";
             //var title = "Pet door";
 
