@@ -11,7 +11,7 @@ namespace Gemipedia.Converter.Models
 
     public class ContentItem : SectionItem, ILinkedArticles
     {
-        public List<String> LinkedArticles { get; set; }
+        public List<String> LinkedArticles { get; set; } = new List<string>();
 
         public string Content { get; set; }
 
