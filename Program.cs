@@ -3,11 +3,8 @@ using System.IO;
 using System.Net;
 using Gemipedia.API;
 
-using System.Diagnostics;
-
 using Gemini.Cgi;
 using Gemipedia.Converter;
-using Gemipedia.Converter.Models;
 
 namespace Gemipedia
 {
@@ -15,7 +12,7 @@ namespace Gemipedia
     {
         static void LocalTesting()
         {
-            var title = "World War II";
+            var title = "ALOHAnet";
             //var title = "McDonnell F-101 Voodoo";
             //var title = "Pet door";
 
@@ -25,11 +22,8 @@ namespace Gemipedia
 
             //new output
             StreamWriter fout = new StreamWriter("/Users/billy/tmp/output-new.gmi");
-            Stopwatch newTimer = new Stopwatch();
-            newTimer.Start();
             var newConverter = new WikiHtmlConverter(DefaultSettings);
             newConverter.Convert(resp.Title, resp.HtmlText, fout);
-            newTimer.Stop();
             fout.Close();
 
             int x = 4;
@@ -80,7 +74,7 @@ namespace Gemipedia
                     cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(result.Title)} {counter}. {result.Title}");
                 }
             }
-            RenderFooter(cgi.Writer);
+            RenderFooter(cgi);
         }
 
         static void Lucky(CgiWrapper cgi)
@@ -99,8 +93,11 @@ namespace Gemipedia
             cgi.Writer.WriteLine("# Gemipedia");
             cgi.Writer.WriteLine("Welcome to Gemipedia: A Gemini proxy to Wikipedia, focused on providing a 1st class reading experience.");
             cgi.Writer.WriteLine("");
-            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/lucky Go to Article");
-            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/search Search");
+            cgi.Writer.WriteLine("## Examples:");
+            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("McDonnell F-101 Voodoo")} McDonnell F-101 Voodoo");
+            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("McDonnell F-101 Voodoo")} McDonnell F-101 Voodoo");
+            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("McDonnell F-101 Voodoo")} McDonnell F-101 Voodoo");
+            RenderFooter(cgi);
         }
 
         static void ViewArticle(CgiWrapper cgi)
@@ -125,7 +122,7 @@ namespace Gemipedia
                 cgi.Success();
                 cgi.Writer.WriteLine("We could not access that article");
             }
-            RenderFooter(cgi.Writer);
+            RenderFooter(cgi);
         }
 
         static void ViewImages(CgiWrapper cgi)
@@ -151,7 +148,7 @@ namespace Gemipedia
                 cgi.Success();
                 cgi.Writer.WriteLine("We could not access that article");
             }
-            RenderFooter(cgi.Writer);
+            RenderFooter(cgi);
         }
 
         static void ProxyMedia(CgiWrapper cgi)
@@ -167,12 +164,13 @@ namespace Gemipedia
             cgi.Out.Write(client.FetchMedia("https:" + url));
         }
 
-        static void RenderFooter(TextWriter tw)
+        static void RenderFooter(CgiWrapper cgi)
         {
-            tw.WriteLine();
-            tw.WriteLine("--");
-            tw.WriteLine("=> /cgi-bin/wp.cgi/lucky Go to Article");
-            tw.WriteLine("=> /cgi-bin/wp.cgi/search Search Wikipedia");
+            cgi.Writer.WriteLine();
+            cgi.Writer.WriteLine("--");
+            cgi.Writer.WriteLine($"=> mailto:acidus@gemi.dev?subject=Gemipedia+issue&body=URL%3A{WebUtility.UrlEncode(cgi.RequestUrl.ToString())} Report Problem");
+            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/lucky Go to Article");
+            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/search Search Wikipedia");
         }
 
         static ConverterSettings DefaultSettings
