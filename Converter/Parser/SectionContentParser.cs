@@ -46,9 +46,14 @@ namespace Gemipedia.Converter.Parser
                 var caption = CommonUtils.PrepareTextContent(element.QuerySelector("div.thumbcaption")?.TextContent ?? "");
                 if (url.Length > 0 && caption.Length > 0 && Settings.ShouldConvertMedia)
                 {
+                    if (!url.StartsWith("https:"))
+                    {
+                        url = "https:" + url;
+                    }
+
                     return new MediaItem
                     {
-                        Url = CommonUtils.RewriteMediaUrl(url),
+                        Url = CommonUtils.MediaProxyUrl(url),
                         Caption = caption
                     };
                 }
