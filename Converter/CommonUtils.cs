@@ -17,11 +17,7 @@ namespace Gemipedia.Converter
     {
         static public ConverterSettings Settings { get;  set; }
 
-        public static bool IsHeader(INode node)
-            => node.NodeType == NodeType.Element &&
-                node.NodeName.Length == 2 &&
-                node.NodeName[0] == 'H' &&
-                char.IsDigit(node.NodeName[1]);
+
 
         public static string GetHeaderText(INode node)
             => ((HtmlElement)node).QuerySelector("span.mw-headline").TextContent.Trim().Replace("\n", "");
