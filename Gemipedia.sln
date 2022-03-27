@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gemipedia", "Gemipedia.cspr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gemini.Cgi", "..\Gemini.Cgi\Gemini.Cgi.csproj", "{3BA62C3F-DA9C-48EA-AC3A-DA9C17DB593C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{519ED394-B5EA-433F-B298-27949E27193F}"
+	ProjectSection(SolutionItems) = preProject
+		dev-log.txt = dev-log.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
