@@ -14,11 +14,11 @@ using Gemipedia.Converter.Renderer;
 
 namespace Gemipedia.Converter
 {
-    public class NewConverter
+    public class WikiHtmlConverter
     {
         ConverterSettings Settings;
 
-        public NewConverter(ConverterSettings settings)
+        public WikiHtmlConverter(ConverterSettings settings)
         {
             Settings = settings;
             CommonUtils.Settings = settings;
