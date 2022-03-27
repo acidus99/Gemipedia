@@ -8,6 +8,10 @@ using AngleSharp.Html.Parser;
 using AngleSharp.Html.Dom;
 using AngleSharp.Dom;
 
+using Gemipedia.Converter.Models;
+using Gemipedia.Converter.Parser;
+using Gemipedia.Converter.Renderer;
+
 namespace Gemipedia.Converter
 {
     public class NewConverter
@@ -17,9 +21,10 @@ namespace Gemipedia.Converter
         public NewConverter(ConverterSettings settings)
         {
             Settings = settings;
+            CommonUtils.Settings = settings;
         }
 
-        public void Convert(TextWriter writer, string title, string wikiHtml)
+        public void Convert(string title, string wikiHtml, TextWriter writer)
         {
             //step 1: scope Html just to article content
             var contentRoot = GetContentRoot(wikiHtml);
@@ -27,11 +32,11 @@ namespace Gemipedia.Converter
             //step 2: remove known bad/unneeded tags
             RemoveTags(contentRoot);
 
-            //step 3: parse content into sections
-            var sections = ParseSections(contentRoot);
+            //step 3: parse content into model(s)
+            var parsedPage = ParseContent(title, contentRoot);
 
-            //step 4: render those sections as gemtext
-            RenderArticle(writer, title, sections);
+            //step 4: render that model as gemtext to a specific TextWriter
+            RenderArticle(parsedPage, writer);
         }
 
         private IElement GetContentRoot(string wikiHtml)
@@ -52,16 +57,16 @@ namespace Gemipedia.Converter
             contentRoot.QuerySelectorAll("span.flagicon").ToList().ForEach(x => x.Remove());
         }
 
-        private List<Section> ParseSections(IElement contentRoot)
+        private ParsedPage ParseContent(string title, IElement contentRoot)
         {
-            Sectionizer sectionizer = new Sectionizer(Settings);
-            return sectionizer.ExtractSections(contentRoot);
+            var parser = new WikiHtmlParser(Settings);
+            return parser.ParseContent(title, contentRoot);
         }
 
-        private void RenderArticle(TextWriter writer, string title, List<Section> sections)
+        private void RenderArticle(ParsedPage parsedPage, TextWriter writer)
         {
-            GemTextRenderer renderer = new GemTextRenderer(Settings, writer);
-            renderer.RenderArticle(title, sections);
+            var renderer = new ArticleRenderer(Settings);
+            renderer.RenderArticle(parsedPage, writer);
         }
 
     }

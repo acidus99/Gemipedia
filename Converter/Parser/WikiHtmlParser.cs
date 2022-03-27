@@ -4,27 +4,36 @@ using System.Linq;
 using AngleSharp.Html.Dom;
 using AngleSharp.Dom;
 
-namespace Gemipedia.Converter
+using Gemipedia.Converter.Models;
+
+namespace Gemipedia.Converter.Parser
 {
     /// <summary>
     /// Constructs a tree of sections and subsections for the Wiki content
     /// </summary>
-    public class Sectionizer
+    public class WikiHtmlParser
     {
         ConverterSettings Settings;
 
         Stack<Section> SectionStack;
-        List<Section> OrderedSections;
+        SectionContentParser Parser;
 
-        public Sectionizer(ConverterSettings settings)
+        ParsedPage ParsedPage;
+
+        public WikiHtmlParser(ConverterSettings settings)
         {
             Settings = settings;
+            Parser = new SectionContentParser(Settings);
         }
 
-        public List<Section> ExtractSections(INode ContentRoot)
+        public ParsedPage ParseContent(string title, INode contentRoot)
         {
+            ParsedPage = new ParsedPage
+            {
+                Title = title
+            };
+
             SectionStack = new Stack<Section>();
-            OrderedSections = new List<Section>();
 
             SectionStack.Push(new Section
             {
@@ -32,16 +41,16 @@ namespace Gemipedia.Converter
                 SectionDepth = 2,
             });
 
-            var nodeList = ContentRoot.ChildNodes.ToArray();
+            var nodeList = contentRoot.ChildNodes.ToArray();
 
             for (int currIndex = 0, len = nodeList.Length; currIndex < len; currIndex++)
             {
-                INode currNode = ContentRoot.ChildNodes[currIndex];
+                INode currNode = contentRoot.ChildNodes[currIndex];
                 //is it a normal node
-                if(IsHeader(currNode))
+                if (IsHeader(currNode))
                 {
                     //we are supposed to skip this?
-                    if(ShouldSkipSection(currNode))
+                    if (ShouldSkipSection(currNode))
                     {
                         currIndex = FastForward(currNode, nodeList, currIndex);
                         continue;
@@ -49,26 +58,26 @@ namespace Gemipedia.Converter
 
                     int depthOnStack = SectionStack.Peek().SectionDepth;
                     //what level is this?
-                    int level = (int) (currNode.NodeName[1] - 48);
-                    if(level > depthOnStack)
+                    int level = (int)(currNode.NodeName[1] - 48);
+                    if (level > depthOnStack)
                     {
                         //ok push a new section
-                        PushHeader(currNode, level);
+                        PushNewSection(currNode, level);
                         continue;
                     }
-                    else if(level == depthOnStack)
+                    else if (level == depthOnStack)
                     {
                         //pop the current section off
                         AddCompletedSection(SectionStack.Pop());
                         //push the new section
-                        PushHeader(currNode, level);
+                        PushNewSection(currNode, level);
                     }
                     else
                     {
                         //new section is
                         //found one lower!
                         //while the top of ths stacck is > the next one
-                        while(SectionStack.Peek().SectionDepth > level)
+                        while (SectionStack.Peek().SectionDepth > level)
                         {
                             var tmpSection = SectionStack.Pop();
                             //add that as a subsection for the section of the top
@@ -77,12 +86,17 @@ namespace Gemipedia.Converter
                         //pop the current section off
                         AddCompletedSection(SectionStack.Pop());
                         //push the new section
-                        PushHeader(currNode, level);
+                        PushNewSection(currNode, level);
                     }
-                } else if(ShouldAddNode(currNode))
+                }
+                else if (ShouldAddNode(currNode))
                 {
-                    //add to the one on the queue
-                    SectionStack.Peek().ContentNodes.Add(currNode);
+                    var item = Parser.ParseElement(currNode as HtmlElement);
+                    if (item != null)
+                    {
+                        //add to the one on the queue
+                        SectionStack.Peek().Items.Add(item);
+                    }
                 }
             }
             //combine remain stack
@@ -90,7 +104,7 @@ namespace Gemipedia.Converter
             {
                 AddCompletedSection(SectionStack.Pop());
             }
-            return OrderedSections;
+            return ParsedPage;
         }
 
 
@@ -103,11 +117,11 @@ namespace Gemipedia.Converter
             }
             else
             {
-                OrderedSections.Add(section);
+                ParsedPage.Sections.Add(section);
             }
         }
 
-        private void PushHeader(INode node, int level)
+        private void PushNewSection(INode node, int level)
             => SectionStack.Push(new Section
             {
                 Title = GetSectionText(node),
@@ -140,7 +154,7 @@ namespace Gemipedia.Converter
 
         private bool ShouldSkipSection(INode node)
         {
-            var id = ((HtmlElement) node).QuerySelector("span.mw-headline").GetAttribute("id")?.ToLower() ?? "";
+            var id = ((HtmlElement)node).QuerySelector("span.mw-headline").GetAttribute("id")?.ToLower() ?? "";
             return Settings.ExcludedSections.Contains(id);
         }
 
@@ -150,7 +164,7 @@ namespace Gemipedia.Converter
         /// <param name="children"></param>
         /// <param name="currentIndex"></param>
         /// <returns></returns>
-        private int FastForward(INode element, INode [] nodeList, int currentIndex)
+        private int FastForward(INode element, INode[] nodeList, int currentIndex)
         {
             int skipIndex = currentIndex + 1;
             //fast forward until we get to the next section
@@ -165,6 +179,6 @@ namespace Gemipedia.Converter
         }
 
         private string GetSectionText(INode node)
-            => ((HtmlElement) node).QuerySelector("span.mw-headline").TextContent.Trim().Replace("\n", "");
+            => ((HtmlElement)node).QuerySelector("span.mw-headline").TextContent.Trim().Replace("\n", "");
     }
 }

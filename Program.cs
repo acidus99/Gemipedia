@@ -13,7 +13,8 @@ namespace Gemipedia
     {
         static void LocalTesting()
         {
-            var title = "Minor League Baseball";
+            //var title = "Minor League Baseball";
+            var title = "McDonnell F-101 Voodoo";
             //var title = "Pet door";
 
             var client = new WikipediaApiClient();
@@ -25,19 +26,19 @@ namespace Gemipedia
             Stopwatch newTimer = new Stopwatch();
             newTimer.Start();
             var newConverter = new NewConverter(DefaultSettings);
-            newConverter.Convert(fout, resp.Title, resp.HtmlText);
+            newConverter.Convert(resp.Title, resp.HtmlText, fout);
             newTimer.Stop();
             fout.Close();
 
 
-            //legacy output
-            fout = new StreamWriter("/Users/billy/tmp/output-legacy.gmi");
-            Stopwatch legacyTimer = new Stopwatch();
-            legacyTimer.Start();
-            var legacyConverter = new WikiHtmlConverter(DefaultSettings);
-            legacyConverter.Convert(fout, resp.Title, resp.HtmlText);
-            legacyTimer.Stop();
-            fout.Close();
+            ////legacy output
+            //fout = new StreamWriter("/Users/billy/tmp/output-legacy.gmi");
+            //Stopwatch legacyTimer = new Stopwatch();
+            //legacyTimer.Start();
+            //var legacyConverter = new WikiHtmlConverter(DefaultSettings);
+            //legacyConverter.Convert(fout, resp.Title, resp.HtmlText);
+            //legacyTimer.Stop();
+            //fout.Close();
 
             int x = 4;
         }
@@ -125,7 +126,7 @@ namespace Gemipedia
                 cgi.Success();
                 //var converter = new WikiHtmlConverter(DefaultSettings);
                 var converter = new NewConverter(DefaultSettings);
-                converter.Convert(cgi.Writer, resp.Title, resp.HtmlText);
+                converter.Convert(resp.Title, resp.HtmlText, cgi.Writer);
             }
             else
             {
