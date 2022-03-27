@@ -85,7 +85,6 @@ namespace Gemipedia.Converter.Parser
                                 break;
 
                             case "dd":
-                                sb.Write("* ");
                                 sb.WriteLine(RenderChildren(current));
                                 break;
 
@@ -147,6 +146,19 @@ namespace Gemipedia.Converter.Parser
                                 }
                                 break;
 
+                            case "span":
+                                {
+                                    var special = ConvertSpan(element, sb);
+                                    if(special.Length >0)
+                                    {
+                                        sb.Write(special);
+                                    } else
+                                    {
+                                        sb.Write(RenderChildren(current));
+                                    }
+                                }
+                                break;
+
                             //tags to ignore
                             case "link":
                             case "style":
@@ -165,8 +177,18 @@ namespace Gemipedia.Converter.Parser
             return sb.ToString();
         }
 
-        private void ProcessLi(HtmlElement element, TextWriter sb)
+        private string ConvertSpan(HtmlElement element, TextWriter sb)
         {
+            
+            if (element.ClassList.Contains("mwe-math-element"))
+            {
+                return SpecialBlock.ConvertMath(element);
+            }
+            return "";
+        }
+
+        private void ProcessLi(HtmlElement element, TextWriter sb)
+        { 
             if (ListDepth == 1)
             {
                 //if the entire item in a line, make it a link line,

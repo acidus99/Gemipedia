@@ -23,7 +23,13 @@ namespace Gemipedia.Converter
             => ((HtmlElement)node).QuerySelector("span.mw-headline").TextContent.Trim().Replace("\n", "");
 
         public static string RewriteMediaUrl(string url)
-         => $"{Settings.MediaProxyUrl}?{WebUtility.UrlEncode(url)}";
+        {
+            if(!url.StartsWith("https:"))
+            {
+                url += "https:";
+            }
+            return $"{Settings.MediaProxyUrl}?{WebUtility.UrlEncode(url)}";
+        }
 
         public static string ArticleUrl(string title)
             => $"{Settings.ArticleUrl}?{WebUtility.UrlEncode(title)}";
