@@ -134,22 +134,7 @@ namespace Gemipedia.Converter.Parser
                 char.IsDigit(node.NodeName[1]);
 
         private bool ShouldAddNode(INode node)
-        {
-            switch (node.NodeType)
-            {
-                case NodeType.Element:
-                    return true;
-                case NodeType.Text:
-                    //not expecting to find real content here. All text content should be incased in other blocks
-                    if (node.TextContent.Trim().Length > 0)
-                    {
-                        throw new ApplicationException($"Unexpected non-whitepsace text node in main content");
-                    }
-                    return false;
-                default:
-                    throw new ApplicationException($"Unexpected Node type '{node.NodeType}' in main content");
-            }
-        }
+            => (node.NodeType == NodeType.Element);
 
         private bool ShouldSkipSection(INode node)
         {
