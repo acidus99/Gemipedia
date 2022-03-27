@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Gemipedia.Converter.Models
@@ -8,9 +9,11 @@ namespace Gemipedia.Converter.Models
         public abstract string Render();
     }
 
-    public class ContentItem : SectionItem
+    public class ContentItem : SectionItem, ILinkedArticles
     {
-        public string Content;
+        public List<String> LinkedArticles { get; set; }
+
+        public string Content { get; set; }
 
         public override string Render()
             => Content;

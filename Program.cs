@@ -13,8 +13,8 @@ namespace Gemipedia
     {
         static void LocalTesting()
         {
-            //var title = "Minor League Baseball";
-            var title = "McDonnell F-101 Voodoo";
+            var title = "Minor League Baseball";
+            //var title = "McDonnell F-101 Voodoo";
             //var title = "Pet door";
 
             var client = new WikipediaApiClient();
@@ -152,6 +152,7 @@ namespace Gemipedia
             {
                 ArticleUrl = "/cgi-bin/wp.cgi/view",
                 ExcludedSections = new string []{ "bibliography", "citations", "external_links", "notes", "references" },
+                ArticleLinkSections = new string[] {"see also"},
                 MediaProxyUrl = "/cgi-bin/wp.cgi/media/thumb.jpg",
             };
     }

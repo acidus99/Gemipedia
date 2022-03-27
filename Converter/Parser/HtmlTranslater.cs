@@ -7,14 +7,20 @@ using System.Text;
 using AngleSharp.Html.Dom;
 using AngleSharp.Dom;
 
+
+using Gemipedia.Converter.Models;
 namespace Gemipedia.Converter.Parser
 {
     /// <summary>
     /// Takes specific HtmlElements in WikiHtml and translates them to GemText
     /// </summary>
-    public class HtmlTranslater
+    public class HtmlTranslater : ILinkedArticles
     {
         int ListDepth = 0;
+        LinkedArticles links = new LinkedArticles();
+
+        public List<string> LinkedArticles
+            => links.GetLinks();
 
         public string RenderHtml(Element element)
             => RenderContentNode(element);
@@ -64,7 +70,7 @@ namespace Gemipedia.Converter.Parser
                         {
 
                             case "a":
-                                //TODO RECORD URLS!
+                                RecordArticleLink(element);
                                 sb.Write(RenderChildren(current));
                                 break;
 
@@ -164,6 +170,14 @@ namespace Gemipedia.Converter.Parser
                 sb.WriteLine();
                 sb.Write("* * ");
                 sb.WriteLine(RenderChildren(element).Trim());
+            }
+        }
+
+        private void RecordArticleLink(HtmlElement element)
+        {
+            if (CommonUtils.ShouldUseLink(element))
+            {
+                links.AddLink(element.GetAttribute("title"));
             }
         }
 

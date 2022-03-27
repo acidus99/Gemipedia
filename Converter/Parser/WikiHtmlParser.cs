@@ -95,7 +95,7 @@ namespace Gemipedia.Converter.Parser
                     if (item != null)
                     {
                         //add to the one on the queue
-                        SectionStack.Peek().Items.Add(item);
+                        SectionStack.Peek().AddItem(item);
                     }
                 }
             }
@@ -106,7 +106,6 @@ namespace Gemipedia.Converter.Parser
             }
             return ParsedPage;
         }
-
 
         private void AddCompletedSection(Section section)
         {

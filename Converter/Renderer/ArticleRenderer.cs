@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -12,12 +13,10 @@ namespace Gemipedia.Converter.Renderer
     {
         ConverterSettings Settings;
         TextWriter Writer;
-        LinkArticles linkedArticles;
 
         public ArticleRenderer(ConverterSettings settings)
         {
             Settings = settings;
-            linkedArticles = new LinkArticles();
         }
 
         public void RenderArticle(ParsedPage parsedPage, TextWriter writer)
@@ -29,7 +28,7 @@ namespace Gemipedia.Converter.Renderer
             {
                 Writer.Write(RenderSection(section));
             }
-            RenderIndex(parsedPage.Title);
+            RenderIndex(parsedPage);
         }
 
         private void RenderArticleTitle(string title)
@@ -38,23 +37,32 @@ namespace Gemipedia.Converter.Renderer
             Writer.WriteLine();
         }
 
-        private void RenderIndex(string title)
+        private void RenderIndex(ParsedPage parsedPage)
         {
             Writer.WriteLine();
             Writer.WriteLine("## Index of References");
-            foreach (var linkTitle in linkedArticles.GetLinks())
+            Writer.WriteLine("References to other articles, organized by section");
+            foreach(Section section in parsedPage.Sections
+                .Where(x=>x.LinkedArticles.Count > 0 && !Settings.ArticleLinkSections.Contains(x.Title?.ToLower())))
             {
-                Writer.WriteLine($"=> {CommonUtils.ArticleUrl(linkTitle)} {linkTitle}");
+                if(!section.IsSpecial)
+                {
+                    Writer.WriteLine($"### {section.Title}");
+                }
+                foreach (var linkTitle in section.LinkedArticles)
+                {
+                    Writer.WriteLine($"=> {CommonUtils.ArticleUrl(linkTitle)} {linkTitle}");
+                }
             }
             Writer.WriteLine();
-            Writer.WriteLine($"=> https://en.wikipedia.org/wiki/{WebUtility.UrlEncode(title)} View '{title}' on Wikipedia");
+            Writer.WriteLine($"=> https://en.wikipedia.org/wiki/{WebUtility.UrlEncode(parsedPage.Title)} View '{parsedPage.Title}' on Wikipedia");
         }
 
         private string RenderSection(Section section)
         {
             StringBuilder sb = new StringBuilder();
 
-            foreach(SectionItem item in section.Items)
+            foreach(SectionItem item in section.GetItems())
             {
                 sb.Append(item.Render());
             }

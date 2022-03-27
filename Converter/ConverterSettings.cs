@@ -14,6 +14,12 @@ namespace Gemipedia.Converter
         public string[] ExcludedSections { get; set; }
 
         /// <summary>
+        /// Section titles that are just lists of links to other articles.
+        /// We don't want to duplicate our output in the index by display these again
+        /// </summary>
+        public string[] ArticleLinkSections { get; set; }
+
+        /// <summary>
         /// URL to use to proxy media. actually media path passed via query string
         /// </summary>
         public string MediaProxyUrl { get; set; }

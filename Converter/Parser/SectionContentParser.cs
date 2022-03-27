@@ -94,7 +94,8 @@ namespace Gemipedia.Converter.Parser
 
                 return new ContentItem
                 {
-                    Content = contents
+                    Content = contents,
+                    LinkedArticles = translater.LinkedArticles
                 };
             }
             return null;
