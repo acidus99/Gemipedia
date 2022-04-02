@@ -57,15 +57,21 @@ namespace Gemipedia.Converter
             return document.QuerySelector("div.mw-parser-output");
         }
 
-
         //Removes tags we no we want need, and which make rendering harder
         private void RemoveTags(IElement contentRoot)
         {
-            //all <sup> tags are used to link to references. 
-            contentRoot.QuerySelectorAll("sup").ToList().ForEach(x => x.Remove());
+            //all <sup> tags are used to link to references.
+            RemoveMatchingTags(contentRoot, "sup");
             //all span holders for flag icons
-            contentRoot.QuerySelectorAll("span.flagicon").ToList().ForEach(x => x.Remove());
+            RemoveMatchingTags(contentRoot, "span.flagicon");
+            //all <link> tags
+            RemoveMatchingTags(contentRoot, "link");
+            //all style tags
+            RemoveMatchingTags(contentRoot, "style");
         }
+
+        private void RemoveMatchingTags(IElement element, string selector)
+            => element.QuerySelectorAll(selector).ToList().ForEach(x => x.Remove());
 
         private ParsedPage ParseContent(string title, IElement contentRoot)
         {
