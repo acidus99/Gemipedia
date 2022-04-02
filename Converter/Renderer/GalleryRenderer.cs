@@ -18,7 +18,7 @@ namespace Gemipedia.Converter.Renderer
         {
             Writer = writer;
             Page = parsedPage;
-            Writer.WriteLine($"# {Page.Title}");
+            Writer.WriteLine($"# Image Gallery: {Page.Title}");
             Writer.WriteLine($"=> {CommonUtils.ArticleUrl(Page.Title)} Back to article");
             Writer.WriteLine();
             foreach(var mediaItem in Page.GetAllImages())
