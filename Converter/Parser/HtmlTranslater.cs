@@ -19,28 +19,32 @@ namespace Gemipedia.Converter.Parser
         int ListDepth = 0;
         LinkedArticles links = new LinkedArticles();
 
+
+
         public List<string> LinkedArticles
             => links.GetLinks();
 
         public string RenderHtml(Element element)
-            => RenderContentNode(element);
+            => RenderContentNode(element, false);
 
-        private string RenderChildren(INode node)
-            => RenderContentNodes(node.ChildNodes);
+        //most of the time ,we want to ignore all whitepsace text nodes.
+        //However, if we are inside of a <PRE>
+        //we need to preserve it
+        private string RenderChildren(INode node, bool preserveWhitespaceText = false)
+            => RenderContentNodes(node.ChildNodes, preserveWhitespaceText);
 
-
-        private string RenderContentNodes(IEnumerable<INode> nodes)
+        private string RenderContentNodes(IEnumerable<INode> nodes, bool preserveWhitespaceText)
         {
             StringBuilder sb = new StringBuilder();
 
             foreach (var node in nodes)
             {
-                sb.Append(RenderContentNode(node));
+                sb.Append(RenderContentNode(node, preserveWhitespaceText));
             }
             return sb.ToString();
         }
 
-        private string RenderContentNode(INode current)
+        private string RenderContentNode(INode current, bool preserveWhitespaceText)
         {
             StringWriter sb = new StringWriter();
 
@@ -50,15 +54,22 @@ namespace Gemipedia.Converter.Parser
                     break;
 
                 case NodeType.Text:
-                    //if its not only whitespace add it.
-                    if (current.TextContent.Trim().Length > 0)
+                    if (preserveWhitespaceText)
                     {
                         sb.Write(current.TextContent);
                     }
-                    //if its whitepsace, but doesn't have a newline
-                    else if (!current.TextContent.Contains('\n'))
+                    else
                     {
-                        sb.Write(current.TextContent);
+                        //if its not only whitespace add it.
+                        if (current.TextContent.Trim().Length > 0)
+                        {
+                            sb.Write(current.TextContent);
+                        }
+                        //if its whitepsace, but doesn't have a newline
+                        else if (!current.TextContent.Contains('\n'))
+                        {
+                            sb.Write(current.TextContent);
+                        }
                     }
                     break;
 
@@ -71,11 +82,11 @@ namespace Gemipedia.Converter.Parser
 
                             case "a":
                                 RecordArticleLink(element);
-                                sb.Write(RenderChildren(current));
+                                sb.Write(RenderChildren(current, preserveWhitespaceText));
                                 break;
 
                             case "blockquote":
-                                RenderChildren(current).Trim().Split("\n").ToList()
+                                RenderChildren(current, preserveWhitespaceText).Trim().Split("\n").ToList()
                                     .ForEach(x => sb.WriteLine($">{x}"));
                                 sb.WriteLine();
                                 break;
@@ -86,11 +97,11 @@ namespace Gemipedia.Converter.Parser
 
                             case "dd":
                                 sb.Write("* ");
-                                sb.WriteLine(RenderChildren(current));
+                                sb.WriteLine(RenderChildren(current, preserveWhitespaceText));
                                 break;
 
                             case "dt":
-                                sb.Write(RenderChildren(current));
+                                sb.Write(RenderChildren(current, preserveWhitespaceText));
                                 sb.WriteLine(":");
                                 break;
 
@@ -115,36 +126,36 @@ namespace Gemipedia.Converter.Parser
 
                             case "i":
                                 sb.Write('"');
-                                sb.Write(RenderChildren(current));
+                                sb.Write(RenderChildren(current, preserveWhitespaceText));
                                 sb.Write('"');
-                                break;
-
-                            case "u":
-                                sb.Write('_');
-                                sb.Write(RenderChildren(current));
-                                sb.Write('_');
-                                break;
-
-                            case "ol":
-                            case "ul":
-                                ListDepth++;
-                                sb.Write(RenderChildren(current));
-                                ListDepth--;
                                 break;
 
                             case "li":
                                 ProcessLi(element, sb);
                                 break;
 
+                            case "ol":
+                            case "ul":
+                                ListDepth++;
+                                sb.Write(RenderChildren(current, preserveWhitespaceText));
+                                ListDepth--;
+                                break;
+
                             case "p":
                                 {
-                                    var innerContent = RenderChildren(current).Trim();
+                                    var innerContent = RenderChildren(current, preserveWhitespaceText).Trim();
                                     if (innerContent.Length > 0)
                                     {
                                         sb.WriteLine(innerContent);
                                         sb.WriteLine();
                                     }
                                 }
+                                break;
+
+                            case "pre":
+                                sb.WriteLine("```");
+                                sb.WriteLine(RenderChildren(current, true));
+                                sb.WriteLine("```");
                                 break;
 
                             case "span":
@@ -155,9 +166,15 @@ namespace Gemipedia.Converter.Parser
                                         sb.Write(special);
                                     } else
                                     {
-                                        sb.Write(RenderChildren(current));
+                                        sb.Write(RenderChildren(current, preserveWhitespaceText));
                                     }
                                 }
+                                break;
+
+                            case "u":
+                                sb.Write('_');
+                                sb.Write(RenderChildren(current, preserveWhitespaceText));
+                                sb.Write('_');
                                 break;
 
                             //tags to ignore
@@ -166,7 +183,7 @@ namespace Gemipedia.Converter.Parser
                                 break;
 
                             default:
-                                sb.Write(RenderChildren(current));
+                                sb.Write(RenderChildren(current, preserveWhitespaceText));
                                 break;
                         }
                     }
