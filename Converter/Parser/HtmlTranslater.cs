@@ -197,7 +197,6 @@ namespace Gemipedia.Converter.Parser
 
         private string ConvertSpan(HtmlElement element, TextWriter sb)
         {
-            
             if (element.ClassList.Contains("mwe-math-element"))
             {
                 return SpecialBlock.ConvertMath(element);
