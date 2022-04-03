@@ -105,7 +105,7 @@ namespace Gemipedia.Converter.Parser
                 int start = 0;
                 while (start < input.Length)
                 {
-                    lines.Add(PadTo(input.Substring(start, Math.Min(maxCharacters, input.Length - start)), maxCharacters));
+                    lines.Add(PadCell(input.Substring(start, Math.Min(maxCharacters, input.Length - start)), maxCharacters, cell.IsHeader));
                     start += maxCharacters;
                 }
             }
@@ -118,7 +118,7 @@ namespace Gemipedia.Converter.Parser
                 {
                     if ((line + word).Length > maxCharacters)
                     {
-                        lines.Add(PadTo(line.Trim(), maxCharacters));
+                        lines.Add(PadCell(line.Trim(), maxCharacters, cell.IsHeader));
                         line = "";
                     }
 
@@ -127,17 +127,27 @@ namespace Gemipedia.Converter.Parser
 
                 if (line.Length > 0)
                 {
-                    lines.Add(PadTo(line.Trim(), maxCharacters));
+                    lines.Add(PadCell(line.Trim(), maxCharacters, cell.IsHeader));
                 }
             }
             return lines;
         }
 
-        private static string PadTo(string s, int length)
+
+        private static string PadCell(string s, int length, bool center)
         {
+            int counter = 0;
             for(;s.Length < length;)
             {
-                s += " ";
+                counter++;
+                if (center && counter % 2 == 1)
+                {
+                    s = " " + s;
+                }
+                else
+                {
+                    s += " ";
+                }
             }
             return s;
         }
