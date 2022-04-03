@@ -16,7 +16,6 @@ namespace Gemipedia.Converter.Parser.Tables
     {
 
         int ColumnWidth = 0;
-        int TableWidth = 0;
 
         Table Table;
         StringBuilder buffer;
@@ -85,7 +84,6 @@ namespace Gemipedia.Converter.Parser.Tables
         {
 
             ColumnWidth = Math.Max((60 / Table.MaxColumns), 15);
-            TableWidth = ((ColumnWidth + 1) * Table.MaxColumns) + 1;
 
             foreach (var row in Table.Rows)
             {
@@ -174,13 +172,13 @@ namespace Gemipedia.Converter.Parser.Tables
             }
         }
 
-
         public static string RenderTable(Table Table)
         {
             var renderer = new TableRenderer(Table);
             renderer.FormatContents();
             return renderer.Render();
         }
+
 
     }
 }
