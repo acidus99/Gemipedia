@@ -30,7 +30,7 @@ namespace Gemipedia.Converter.Parser
 
                 //high level content blocks we are ignoring
                 case "table":
-                    return null;
+                    return ParseTable(element);
 
                 default:
                     return ParseHtmlContent(element);
@@ -115,10 +115,14 @@ namespace Gemipedia.Converter.Parser
                 }
                 return null;
             }
-            return new ContentItem
-                {
-                    Content = "[UNABLE TO PARSE TABLE]"
-                };
+
+            //ignore infobox
+            if(element.ClassName == "infobox")
+            {
+                return null;
+            }
+
+            return TableConverter.Convert(element);
         }
 
         /// <summary>
