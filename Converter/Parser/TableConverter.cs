@@ -80,7 +80,7 @@ namespace Gemipedia.Converter.Parser
             {
                 foreach(var cell in row.Cells)
                 {
-                    cell.FormattedLines = WrapAndPad(cell.Contents, columnWidth);
+                    cell.FormattedLines = FormatCell(cell, columnWidth);
                 }
 
                 int maxHeight = row.LineHeight;
@@ -92,8 +92,12 @@ namespace Gemipedia.Converter.Parser
             }
         }
 
-        private static List<string> WrapAndPad(string input, int maxCharacters)
+
+        private static List<string> FormatCell(Cell cell, int maxCharacters)
         {
+
+            var input = cell.IsHeader ? cell.Contents.ToUpper() : cell.Contents;
+
             List<string> lines = new List<string>();
 
             if (!input.Contains(" "))
