@@ -117,12 +117,12 @@ namespace Gemipedia.Converter.Parser
             }
 
             //ignore infobox
-            if(element.ClassName == "infobox")
+            if(element.ClassList.Contains("wikitable"))
             {
-                return null;
+                return TableConverter.Convert(element);
             }
 
-            return TableConverter.Convert(element);
+            return null;
         }
 
         /// <summary>
