@@ -12,7 +12,7 @@ namespace Gemipedia.Converter.Parser.Tables
         public bool HasCaption
             => Caption.Length > 0;
 
-        public int NumColumns
+        public int MaxColumns
             => Rows.Max(x => x.Cells.Count);
     }
 
@@ -33,6 +33,9 @@ namespace Gemipedia.Converter.Parser.Tables
         public List<string> FormattedLines;
 
         public int LineHeight
-            => FormattedLines.Count;
+            => FormattedLines?.Count ?? 0;
+
+        public int FormattedWidth
+            => (FormattedLines?.Count > 0) ? FormattedLines[0].Length : 0;
     }
 }
