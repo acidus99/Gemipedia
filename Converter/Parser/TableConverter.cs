@@ -16,6 +16,7 @@ namespace Gemipedia.Converter.Parser
 {
     public static class TableConverter
     {
+
         public static ContentItem Convert(HtmlElement element)
         {
             TableParser tableParser = new TableParser();
@@ -45,11 +46,8 @@ namespace Gemipedia.Converter.Parser
             {
                 sb.AppendLine($"### Table: {table.Caption}");
             }
-
             sb.AppendLine("```table");
-
-            var tableTop = new string('-', renderWidth);
-            sb.AppendLine(tableTop);
+            sb.AppendLine(GenerateDividerLine(table.Rows[0], cellSize));
             foreach(var row in table.Rows)
             {
                 for(int lineNum = 0, max = row.LineHeight; lineNum < max; lineNum++)
@@ -66,9 +64,21 @@ namespace Gemipedia.Converter.Parser
                     }
                     sb.AppendLine();
                 }
-                sb.AppendLine(tableTop);
+                sb.AppendLine(GenerateDividerLine(row, cellSize));
             }
             sb.AppendLine("```");
+            return sb.ToString();
+        }
+
+        private static string GenerateDividerLine(Row row, int colWidth)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("+");
+            foreach(var cell in row.Cells)
+            {
+                sb.Append(new string('-', colWidth * cell.ColSpan));
+                sb.Append("+");
+            }
             return sb.ToString();
         }
 
@@ -162,4 +172,5 @@ namespace Gemipedia.Converter.Parser
 
 
     }
+
 }
