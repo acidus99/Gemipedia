@@ -12,9 +12,15 @@ namespace Gemipedia
     {
         static void LocalTesting()
         {
-         
 
-            int x = 4;
+            var title = "Minor League Baseball";
+            Console.WriteLine(title);
+            var client = new WikipediaApiClient();
+            var resp = client.GetArticle(title);
+
+            var newConverter = new WikiHtmlConverter(DefaultSettings);
+            newConverter.Convert(resp.Title, resp.HtmlText, Console.Out);
+            int x = 9;
         }
 
         static void Main(string[] args)
@@ -85,9 +91,11 @@ namespace Gemipedia
             cgi.Writer.WriteLine("Welcome to Gemipedia: A Gemini proxy to Wikipedia, focused on providing a 1st class reading experience.");
             cgi.Writer.WriteLine("");
             cgi.Writer.WriteLine("## Examples:");
+            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Sabah")} Sabah");
+            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("ALOHAnet")} ALOHAnet");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("McDonnell F-101 Voodoo")} McDonnell F-101 Voodoo");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Computer network")} Computer network");
-            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Peachtree Road Race")} Peachtree Road Race");
+            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Interface Message Processor")} Interface Message Processor");
             RenderFooter(cgi);
         }
 

@@ -13,7 +13,7 @@ using Gemipedia.Converter.Models;
 
 namespace Gemipedia.Converter.Parser.Tables
 {
-    public class TableParser
+    public class TableParser : ILinkedArticles
     {
 
         Table table;
@@ -22,9 +22,14 @@ namespace Gemipedia.Converter.Parser.Tables
 
         StringBuilder innerText;
 
+        LinkedArticles linkedArticles;
+
+        public List<string> LinkedArticles => linkedArticles.GetLinks();
+
         public TableParser()
         {
             table = new Table();
+            linkedArticles = new LinkedArticles();
         }
 
         public Table ParseTable(HtmlElement element)
@@ -123,6 +128,11 @@ namespace Gemipedia.Converter.Parser.Tables
                         switch (nodeName)
                         {
 
+                            case "a":
+                                RecordArticleLink(element);
+                                ExtractChildrenText(current);
+                                break;
+
                             case "br":
                                 innerText.AppendLine();
                                 break;
@@ -135,6 +145,14 @@ namespace Gemipedia.Converter.Parser.Tables
                     break;
                 default:
                     throw new ApplicationException("Unhandled NODE TYPE!");
+            }
+        }
+
+        private void RecordArticleLink(HtmlElement element)
+        {
+            if (CommonUtils.ShouldUseLink(element))
+            {
+                linkedArticles.AddLink(element.GetAttribute("title"));
             }
         }
 
