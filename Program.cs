@@ -13,7 +13,7 @@ namespace Gemipedia
         static void LocalTesting()
         {
 
-            var title = "Minor League Baseball";
+            var title = "Desecration Smile";
             Console.WriteLine(title);
             var client = new WikipediaApiClient();
             var resp = client.GetArticle(title);

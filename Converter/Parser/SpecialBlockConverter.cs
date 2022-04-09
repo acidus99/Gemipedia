@@ -57,7 +57,7 @@ namespace Gemipedia.Converter.Parser
 
                 return parser.Matches(srcset)
                     .Where(x => x.Success && x.Groups[2].Value.Trim() == size)
-                    .Select(x => x.Groups[1].Value).FirstOrDefault();
+                    .Select(x => x.Groups[1].Value).FirstOrDefault() ?? "";
             }
             return "";
         }
