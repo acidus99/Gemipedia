@@ -65,7 +65,9 @@ namespace Gemipedia.Converter.Parser
 
             //A Div we can just pass through?
             //e.g. highlighted pre-formatted text?
-            if (element.ClassList.Contains("mw-highlight"))
+            //or columnized unsorted list
+            if (element.ClassList.Contains("mw-highlight") ||
+                element.ClassList.Contains("div-col"))
             {
                 return ParseHtmlContent(element);
             }
