@@ -102,6 +102,11 @@ namespace Gemipedia.Converter.Renderer
             //other content below, in order
             foreach (SectionItem item in section.GetItems().Where(x=> !(x is NavSuggestionsItem)))
             {
+                //skip media items if configured to do so
+                if(!Settings.ShouldConvertMedia && item is MediaItem)
+                {
+                    continue;
+                }
                 sb.Append(item.Render());
             }
 
