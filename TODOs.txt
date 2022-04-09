@@ -10,16 +10,10 @@
 
 Better Rendering:
 
-	
-- Use the 2x thumbnail?
+- Tables don't support Row spans
 
 -Title as link sometimes fails for going to wikipedia
 	e.g. "Military+tactics" vs "Military_tactics"
-
-- Tables need better parsing. Right now the "TR" query finds tables inside of the table!
-https://en.wikipedia.org/wiki/Desecration_Smile
-
-- Tables => ASCII tables
 
 
 COMPLETE:
@@ -28,3 +22,7 @@ COMPLETE:
 - image gallery
 - Don't show a section if it doesn't have any content
 	(or it only has a navigation link to something else)
+- Tables => ASCII tables
+- Use the 2x thumbnail
+- Tables need better parsing. Right now the "TR" query finds tables inside of the table!
+https://en.wikipedia.org/wiki/Desecration_Smile
