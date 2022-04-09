@@ -144,7 +144,6 @@ namespace Gemipedia.Converter.Parser.Tables
             return lines;
         }
 
-
         private string PadCell(string s, int length, bool center)
         {
             int counter = 0;
