@@ -19,8 +19,6 @@ namespace Gemipedia.Converter.Parser
         int ListDepth = 0;
         LinkedArticles links = new LinkedArticles();
 
-
-
         public List<string> LinkedArticles
             => links.GetLinks();
 
@@ -199,7 +197,7 @@ namespace Gemipedia.Converter.Parser
         {
             if (element.ClassList.Contains("mwe-math-element"))
             {
-                return SpecialBlock.ConvertMath(element);
+                return SpecialBlockConverter.ConvertMath(element);
             }
             return "";
         }
