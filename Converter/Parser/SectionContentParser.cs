@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -18,41 +19,66 @@ namespace Gemipedia.Converter.Parser
     /// </summary>
     public class SectionContentParser
     {
-        ConverterSettings Settings;
 
-        public SectionContentParser(ConverterSettings settings)
+        private List<SectionItem> items;
+
+        public SectionContentParser()
         {
-            Settings = settings;
+            items = new List<SectionItem>();
         }
 
-        public SectionItem ParseElement(HtmlElement element)
+        private void AddItem(SectionItem item)
         {
-            switch(element.NodeName.ToLower())
+            if(item != null)
             {
-                case "div":
-                    return ParseDiv(element);
-
-                //high level content blocks we are ignoring
-                case "table":
-                    return ParseTable(element);
-
-                default:
-                    return ParseHtmlContent(element);
+                items.Add(item);
             }
         }
 
-        private SectionItem ParseDiv(HtmlElement element)
+        public IEnumerable<SectionItem> ParseElement(HtmlElement element)
+        {
+            items.Clear();
+            ParseElementHelper(element);
+            return items;
+        }
+
+        private void ParseElementsHelper(IHtmlCollection<IElement> elements)
+            => elements.ToList().ForEach(x => ParseElementHelper(x as HtmlElement));
+
+        private void ParseElementHelper(HtmlElement element)
+        {
+
+            switch (element.NodeName.ToLower())
+            {
+                case "div":
+                    ParseDiv(element);
+                    break;
+
+                //high level content blocks we are ignoring
+                case "table":
+                    ParseTable(element);
+                    break;
+
+                default:
+                    ParseHtmlElement(element);
+                    break;
+            }
+        }
+
+        private void ParseDiv(HtmlElement element)
         {
             //is it a media div?
             if (element.ClassList.Contains("thumb") && !element.ClassList.Contains("locmap"))
             {
-                return SpecialBlockConverter.ConvertImageBlock(element);
+                AddItem(SpecialBlockConverter.ConvertImageBlock(element));
+                return;
             }
 
             //a navigation note?
             if (element.GetAttribute("role") == "note" && element.ClassList.Contains("navigation-not-searchable"))
             {
-                return SpecialBlockConverter.ConvertNavigationNotes(element);
+                AddItem(SpecialBlockConverter.ConvertNavigationNotes(element));
+                return;
             }
 
             //is it a naked with a table?
@@ -60,7 +86,8 @@ namespace Gemipedia.Converter.Parser
                 element.ChildElementCount == 1 &&
                 element.FirstElementChild.NodeName == "TABLE")
             {
-                return ParseTable(element.FirstElementChild as HtmlElement);
+                ParseTable(element.FirstElementChild as HtmlElement);
+                return;
             }
 
             //A Div we can just pass through?
@@ -69,30 +96,24 @@ namespace Gemipedia.Converter.Parser
             if (element.ClassList.Contains("mw-highlight") ||
                 element.ClassList.Contains("div-col"))
             {
-                return ParseHtmlContent(element);
+                ParseHtmlElement(element);
+                return;
             }
-
-            return null;
         }
 
-        private ContentItem ParseHtmlContent(HtmlElement element)
+        private void ParseHtmlElement(HtmlElement element)
         {
             HtmlTranslater translater = new HtmlTranslater();
 
             var contents = translater.RenderHtml(element);
             if (contents.Length > 0)
             {
-
-                //todo add support for extracting links from the HtmlRenderer instance
-                //and add them to the section item
-
-                return new ContentItem
+                AddItem(new ContentItem
                 {
                     Content = contents,
                     LinkedArticles = translater.LinkedArticles
-                };
+                });
             }
-            return null;
         }
 
         /// <summary>
@@ -100,54 +121,42 @@ namespace Gemipedia.Converter.Parser
         /// </summary>
         /// <param name="elements"></param>
         /// <returns></returns>
-        private ContentItem ParseHtmlElements(IHtmlCollection<IElement> elements)
+        private void ParseHtmlElements(IHtmlCollection<IElement> elements)
         {
-            StringBuilder sb = new StringBuilder();
-            LinkedArticles links = new LinkedArticles();
-
             foreach (HtmlElement element in elements)
             {
-                var item = ParseHtmlContent(element);
-                if (item != null)
-                {
-                    sb.Append(item.Content);
-                    links.AddRange(item.LinkedArticles);
-                }
+                ParseHtmlElement(element);
             }
-            if (sb.Length > 0)
-            {
-                return new ContentItem
-                {
-                    Content = sb.ToString(),
-                    LinkedArticles = links.GetLinks()
-                };
-            }
-            return null;
         }
 
-        private SectionItem ParseTable(HtmlElement element)
+        private void ParseTable(HtmlElement element)
         {
             //is it a data table?
             if (element.ClassList.Contains("wikitable"))
             {
-                return SpecialBlockConverter.ConvertTable(element);
+                AddItem(SpecialBlockConverter.ConvertTable(element));
             }
 
             //is it a table just used to create a multicolumn view?
-            if (element.GetAttribute("role") == "presentation")
+            if (IsMulticolumnLayoutTable(element))
             {
-                if (element.ClassList.Contains("multicol"))
-                {
-                    var rows = element.QuerySelectorAll("tr").ToArray();
-                    if (rows.Length == 1)
-                    {
-                        return ParseHtmlElements(rows[0].QuerySelectorAll("td"));
-                    }
-                }
-                return null;
+                ParseMulticolmnTable(element);
             }
+        }
 
-            return null;
+        private bool IsMulticolumnLayoutTable(HtmlElement element)
+            => element.GetAttribute("role") == "presentation" &&
+                element.ClassList.Contains("multicol") &&
+                element.HasChildNodes &&
+                element.Children[0].NodeName == "TBODY" &&
+                element.Children[0].HasChildNodes &&
+                element.Children[0].Children[0].NodeName == "TR";
+
+        private void ParseMulticolmnTable(HtmlElement table)
+        {
+            table.Children[0].Children[0].Children
+                .Where(x => x.NodeName == "TD").ToList()
+                .ForEach(x=> ParseElementsHelper(x.Children));
         }
     }
 }

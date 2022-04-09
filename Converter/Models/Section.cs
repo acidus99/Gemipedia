@@ -17,13 +17,12 @@ namespace Gemipedia.Converter.Models
         LinkedArticles links = new LinkedArticles();
 
         //force processing
-        public void AddItem(SectionItem item)
+        public void AddItems(IEnumerable<SectionItem> items)
+            => items.ToList().ForEach(x => AddItem(x));
+
+        private void AddItem(SectionItem item)
         {
-            if(item == null)
-            {
-                return;
-            }
-            if(item is ContentItem)
+            if (item is ContentItem)
             {
                 links.AddRange(((ContentItem)item).LinkedArticles);
             }

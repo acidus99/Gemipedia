@@ -23,7 +23,7 @@ namespace Gemipedia.Converter.Parser
         public WikiHtmlParser(ConverterSettings settings)
         {
             Settings = settings;
-            Parser = new SectionContentParser(Settings);
+            Parser = new SectionContentParser();
         }
 
         public ParsedPage ParseContent(string title, INode contentRoot)
@@ -91,12 +91,7 @@ namespace Gemipedia.Converter.Parser
                 }
                 else if (ShouldAddNode(currNode))
                 {
-                    var item = Parser.ParseElement(currNode as HtmlElement);
-                    if (item != null)
-                    {
-                        //add to the one on the queue
-                        SectionStack.Peek().AddItem(item);
-                    }
+                    SectionStack.Peek().AddItems(Parser.ParseElement(currNode as HtmlElement));
                 }
             }
             //combine remain stack
