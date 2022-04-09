@@ -17,8 +17,6 @@ namespace Gemipedia.Converter
     {
         static public ConverterSettings Settings { get;  set; }
 
-
-
         public static string GetHeaderText(INode node)
             => ((HtmlElement)node).QuerySelector("span.mw-headline").TextContent.Trim().Replace("\n", "");
 
@@ -29,9 +27,7 @@ namespace Gemipedia.Converter
             => RewriteMediaUrl(url, Settings.SvgProxyUrl);
 
         private static string RewriteMediaUrl(string url, string cgiPath)
-        {
-            return $"{cgiPath}?{WebUtility.UrlEncode(url)}";
-        }
+            => $"{cgiPath}?{WebUtility.UrlEncode(url)}";
 
         public static string ArticleUrl(string title)
             => $"{Settings.ArticleUrl}?{WebUtility.UrlEncode(title)}";
