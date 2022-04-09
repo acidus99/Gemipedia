@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 using AngleSharp.Html.Dom;
 using AngleSharp.Dom;
@@ -19,7 +20,7 @@ namespace Gemipedia.Converter.Parser
 
         public static SectionItem ConvertImageBlock(HtmlElement element)
         {
-            var url = element.QuerySelector("img")?.GetAttribute("src") ?? "";
+            var url = GetImageUrl(element);
             var caption = CommonUtils.PrepareTextContent(element.QuerySelector("div.thumbcaption")?.TextContent ?? "");
             if (url.Length > 0 && caption.Length > 0)
             {
@@ -35,6 +36,30 @@ namespace Gemipedia.Converter.Parser
                 };
             }
             return null;
+        }
+
+        private static string GetImageUrl(HtmlElement element)
+        {
+            //try the srcset
+            var url = GetImageFromSrcset(element.QuerySelector("img")?.GetAttribute("srcset") ?? "", "2x");
+            if(url.Length > 0)
+            {
+                return url;
+            }
+            return element.QuerySelector("img")?.GetAttribute("src") ?? "";
+        }
+
+        private static string GetImageFromSrcset(string srcset, string size)
+        {
+            if (srcset.Length > 0)
+            {
+                Regex parser = new Regex(@"(\S*[^,\s])(\s+([\d.]+)(x|w))?");
+
+                return parser.Matches(srcset)
+                    .Where(x => x.Success && x.Groups[2].Value.Trim() == size)
+                    .Select(x => x.Groups[1].Value).FirstOrDefault();
+            }
+            return "";
         }
 
 
