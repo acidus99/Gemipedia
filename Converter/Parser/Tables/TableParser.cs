@@ -13,7 +13,7 @@ using Gemipedia.Converter.Models;
 
 namespace Gemipedia.Converter.Parser.Tables
 {
-    public class TableParser : ILinkedArticles
+    public class TableParser : IArticleLinks
     {
 
         Table table;
@@ -22,14 +22,12 @@ namespace Gemipedia.Converter.Parser.Tables
 
         StringBuilder innerText;
 
-        LinkedArticles linkedArticles;
-
-        public List<string> LinkedArticles => linkedArticles.GetLinks();
+        public ArticleLinkCollection ArticleLinks { get; private set; }
 
         public TableParser()
         {
             table = new Table();
-            linkedArticles = new LinkedArticles();
+            ArticleLinks = new ArticleLinkCollection();
         }
 
         public Table ParseTable(HtmlElement element)
@@ -88,9 +86,7 @@ namespace Gemipedia.Converter.Parser.Tables
                 innerText = new StringBuilder();
                 ExtractInnerText(cell);
 
-
                 int colSpan = Convert.ToInt32(cell.GetAttribute("colspan") ?? "1");
-
 
                 currRow.Cells.Add(new Cell
                 {
@@ -152,7 +148,7 @@ namespace Gemipedia.Converter.Parser.Tables
         {
             if (CommonUtils.ShouldUseLink(element))
             {
-                linkedArticles.AddLink(element.GetAttribute("title"));
+                ArticleLinks.AddArticle(element.GetAttribute("title"));
             }
         }
 

@@ -14,13 +14,11 @@ namespace Gemipedia.Converter.Parser
     /// <summary>
     /// Takes specific HtmlElements in WikiHtml and translates them to GemText
     /// </summary>
-    public class HtmlTranslater : ILinkedArticles
+    public class HtmlTranslater : IArticleLinks
     {
         int ListDepth = 0;
-        LinkedArticles links = new LinkedArticles();
 
-        public List<string> LinkedArticles
-            => links.GetLinks();
+        public ArticleLinkCollection ArticleLinks { get; set; } = new ArticleLinkCollection();
 
         public string RenderHtml(Element element)
             => RenderContentNode(element, false);
@@ -233,7 +231,7 @@ namespace Gemipedia.Converter.Parser
         {
             if (CommonUtils.ShouldUseLink(element))
             {
-                links.AddLink(element.GetAttribute("title"));
+                ArticleLinks.AddArticle(element.GetAttribute("title"));
             }
         }
 

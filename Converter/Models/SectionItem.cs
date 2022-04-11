@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
 
 namespace Gemipedia.Converter.Models
 {
@@ -9,9 +11,9 @@ namespace Gemipedia.Converter.Models
         public abstract string Render();
     }
 
-    public class ContentItem : SectionItem, ILinkedArticles
+    public class ContentItem : SectionItem, IArticleLinks
     {
-        public List<String> LinkedArticles { get; set; } = new List<string>();
+        public ArticleLinkCollection ArticleLinks { get; set; }
 
         public string Content { get; set; }
 
@@ -42,5 +44,4 @@ namespace Gemipedia.Converter.Models
         public string ArticleTitle;
         public string Description;
     }
-
 }

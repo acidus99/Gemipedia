@@ -62,13 +62,13 @@ namespace Gemipedia.Converter.Renderer
         private void RenderIndexForSection(Section section, HashSet<String> alreadyUsed)
         {
             //only display the section title if this section has links
-            if (section.HasLinks)
+            if (section.ArticleLinks.HasLinks)
             {
                 if (!section.IsSpecial)
                 {
                     Writer.WriteLine($"### {section.Title}");
                 }
-                foreach (var linkTitle in section.LinkedArticles)
+                foreach (var linkTitle in section.ArticleLinks.GetLinks())
                 {
                     if(!alreadyUsed.Contains(linkTitle))
                     {

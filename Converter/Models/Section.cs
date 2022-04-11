@@ -4,17 +4,16 @@ using System.Collections.Generic;
 
 namespace Gemipedia.Converter.Models
 {
-    public class Section :ILinkedArticles
+    public class Section : IArticleLinks
     {
 
-        public bool HasLinks => links.HasLinks;
+        public ArticleLinkCollection ArticleLinks { get; private set; } = new ArticleLinkCollection();
+
         public bool HasSubSections => (SubSections.Count > 0);
 
         public List<Section> SubSections { get; set; }=  new List<Section>();
 
         List<SectionItem> items = new List<SectionItem>();
-
-        LinkedArticles links = new LinkedArticles();
 
         //force processing
         public void AddItems(IEnumerable<SectionItem> items)
@@ -24,7 +23,7 @@ namespace Gemipedia.Converter.Models
         {
             if (item is ContentItem)
             {
-                links.AddRange(((ContentItem)item).LinkedArticles);
+                ArticleLinks.MergeCollection(((ContentItem)item).ArticleLinks);
             }
             items.Add(item);
         }
@@ -41,7 +40,5 @@ namespace Gemipedia.Converter.Models
         public int SectionDepth { get; set; }
         public string Title { get; set; }
 
-        public List<string> LinkedArticles
-            => links.GetLinks();
     }
 }

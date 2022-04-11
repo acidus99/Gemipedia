@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 namespace Gemipedia.Converter.Models
 {
-    public interface ILinkedArticles
+    public interface IArticleLinks
     {
-        List<string> LinkedArticles { get; }
+        ArticleLinkCollection ArticleLinks { get; }
     }
 }

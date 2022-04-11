@@ -126,7 +126,7 @@ namespace Gemipedia.Converter.Parser
             return new ContentItem
             {
                 Content = contents,
-                LinkedArticles = tableParser.LinkedArticles
+                ArticleLinks = tableParser.ArticleLinks
             };
         }
 
