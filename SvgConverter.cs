@@ -11,6 +11,7 @@ namespace Gemipedia
             using (var image = new MagickImage(svg))
             {
                 image.Format = MagickFormat.Png;
+                image.Scale(image.Width * 2, image.Height * 2);
                 return image.ToByteArray();
             }
         }
