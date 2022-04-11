@@ -2,6 +2,9 @@
 using System.Linq;
 using System.Collections.Generic;
 
+using AngleSharp.Dom;
+using AngleSharp.Html.Dom;
+
 namespace Gemipedia.Converter.Models
 {
     public class ArticleLinkCollection
@@ -16,8 +19,13 @@ namespace Gemipedia.Converter.Models
         public bool HasLinks
             => (articles.Count > 0);
 
-        public void AddArticle(string title)
+        public void Add(string title)
         {
+            if(title.Length == 0)
+            {
+                return;
+            }
+
             var key = title.ToLower();
 
             if(!articles.ContainsKey(key))
@@ -26,6 +34,14 @@ namespace Gemipedia.Converter.Models
             } else
             {
                 articles[key].Occurences++;
+            }
+        }
+
+        public void Add(HtmlElement element)
+        {
+            if (ShouldUseLink(element))
+            {
+                Add(element.GetAttribute("title"));
             }
         }
 
@@ -47,5 +63,11 @@ namespace Gemipedia.Converter.Models
         public List<string> GetLinks()
             => articles.Keys.OrderBy(x => x).Select(x => articles[x].Title).ToList();
 
+        public static bool ShouldUseLink(IElement element)
+            => element.HasAttribute("title") &&
+            //ignore links to special pages!
+            !element.GetAttribute("title").StartsWith("Special:") &&
+            //links to pages that don't exist have a "new" class
+            !element.ClassList.Contains("new");
     }
 }

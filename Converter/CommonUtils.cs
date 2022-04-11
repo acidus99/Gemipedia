@@ -37,12 +37,5 @@ namespace Gemipedia.Converter
 
         public static string PrepareTextContent(string s)
             => s.Trim().Replace("\n", "");
-
-        public static bool ShouldUseLink(IElement element)
-            => element.HasAttribute("title") &&
-                //ignore links to special pages!
-                !element.GetAttribute("title").StartsWith("Special:") &&
-                //links to pages that don't exist have a "new" class
-                !element.ClassList.Contains("new");
     }
 }

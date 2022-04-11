@@ -77,7 +77,7 @@ namespace Gemipedia.Converter.Parser
                         {
 
                             case "a":
-                                RecordArticleLink(element);
+                                ArticleLinks.Add(element);
                                 sb.Write(RenderChildren(current, preserveWhitespaceText));
                                 break;
 
@@ -207,7 +207,7 @@ namespace Gemipedia.Converter.Parser
                 //if the entire item in a line, make it a link line,
                 //otherwise its a bulleted list
                 var links = element.QuerySelectorAll("a").ToList();
-                if (links.Count > 0 && CommonUtils.ShouldUseLink(links[0]) && element.TextContent.StartsWith(links[0].TextContent))
+                if (links.Count > 0 && ArticleLinkCollection.ShouldUseLink(links[0]) && element.TextContent.StartsWith(links[0].TextContent))
                 {
                     sb.Write($"=> {CommonUtils.ArticleUrl(links[0].GetAttribute("title"))} ");
                     //process inside the A tag so we don't add this link to our list of references
@@ -226,14 +226,5 @@ namespace Gemipedia.Converter.Parser
                 sb.WriteLine(RenderChildren(element).Trim());
             }
         }
-
-        private void RecordArticleLink(HtmlElement element)
-        {
-            if (CommonUtils.ShouldUseLink(element))
-            {
-                ArticleLinks.AddArticle(element.GetAttribute("title"));
-            }
-        }
-
     }
 }

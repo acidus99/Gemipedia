@@ -44,4 +44,17 @@ namespace Gemipedia.Converter.Models
         public string ArticleTitle;
         public string Description;
     }
+
+    public class InfoboxItem : SectionItem
+    {
+        public List<SectionItem> Items = new List<SectionItem>();
+
+        public override string Render()
+        {
+            StringBuilder sb = new StringBuilder();
+            Items.ToList().ForEach(x => sb.Append(x.ToString()));
+            return sb.ToString();
+        }
+    }
+
 }

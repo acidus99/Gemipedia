@@ -125,7 +125,7 @@ namespace Gemipedia.Converter.Parser.Tables
                         {
 
                             case "a":
-                                RecordArticleLink(element);
+                                ArticleLinks.Add(element);
                                 ExtractChildrenText(current);
                                 break;
 
@@ -144,17 +144,8 @@ namespace Gemipedia.Converter.Parser.Tables
             }
         }
 
-        private void RecordArticleLink(HtmlElement element)
-        {
-            if (CommonUtils.ShouldUseLink(element))
-            {
-                ArticleLinks.AddArticle(element.GetAttribute("title"));
-            }
-        }
-
         private void ExtractChildrenText(INode element)
             => element.ChildNodes.ToList().ForEach(x => ExtractInnerText(x));
-
 
         private string PrepareText(string s)
             => s.Replace("\n", " ").Trim();

@@ -97,7 +97,7 @@ namespace Gemipedia.Converter.Parser
                 var item = new NavSuggestionsItem();
                 for (int i = 0; i < lines.Length; i++)
                 {
-                    if (CommonUtils.ShouldUseLink(tags[i]))
+                    if (ArticleLinkCollection.ShouldUseLink(tags[i]))
                     {
                         item.Suggestions.Add(new NavSuggestion
                         {
