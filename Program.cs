@@ -13,14 +13,13 @@ namespace Gemipedia
         static void LocalTesting()
         {
 
-            var title = "Desecration Smile";
+            var title = "William G. Bramham";
             Console.WriteLine(title);
             var client = new WikipediaApiClient();
             var resp = client.GetArticle(title);
 
             var newConverter = new WikiHtmlConverter(DefaultSettings);
             newConverter.Convert(resp.Title, resp.HtmlText, Console.Out);
-            int x = 9;
         }
 
         static void Main(string[] args)
@@ -37,7 +36,6 @@ namespace Gemipedia
             router.OnRequest("/images", ViewImages);
             router.OnRequest("/svg", ProxySvg);
             router.OnRequest("/media", ProxyMedia);
-            router.OnRequest("/lucky", Lucky);
             router.OnRequest("", Welcome);
             router.ProcessRequest();
         }
@@ -72,23 +70,13 @@ namespace Gemipedia
             RenderFooter(cgi);
         }
 
-        static void Lucky(CgiWrapper cgi)
-        {
-            if (!cgi.HasQuery)
-            {
-                cgi.Input("Article Name? (doesn't need to be exact)");
-                return;
-            }
-            cgi.Redirect($"/cgi-bin/wp.cgi/view?{cgi.RawQuery}");
-        }
-
         static void Welcome(CgiWrapper cgi)
         {
             CommonUtils.Settings = DefaultSettings;
 
             cgi.Success();
             cgi.Writer.WriteLine("# Gemipedia");
-            cgi.Writer.WriteLine("Welcome to Gemipedia: A Gemini proxy to Wikipedia, focused on providing a 1st class reading experience.");
+            cgi.Writer.WriteLine("Welcome to Gemipedia: A Gemini frontend to Wikipedia, focused on providing a 1st class reading experience.");
             cgi.Writer.WriteLine("");
             cgi.Writer.WriteLine("## Examples:");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Sabah")} Sabah");
@@ -101,6 +89,12 @@ namespace Gemipedia
 
         static void ViewArticle(CgiWrapper cgi)
         {
+            if (!cgi.HasQuery)
+            {
+                cgi.Input("Article Name? (doesn't need to be exact)");
+                return;
+            }
+
             var client = new WikipediaApiClient();
             var resp = client.GetArticle(cgi.SantiziedQuery);
             try
@@ -119,8 +113,9 @@ namespace Gemipedia
                 }
                 else
                 {
-                    cgi.Success();
-                    cgi.Writer.WriteLine("We could not access that article");
+                    //redirect to search...
+                    cgi.Redirect($"/cgi-bin/wp.cgi/search?{cgi.RawQuery}");
+                    return;
                 }
             } catch(Exception ex)
             {
@@ -211,8 +206,7 @@ namespace Gemipedia
             cgi.Writer.WriteLine();
             cgi.Writer.WriteLine("--");
             cgi.Writer.WriteLine($"=> mailto:acidus@gemi.dev?subject=Gemipedia+issue&body=URL%3A{WebUtility.UrlEncode(cgi.RequestUrl.ToString())} Report Problem");
-            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/lucky Go to Article");
-            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/search Search Wikipedia");
+            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/view Go to Article");
         }
 
         static ConverterSettings DefaultSettings
