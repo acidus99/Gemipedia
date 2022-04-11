@@ -7,7 +7,6 @@ using AngleSharp;
 using AngleSharp.Html.Parser;
 using AngleSharp.Html.Dom;
 using AngleSharp.Dom;
-using System.Text;
 
 using Gemipedia.Converter.Models;
 
@@ -16,17 +15,16 @@ namespace Gemipedia.Converter.Parser.Tables
     public class TableParser : IArticleLinks
     {
 
-        Table table;
-
         Row currRow;
-
-        StringBuilder innerText;
+        Table table;
+        TextExtractor textExtractor;
 
         public ArticleLinkCollection ArticleLinks { get; private set; }
 
         public TableParser()
         {
             table = new Table();
+            textExtractor = new TextExtractor(collapseNewlines: true);
             ArticleLinks = new ArticleLinkCollection();
         }
 
@@ -46,7 +44,8 @@ namespace Gemipedia.Converter.Parser.Tables
             switch(current.NodeName.ToLower())
             {
                 case "caption":
-                    table.Caption = PrepareText(current.TextContent);
+                    table.Caption = textExtractor.GetText(current);
+                    table.ArticleLinks.MergeCollection(textExtractor.ArticleLinks);
                     break;
 
                 case "tr":
@@ -83,71 +82,16 @@ namespace Gemipedia.Converter.Parser.Tables
         {
             if (currRow != null)
             {
-                innerText = new StringBuilder();
-                ExtractInnerText(cell);
-
-                int colSpan = Convert.ToInt32(cell.GetAttribute("colspan") ?? "1");
+                string contents = textExtractor.GetText(cell);
+                ArticleLinks.MergeCollection(textExtractor.ArticleLinks);
 
                 currRow.Cells.Add(new Cell
                 {
                     IsHeader = (cell.NodeName == "TH"),
-                    Contents = PrepareText(innerText.ToString()),
-                    ColSpan = colSpan
-                });
+                    Contents = contents,
+                    ColSpan = Convert.ToInt32(cell.GetAttribute("colspan") ?? "1")
+                }); ;
             }
         }
-
-        private void ExtractInnerText(INode current)
-        {
-            switch (current.NodeType)
-            {
-                case NodeType.Comment:
-                    break;
-
-                case NodeType.Text:
-                    //if its not only whitespace add it.
-                    if (current.TextContent.Trim().Length > 0)
-                    {
-                        innerText.Append(current.TextContent);
-                    }
-                    //if its whitepsace, but doesn't have a newline
-                    else if (!current.TextContent.Contains('\n'))
-                    {
-                        innerText.Append(current.TextContent);
-                    }
-                    break;
-
-                case NodeType.Element:
-                    {
-                        HtmlElement element = current as HtmlElement;
-                        var nodeName = element.NodeName.ToLower();
-                        switch (nodeName)
-                        {
-
-                            case "a":
-                                ArticleLinks.Add(element);
-                                ExtractChildrenText(current);
-                                break;
-
-                            case "br":
-                                innerText.AppendLine();
-                                break;
-
-                            default:
-                                ExtractChildrenText(current);
-                                break;
-                        }
-                    }
-                    break;
-                default:
-                    throw new ApplicationException("Unhandled NODE TYPE!");
-            }
-        }
-
-        private void ExtractChildrenText(INode element)
-            => element.ChildNodes.ToList().ForEach(x => ExtractInnerText(x));
-
-        private string PrepareText(string s)
-            => s.Replace("\n", " ").Trim();
     }
 }
