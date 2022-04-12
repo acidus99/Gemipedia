@@ -27,7 +27,7 @@ namespace Gemipedia.Converter.Parser
             CollapseNewlines = collapseNewlines;
         }
 
-        public string ExtractInnerText(INode current)
+        public string GetText(INode current)
         {
             buffer.Clear();
             ArticleLinks.Clear();
