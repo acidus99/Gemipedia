@@ -45,9 +45,6 @@ namespace Gemipedia.Converter.Models
             }
         }
 
-        public void Clear()
-            => articles.Clear();
-
         public void MergeCollection(ArticleLinkCollection collection)
         {
             foreach(string key in collection.articles.Keys)

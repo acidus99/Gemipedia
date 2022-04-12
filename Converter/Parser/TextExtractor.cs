@@ -30,7 +30,7 @@ namespace Gemipedia.Converter.Parser
         public string GetText(INode current)
         {
             buffer.Clear();
-            ArticleLinks.Clear();
+            ArticleLinks = new ArticleLinkCollection();
             ExtractInnerTextHelper(current);
 
             return CollapseNewlines ?
