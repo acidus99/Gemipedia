@@ -31,12 +31,13 @@ namespace Gemipedia.Converter.Parser
             }
 
             url = EnsureHttps(url);
-            textExtractor.ArticleLinks.Clear();
+            textExtractor = new TextExtractor();
             var description = GetDescription(element);
             return new MediaItem
             {
+                ArticleLinks = textExtractor.ArticleLinks,
                 Caption = description,
-                Url = CommonUtils.MediaProxyUrl(url),                
+                Url = CommonUtils.MediaProxyUrl(url),            
             };
         }
 

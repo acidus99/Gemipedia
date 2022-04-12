@@ -21,9 +21,9 @@ namespace Gemipedia.Converter.Models
 
         private void AddItem(SectionItem item)
         {
-            if (item is ContentItem)
+            if (item is IArticleLinks)
             {
-                ArticleLinks.MergeCollection(((ContentItem)item).ArticleLinks);
+                ArticleLinks.MergeCollection(((IArticleLinks)item).ArticleLinks);
             }
             items.Add(item);
         }

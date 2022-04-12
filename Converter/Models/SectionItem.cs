@@ -21,10 +21,11 @@ namespace Gemipedia.Converter.Models
             => Content;
     }
 
-    public class MediaItem : SectionItem
+    public class MediaItem : SectionItem, IArticleLinks
     {
         public string Url;
         public string Caption;
+        public ArticleLinkCollection ArticleLinks { get; set; }
 
         public override string Render()
             => $"=> {Url} {Caption}\n";
