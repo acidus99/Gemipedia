@@ -21,10 +21,12 @@ namespace Gemipedia.Converter.Parser
     {
 
         private List<SectionItem> items;
+        private ImageBlockParser imageParser;
 
         public SectionContentParser()
         {
             items = new List<SectionItem>();
+            imageParser = new ImageBlockParser();
         }
 
         private void AddItem(SectionItem item)
@@ -70,7 +72,7 @@ namespace Gemipedia.Converter.Parser
             //is it a media div?
             if (element.ClassList.Contains("thumb") && !element.ClassList.Contains("locmap"))
             {
-                AddItem(SpecialBlockConverter.ConvertImageBlock(element));
+                AddItem(imageParser.ConvertImageBlock(element));
                 return;
             }
 

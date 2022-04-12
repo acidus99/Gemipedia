@@ -18,51 +18,6 @@ namespace Gemipedia.Converter.Parser
     public static class SpecialBlockConverter
     {
 
-        public static SectionItem ConvertImageBlock(HtmlElement element)
-        {
-            var url = GetImageUrl(element);
-            var caption = CommonUtils.PrepareTextContent(element.QuerySelector("div.thumbcaption")?.TextContent ?? "");
-            if (url.Length > 0 && caption.Length > 0)
-            {
-                if (!url.StartsWith("https:"))
-                {
-                    url = "https:" + url;
-                }
-
-                return new MediaItem
-                {
-                    Url = CommonUtils.MediaProxyUrl(url),
-                    Caption = caption
-                };
-            }
-            return null;
-        }
-
-        private static string GetImageUrl(HtmlElement element)
-        {
-            //try the srcset
-            var url = GetImageFromSrcset(element.QuerySelector("img")?.GetAttribute("srcset") ?? "", "2x");
-            if(url.Length > 0)
-            {
-                return url;
-            }
-            return element.QuerySelector("img")?.GetAttribute("src") ?? "";
-        }
-
-        private static string GetImageFromSrcset(string srcset, string size)
-        {
-            if (srcset.Length > 0)
-            {
-                Regex parser = new Regex(@"(\S*[^,\s])(\s+([\d.]+)(x|w))?");
-
-                return parser.Matches(srcset)
-                    .Where(x => x.Success && x.Groups[2].Value.Trim() == size)
-                    .Select(x => x.Groups[1].Value).FirstOrDefault() ?? "";
-            }
-            return "";
-        }
-
-
         /// <summary>
         /// Attempts to convert an inline Math element into a linkable image
         /// Math formulas are in SVG, so link to our converter
