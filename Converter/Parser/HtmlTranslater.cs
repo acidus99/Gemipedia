@@ -20,7 +20,7 @@ namespace Gemipedia.Converter.Parser
 
         public ArticleLinkCollection ArticleLinks { get; set; } = new ArticleLinkCollection();
 
-        public string RenderHtml(Element element)
+        public string RenderHtml(IElement element)
             => RenderContentNode(element, false);
 
         //most of the time ,we want to ignore all whitepsace text nodes.
@@ -72,6 +72,11 @@ namespace Gemipedia.Converter.Parser
                 case NodeType.Element:
                     {
                         HtmlElement element = current as HtmlElement;
+                        if(IsInvisible(element))
+                        {
+                            break;
+                        }
+
                         var nodeName = element.NodeName.ToLower();
                         switch (nodeName)
                         {
@@ -190,6 +195,9 @@ namespace Gemipedia.Converter.Parser
 
             return sb.ToString();
         }
+
+        private bool IsInvisible(HtmlElement element)
+            => element.GetAttribute("style")?.Contains("display:none") ?? false;
 
         private string ConvertSpan(HtmlElement element, TextWriter sb)
         {
