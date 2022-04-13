@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
+using AngleSharp;
+using AngleSharp.Html.Parser;
 using AngleSharp.Html.Dom;
 using AngleSharp.Dom;
 
-using Gemipedia.Converter.Parser.Tables;
 using Gemipedia.Converter.Models;
 
 
@@ -21,58 +19,119 @@ namespace Gemipedia.Converter.Parser
     {
         TextExtractor textExtractor = new TextExtractor();
 
-        public SectionItem ConvertImageBlock(HtmlElement element)
+        public MediaItem Convert(IElement imageContainer, IElement captionContainer)
+            => IsVideo(imageContainer) ?
+                ConvertVideo(imageContainer, captionContainer) :
+                ConvertImage(imageContainer, captionContainer);
+        
+        private MediaItem ConvertImage(IElement imageContainer, IElement captionContainer)
         {
-            //try and find the image URL
-            var url = GetImageUrl(element);
-            if(url == null)
+            var url = GetImageUrl(imageContainer);
+            if (url == null)
             {
                 return null;
             }
 
-            url = EnsureHttps(url);
             textExtractor = new TextExtractor();
-            var description = GetDescription(element);
+            var description = GetDescription(imageContainer, captionContainer);
             return new MediaItem
             {
                 ArticleLinks = textExtractor.ArticleLinks,
                 Caption = description,
-                Url = CommonUtils.MediaProxyUrl(url),            
+                Url = CommonUtils.MediaProxyUrl(url),
             };
         }
 
-        private string GetImageUrl(HtmlElement element)
+        private MediaItem ConvertVideo(IElement imageContainer, IElement captionContainer)
         {
-            //try the srcset
-            var url = GetImageFromSrcset(element.QuerySelector("img")?.GetAttribute("srcset") ?? "", "2x");
-            if (url != null)
+
+            var videoElement = ParseVideo(imageContainer);
+
+            string imageUrl = GetPosterUrl(videoElement);
+            string videoUrl = GetVideoUrl(videoElement);
+            if(imageUrl == null || videoUrl == null)
             {
-                return url;
+                return null;
             }
-            return element.QuerySelector("img")?.GetAttribute("src") ?? null;
+
+            textExtractor = new TextExtractor();
+            var description = GetDescription(imageContainer, captionContainer);
+
+            return new VideoItem
+            {
+                ArticleLinks = textExtractor.ArticleLinks,
+                Caption = description,
+                Url = CommonUtils.MediaProxyUrl(imageUrl),
+                VideoUrl = videoUrl,
+                VideoDescription = GetVideoDescription(videoElement)
+            };
         }
 
+        private IElement ParseVideo(IElement imageContainer)
+        {
+            var videoHtml = imageContainer.QuerySelector("div[videopayload]").GetAttribute("videopayload");
+            var context = BrowsingContext.New(Configuration.Default);
+            var parser = context.GetService<IHtmlParser>();
+            return parser.ParseDocument(videoHtml).QuerySelector("video");
+        }
+
+        private bool IsVideo(IElement imageContainer)
+            => (imageContainer.QuerySelector("div[videopayload]") != null);
+
+        private string GetImageUrl(IElement imageContainer)
+        {
+            //try the srcset
+            var url = GetImageFromSrcset(imageContainer.QuerySelector("img")?.GetAttribute("srcset") ?? "", "2x");
+            if (url != null)
+            {
+                return EnsureHttps(url);
+            }
+            return EnsureHttps(imageContainer.QuerySelector("img")?.GetAttribute("src") ?? null);
+        }
+
+        private string GetPosterUrl(IElement videoElement)
+            => EnsureHttps(videoElement?.GetAttribute("poster") ?? null);
+
+        private string GetVideoUrl(IElement videoElement)
+            => EnsureHttps(videoElement?.QuerySelector("source").GetAttribute("src") ?? null);
+
+        private string GetVideoDescription(IElement videoElement)
+            => "🎦 " + (videoElement?.QuerySelector("source").GetAttribute("data-title") ?? "Video File");
+
         private string EnsureHttps(string url)
-            => (!url.StartsWith("https:")) ?
+            => (url != null && !url.StartsWith("https:")) ?
                 "https:" + url :
                 url;
 
-        private string GetDescription(HtmlElement element)
+        private string GetDescription(IElement imageContainer, IElement captionContainer)
         {
             //first see if there is a caption
-            var captionTag = element.QuerySelector("div.thumbcaption");
-            if(captionTag != null)
+            if(captionContainer != null)
             {
-                return textExtractor.GetText(element);
+                return textExtractor.GetText(captionContainer);
             }
             //fall back to the ALT text
-            var text = GetImageAlt(element);
+            var text = GetImageAlt(imageContainer);
             return (text.Length > 0) ? text : "Article Image";
         }
 
+        private string GetImageAlt(IElement element)
+            => StripImageExtensions(element.QuerySelector("img")?.GetAttribute("alt") ?? "");
 
-        private string GetImageAlt(HtmlElement element)
-            => element.QuerySelector("img")?.GetAttribute("alt") ?? "";
+        //For some alt text, sometimes the filename is used, so strip off any trailing extension to improve readability
+        private string StripImageExtensions(string alt)
+        {
+            alt = StripExtension(alt, "jpeg");
+            alt = StripExtension(alt, "jpg");
+            alt = StripExtension(alt, "png");
+            alt = StripExtension(alt, "gif");
+            alt = StripExtension(alt, "svg");
+            return alt;
+        }
+
+        private string StripExtension(string alt, string ext)
+            => (alt.Length > (ext.Length) + 1 &&
+                alt.EndsWith($".{ext}")) ? alt.Substring(0, alt.Length - (ext.Length) - 1) : alt;
 
         private string GetImageFromSrcset(string srcset, string size)
         {
