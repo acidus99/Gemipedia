@@ -22,8 +22,9 @@ namespace Gemipedia.Converter.Models
 
         private void CollectorHelper(Section section, List<MediaItem> images)
         {
-            images.AddRange(section.GetItems().Where(x => x is MediaItem).Select(x => (MediaItem)x));
-            foreach(var subSection in section.SubSections)
+            images.AddRange(section.GeneralContent.Where(x => x is MediaItem).Select(x => (MediaItem)x));
+            section.Infoboxes.ForEach(x => images.AddRange(x.MediaItems));
+            foreach (var subSection in section.SubSections)
             {
                 CollectorHelper(subSection, images);
             }
