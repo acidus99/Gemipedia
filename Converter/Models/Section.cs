@@ -11,9 +11,15 @@ namespace Gemipedia.Converter.Models
 
         public bool HasSubSections => (SubSections.Count > 0);
 
-        public List<Section> SubSections { get; set; }=  new List<Section>();
+        //infoboxes 
+        public List<InfoboxItem> Infoboxes = new List<InfoboxItem>();
 
-        List<SectionItem> items = new List<SectionItem>();
+        //content and images
+        public List<SectionItem> GeneralContent = new List<SectionItem>();
+
+        public List<NavSuggestionsItem> NavSuggestions = new List<NavSuggestionsItem>();
+
+        public List<Section> SubSections { get; set; }=  new List<Section>();
 
         //force processing
         public void AddItems(IEnumerable<SectionItem> items)
@@ -25,14 +31,18 @@ namespace Gemipedia.Converter.Models
             {
                 ArticleLinks.MergeCollection(((IArticleLinks)item).ArticleLinks);
             }
-            items.Add(item);
+
+            if(item is InfoboxItem)
+            {
+                Infoboxes.Add((InfoboxItem)item);
+            } else if(item is NavSuggestionsItem)
+            {
+                NavSuggestions.Add((NavSuggestionsItem)item);
+            } else
+            {
+                GeneralContent.Add(item);
+            }
         }
-
-        public List<SectionItem> GetItems()
-            => items;
-
-        public int MediaCount
-            => items.Where(x => (x is MediaItem)).Count();
 
         //special sections don't have titles. the intro section is a special section
         public bool IsSpecial { get; set; } = false;

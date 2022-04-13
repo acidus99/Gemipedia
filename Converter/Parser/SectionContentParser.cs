@@ -72,7 +72,7 @@ namespace Gemipedia.Converter.Parser
             //is it a media div?
             if (element.ClassList.Contains("thumb") && !element.ClassList.Contains("locmap"))
             {
-                AddItem(imageParser.ConvertImageBlock(element));
+                AddItem(imageParser.Convert(element, element.QuerySelector(".thumbcaption")));
                 return;
             }
 
@@ -107,7 +107,7 @@ namespace Gemipedia.Converter.Parser
         {
             HtmlTranslater translater = new HtmlTranslater();
 
-            var contents = translater.RenderHtml(element);
+            var contents = translater.RenderGemtext(element);
             if (contents.Length > 0)
             {
                 AddItem(new ContentItem
@@ -118,31 +118,24 @@ namespace Gemipedia.Converter.Parser
             }
         }
 
-        /// <summary>
-        /// Get the content for a collects of elements, aggregated into a ContentItem
-        /// </summary>
-        /// <param name="elements"></param>
-        /// <returns></returns>
-        private void ParseHtmlElements(IHtmlCollection<IElement> elements)
-        {
-            foreach (HtmlElement element in elements)
-            {
-                ParseHtmlElement(element);
-            }
-        }
-
-        private void ParseTable(HtmlElement element)
+        private void ParseTable(HtmlElement table)
         {
             //is it a data table?
-            if (element.ClassList.Contains("wikitable"))
+            if (table.ClassList.Contains("wikitable"))
             {
-                AddItem(SpecialBlockConverter.ConvertTable(element));
+                AddItem(SpecialBlockConverter.ConvertTable(table));
             }
 
             //is it a table just used to create a multicolumn view?
-            if (IsMulticolumnLayoutTable(element))
+            if (IsMulticolumnLayoutTable(table))
             {
-                ParseMulticolmnTable(element);
+                ParseMulticolmnTable(table);
+            }
+
+            if(table.ClassList.Contains("infobox"))
+            {
+                InfoboxParser parser = new InfoboxParser();
+                AddItem(parser.Parse(table));
             }
         }
 

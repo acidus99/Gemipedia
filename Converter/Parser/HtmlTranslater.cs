@@ -20,7 +20,7 @@ namespace Gemipedia.Converter.Parser
 
         public ArticleLinkCollection ArticleLinks { get; set; } = new ArticleLinkCollection();
 
-        public string RenderHtml(IElement element)
+        public string RenderGemtext(IElement element)
             => RenderContentNode(element, false);
 
         //most of the time ,we want to ignore all whitepsace text nodes.

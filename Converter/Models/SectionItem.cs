@@ -31,6 +31,16 @@ namespace Gemipedia.Converter.Models
             => $"=> {Url} {Caption}\n";
     }
 
+    public class VideoItem : MediaItem, IArticleLinks
+    {
+        public string VideoUrl;
+        public string VideoDescription;
+
+        public override string Render()
+            => $"=> {Url} {Caption}\n=> {VideoUrl} {VideoDescription}\n";
+    }
+
+
     public class NavSuggestionsItem : SectionItem
     {
         public List<NavSuggestion> Suggestions = new List<NavSuggestion>();
@@ -46,14 +56,34 @@ namespace Gemipedia.Converter.Models
         public string Description;
     }
 
-    public class InfoboxItem : SectionItem
+    public class InfoboxItem : ContentItem
     {
-        public List<SectionItem> Items = new List<SectionItem>();
+        public string CustomTitle;
+
+        public List<MediaItem> MediaItems = new List<MediaItem>();
 
         public override string Render()
         {
-            StringBuilder sb = new StringBuilder();
-            Items.ToList().ForEach(x => sb.Append(x.ToString()));
+
+            bool renderText = !string.IsNullOrEmpty(Content.Trim());
+
+            var title = string.IsNullOrEmpty(CustomTitle)
+                ? "Quick Facts" :
+                $"Quick Facts: {CustomTitle}";
+
+            var sb = new StringBuilder();
+            if (renderText)
+            {
+                sb.AppendLine($"### {title}");
+            }
+            foreach (var media in MediaItems)
+            {
+                sb.Append(media.Render());
+            }
+            if (renderText)
+            {
+                sb.Append(Content);
+            }
             return sb.ToString();
         }
     }
