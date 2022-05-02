@@ -106,12 +106,13 @@ namespace Gemipedia.Converter.Parser
         private string GetDescription(IElement imageContainer, IElement captionContainer)
         {
             //first see if there is a caption
-            if(captionContainer != null)
+            var text = textExtractor.GetText(captionContainer);
+            if (!string.IsNullOrEmpty(text))
             {
-                return textExtractor.GetText(captionContainer);
+                return text;
             }
             //fall back to the ALT text
-            var text = GetImageAlt(imageContainer);
+            text = GetImageAlt(imageContainer);
             return (text.Length > 0) ? text : "Article Image";
         }
 
