@@ -13,7 +13,7 @@ namespace Gemipedia
         static void LocalTesting()
         {
 
-            var title = "William G. Bramham";
+            var title = "Déjà vu";
             Console.WriteLine(title);
             var client = new WikipediaApiClient();
             var resp = client.GetArticle(title);
@@ -193,7 +193,7 @@ namespace Gemipedia
             try
             {
                 var host = (new Uri(url)).Host; ;
-                return (host == "upload.wikimedia.org" || host == "wikimedia.org");
+                return host == "wikimedia.org" || host.EndsWith(".wikimedia.org");
             }
             catch (Exception)
             { }
