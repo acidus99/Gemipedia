@@ -64,10 +64,35 @@ namespace Gemipedia.Converter.Models
             => articles.Keys.OrderBy(x => x).Select(x => articles[x].Title).ToList();
 
         public static bool ShouldUseLink(IElement element)
-            => element.HasAttribute("title") &&
-            //ignore links to special pages!
-            !element.GetAttribute("title").StartsWith("Special:") &&
+        {
+            //wiki articles have a title attribute
+            if(!element.HasAttribute("title"))
+            {
+                return false;
+            }
             //links to pages that don't exist have a "new" class
-            !element.ClassList.Contains("new");
+            if (element.ClassList.Contains("new"))
+            {
+                return false;
+            }
+            //hyperlinks should be relative, and start with "/wiki/"
+            if( !(element.GetAttribute("href") ?? "").StartsWith("/wiki/"))
+            {
+                return false;
+            }
+            //should not be a link a special page
+            var title = element.GetAttribute("title");
+            if(title.StartsWith("Special:"))
+            {
+                return false;
+            }
+            if (title.StartsWith("Help:"))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
     }
 }
