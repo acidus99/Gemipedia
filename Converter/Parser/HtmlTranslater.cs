@@ -161,13 +161,17 @@ namespace Gemipedia.Converter.Parser
 
                             case "span":
                                 {
-                                    var special = ConvertSpan(element, sb);
-                                    if(special.Length >0)
+                                    if (!ShouldSkipSpan(element))
                                     {
-                                        sb.Write(special);
-                                    } else
-                                    {
-                                        sb.Write(RenderChildren(current, preserveWhitespaceText));
+                                        var special = ConvertSpan(element, sb);
+                                        if (special.Length > 0)
+                                        {
+                                            sb.Write(special);
+                                        }
+                                        else
+                                        {
+                                            sb.Write(RenderChildren(current, preserveWhitespaceText));
+                                        }
                                     }
                                 }
                                 break;
@@ -198,6 +202,10 @@ namespace Gemipedia.Converter.Parser
 
         private bool IsInvisible(HtmlElement element)
             => element.GetAttribute("style")?.Contains("display:none") ?? false;
+
+        private bool ShouldSkipSpan(HtmlElement element)
+            //exclude spans that contain links to audio pronunciations
+            => (element.QuerySelector("span.unicode.haudio") != null);
 
         private string ConvertSpan(HtmlElement element, TextWriter sb)
         {
