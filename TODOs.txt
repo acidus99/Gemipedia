@@ -10,6 +10,8 @@
 
 Better Rendering:
 
+- table not properly padding text: German submarine U-48 (1939)
+
 - Tables don't support Row spans
 
 -Title as link sometimes fails for going to wikipedia
