@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text;
+
 using Gemipedia.Converter.Models;
 
 namespace Gemipedia.Converter.Parser.Tables
@@ -32,7 +34,17 @@ namespace Gemipedia.Converter.Parser.Tables
     public class Cell
     {
         public bool IsHeader = false;
-        public string Contents = "";
+
+        private string contents = "";
+        public string Contents
+        {
+            get => contents;
+            set
+            {
+                contents = StripZeroWidth(value);
+            }
+        }
+          
         public int ColSpan = 1;
 
         public List<string> FormattedLines;
@@ -42,5 +54,28 @@ namespace Gemipedia.Converter.Parser.Tables
 
         public int FormattedWidth
             => (FormattedLines?.Count > 0) ? FormattedLines[0].Length : 0;
+
+        /// <summary>
+        /// removes any zero-width unicode characters from the string
+        /// these will mess with our column layout since .Lenth with return a number
+        /// longer than the number of characters that are rendered
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        private string StripZeroWidth(string s)
+        {
+            //Replace("\u200b", "") does not appear to work for these unicode characters
+            //do it char by char
+            var sb = new StringBuilder(s.Length);
+            foreach(char c in s)
+            {
+                if(c == '\u200b' || c == '\ufeff')
+                {
+                    continue;
+                }
+                sb.Append(c);
+            }
+            return sb.ToString();
+        }
     }
 }
