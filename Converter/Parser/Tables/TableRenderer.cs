@@ -102,44 +102,52 @@ namespace Gemipedia.Converter.Parser.Tables
             }
         }
 
-
         private List<string> FormatCell(Cell cell, int columnWidth)
         {
-
             var input = cell.IsHeader ? cell.Contents.ToUpper() : cell.Contents;
             int maxWidth = (columnWidth * cell.ColSpan) + (cell.ColSpan - 1);
 
             List<string> lines = new List<string>();
 
-            if (!input.Contains(" "))
-            {
-                int start = 0;
-                while (start < input.Length)
-                {
-                    lines.Add(PadCell(input.Substring(start, Math.Min(maxWidth, input.Length - start)), maxWidth, cell.IsHeader));
-                    start += maxWidth;
-                }
-            }
-            else
-            {
-                string[] words = input.Split(' ');
+            string[] words = input.Split(' ');
 
-                string line = "";
-                foreach (string word in words)
+            string line = "";
+            foreach (string word in words)
+            {
+
+                //can the word fit?
+                if(word.Length >maxWidth)
                 {
-                    if ((line + word).Length > maxWidth)
+                    //flush anything still in the buffer
+                    if (line.Length > 0)
                     {
                         lines.Add(PadCell(line.Trim(), maxWidth, cell.IsHeader));
                         line = "";
                     }
-
-                    line += string.Format("{0} ", word);
+                    int start = 0;
+                    while (start < word.Length)
+                    {
+                        lines.Add(PadCell(word.Substring(start, Math.Min(maxWidth, word.Length - start)), maxWidth, cell.IsHeader));
+                        start += maxWidth;
+                    }
+                    continue;
                 }
-
-                if (line.Length > 0)
+                //will the buffer be to big? if so, flush it
+                if ((line + word).Length > maxWidth)
                 {
                     lines.Add(PadCell(line.Trim(), maxWidth, cell.IsHeader));
+                    line = "";
                 }
+                line += word;
+                if(word.Length + 1 <= maxWidth)
+                {
+                    line += " ";
+                }
+            }
+            //flush any remaining in buffer
+            if (line.Length > 0)
+            {
+                lines.Add(PadCell(line.Trim(), maxWidth, cell.IsHeader));
             }
             return lines;
         }
