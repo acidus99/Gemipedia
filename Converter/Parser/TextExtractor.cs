@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 using Gemipedia.Converter.Models;
 
@@ -16,15 +17,16 @@ namespace Gemipedia.Converter.Parser
     /// </summary>
     public class TextExtractor
     {
+        private static readonly Regex whitespace = new Regex(@"\s+", RegexOptions.Compiled);
 
         public ArticleLinkCollection ArticleLinks;
         public StringBuilder buffer = new StringBuilder();
-        bool CollapseNewlines;
+        bool ShouldCollapseNewlines;
 
         public TextExtractor(bool collapseNewlines = false)
         {
             ArticleLinks = new ArticleLinkCollection();
-            CollapseNewlines = collapseNewlines;
+            ShouldCollapseNewlines = collapseNewlines;
         }
 
         public string GetText(INode current)
@@ -38,8 +40,10 @@ namespace Gemipedia.Converter.Parser
             ArticleLinks = new ArticleLinkCollection();
             ExtractInnerTextHelper(current);
 
-            return CollapseNewlines ?
-                ConvertNewlines(buffer.ToString()) :
+            //converting new lines to space can lead to double spaces, so collapse those
+
+            return ShouldCollapseNewlines ?
+                CollapseNewlines(buffer.ToString()) :
                 buffer.ToString();
         }
 
@@ -88,8 +92,16 @@ namespace Gemipedia.Converter.Parser
         private void ExtractChildrenText(INode element)
             => element.ChildNodes.ToList().ForEach(x => ExtractInnerTextHelper(x));
 
+        //converts newlines to spaces. since that can create runs of whitespace,
+        //remove those is they exist
+        private string CollapseNewlines(string s)
+            => CollapseSpaces(ConvertNewlines(s));
+
         private string ConvertNewlines(string s)
             => s.Replace("\n", " ").Trim();
+
+        private string CollapseSpaces(string s)
+            => whitespace.Replace(s, " ");
 
     }
 }
