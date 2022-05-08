@@ -67,7 +67,7 @@ namespace Gemipedia.Converter
         private void RemoveTags(IElement contentRoot)
         {
             //all <sup> tags are used to link to references.
-            RemoveMatchingTags(contentRoot, "sup");
+            RemoveMatchingTags(contentRoot, "sup.reference");
             //all span holders for flag icons
             RemoveMatchingTags(contentRoot, "span.flagicon");
             //all <link> tags
