@@ -37,9 +37,8 @@ namespace Gemipedia.Converter.Models
         public string VideoDescription;
 
         public override string Render()
-            => $"=> {Url} {Caption}\n=> {VideoUrl} {VideoDescription}\n";
+            => $"=> {Url} Video Still: {Caption}\n=> {VideoUrl} Source Video: {VideoDescription}\n";
     }
-
 
     public class NavSuggestionsItem : SectionItem
     {
