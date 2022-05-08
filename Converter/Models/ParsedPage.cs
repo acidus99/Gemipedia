@@ -10,6 +10,12 @@ namespace Gemipedia.Converter.Models
 
         public String Title { get; set; }
 
+        /// <summary>
+        /// returns an underline escaped version of the title, used by various APIs
+        /// </summary>
+        public string EscapedTitle
+            => Title.Replace(" ", "_");
+
         public List<Section> Sections { get; set; } = new List<Section>();
 
         public List<MediaItem> GetAllImages()
