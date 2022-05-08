@@ -42,7 +42,6 @@ namespace Gemipedia.Converter.Renderer
             {
                 Writer.WriteLine($"=> {CommonUtils.ImageGalleryUrl(Page.Title)} Gallery: {count} images");
             }
-
             Writer.WriteLine();
         }
 
@@ -52,7 +51,9 @@ namespace Gemipedia.Converter.Renderer
             Writer.WriteLine("## Index of References");
             Writer.WriteLine();
             Writer.WriteLine($"=> {CommonUtils.ReferencesUrl(Page.Title)} List of all {parsedPage.GetReferenceCount()} referenced articles");
-            Writer.WriteLine();
+            Writer.WriteLine($"=> {CommonUtils.PdfUrl(Page.Title)} PDF of Article for Offline access");
+            Writer.WriteLine($"=> https://en.wikipedia.org/wiki/{WebUtility.UrlEncode(parsedPage.Title)} Original Source on Wikipedia");
+
             Writer.WriteLine($"=> https://en.wikipedia.org/wiki/{WebUtility.UrlEncode(parsedPage.Title)} Original Source on Wikipedia");
         }
 
