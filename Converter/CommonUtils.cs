@@ -35,8 +35,11 @@ namespace Gemipedia.Converter
         public static string ImageGalleryUrl(string title)
             => $"{Settings.ImageGallerUrl}?{WebUtility.UrlEncode(title)}";
 
-        public static string PdfUrl(string title)
-            => $"https://en.wikipedia.org/api/rest_v1/page/pdf/{WebUtility.UrlEncode(title.Replace(" ", "_"))}";
+        public static string PdfUrl(string escapedTitle)
+            => $"https://en.wikipedia.org/api/rest_v1/page/pdf/{WebUtility.UrlEncode(escapedTitle)}";
+
+        public static string WikipediaSourceUrl(string escapedTitle)
+            => $"https://en.wikipedia.org/wiki/{WebUtility.UrlEncode(escapedTitle)}";
 
         public static string ReferencesUrl(string title)
              => $"{Settings.ReferencesUrl}?name={WebUtility.UrlEncode(title)}";
