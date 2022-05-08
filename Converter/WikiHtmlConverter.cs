@@ -74,6 +74,9 @@ namespace Gemipedia.Converter
             RemoveMatchingTags(contentRoot, "link");
             //all style tags
             RemoveMatchingTags(contentRoot, "style");
+            //geo meta data
+            RemoveMatchingTags(contentRoot, "span.geo-nondefault");
+            RemoveMatchingTags(contentRoot, "span.geo-multi-punct");
         }
 
         private void RemoveMatchingTags(IElement element, string selector)
