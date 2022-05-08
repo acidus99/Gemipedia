@@ -176,6 +176,22 @@ namespace Gemipedia.Converter.Parser
                                 }
                                 break;
 
+                            case "sup":
+                                {
+                                    var supscript = RenderChildren(current, false).Trim();
+                                    if(supscript.Length > 1)
+                                    {
+                                        sb.Write("^(");
+                                        sb.Write(supscript);
+                                        sb.Write(")");
+                                    } else
+                                    {
+                                        sb.Write("^");
+                                        sb.Write(supscript);
+                                    }
+                                }
+                                break;
+
                             case "u":
                                 sb.Write('_');
                                 sb.Write(RenderChildren(current, preserveWhitespaceText));
