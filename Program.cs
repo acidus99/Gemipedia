@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Web;
 using Gemipedia.API;
 
 using Gemini.Cgi;
@@ -13,7 +14,7 @@ namespace Gemipedia
         static void LocalTesting()
         {
 
-            var title = "Déjà vu";
+            var title = "McDonnell F-101 Voodoo";
             Console.WriteLine(title);
             var client = new WikipediaApiClient();
             var resp = client.GetArticle(title);
@@ -36,6 +37,7 @@ namespace Gemipedia
             router.OnRequest("/images", ViewImages);
             router.OnRequest("/svg", ProxySvg);
             router.OnRequest("/media", ProxyMedia);
+            router.OnRequest("/refs", ViewRefs);
             router.OnRequest("", Welcome);
             router.ProcessRequest();
         }
@@ -155,6 +157,31 @@ namespace Gemipedia
             RenderFooter(cgi);
         }
 
+        static void ViewRefs(CgiWrapper cgi)
+        {
+            var client = new WikipediaApiClient();
+
+
+            var query = HttpUtility.ParseQueryString(cgi.RawQuery);
+            var title = query["name"] ?? "";
+            var section = Convert.ToInt32(query["section"] ?? "-1");            
+
+            var resp = client.GetArticle(title);
+
+            if (resp != null)
+            {
+                cgi.Success();
+                var converter = new WikiHtmlConverter(DefaultSettings);
+                converter.ConvertReferences(resp.Title, resp.HtmlText, cgi.Writer, section);
+            }
+            else
+            {
+                cgi.Success();
+                cgi.Writer.WriteLine("We could not access that article");
+            }
+            RenderFooter(cgi);
+        }
+
         static void ProxyMedia(CgiWrapper cgi)
         {
             var url = cgi.Query;
@@ -217,7 +244,8 @@ namespace Gemipedia
                 ArticleUrl = "/cgi-bin/wp.cgi/view",
                 MediaProxyUrl = "/cgi-bin/wp.cgi/media/thumb.jpg",
                 ImageGallerUrl = "/cgi-bin/wp.cgi/images",
-                SvgProxyUrl = "/cgi-bin/wp.cgi/svg/image.png"
+                SvgProxyUrl = "/cgi-bin/wp.cgi/svg/image.png",
+                ReferencesUrl = "/cgi-bin/wp.cgi/refs",
             };
     }
 }

@@ -35,6 +35,12 @@ namespace Gemipedia.Converter
         public static string ImageGalleryUrl(string title)
             => $"{Settings.ImageGallerUrl}?{WebUtility.UrlEncode(title)}";
 
+        public static string ReferencesUrl(string title)
+             => $"{Settings.ReferencesUrl}?name={WebUtility.UrlEncode(title)}";
+
+        public static string ReferencesUrl(string title, int sectionNum)
+             => $"{Settings.ReferencesUrl}?name={WebUtility.UrlEncode(title)}&section={sectionNum}";
+
         public static string PrepareTextContent(string s)
             => s.Trim().Replace("\n", "");
     }

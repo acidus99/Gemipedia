@@ -49,6 +49,12 @@ namespace Gemipedia.Converter
             RenderGallery(parsedPage, writer);
         }
 
+        public void ConvertReferences(string title, string wikiHtml, TextWriter writer, int section = -1)
+        {
+            var parsedPage = Parse(title, wikiHtml);
+            RenderReferences(parsedPage, writer, section);
+        }
+
         private IElement GetContentRoot(string wikiHtml)
         {
             var context = BrowsingContext.New(Configuration.Default);
@@ -90,5 +96,12 @@ namespace Gemipedia.Converter
             GalleryRenderer renderer = new GalleryRenderer();
             renderer.RenderGallery(parsedPage, writer);
         }
+
+        private void RenderReferences(ParsedPage parsedPage, TextWriter writer, int section)
+        {
+            var renderer = new ReferencesRenderer(Settings);
+            renderer.RenderReferences(parsedPage, writer, section);
+        }
+
     }
 }

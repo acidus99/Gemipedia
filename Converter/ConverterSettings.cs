@@ -32,6 +32,9 @@ namespace Gemipedia.Converter
 
         public string ImageGallerUrl { get; set; }
 
+
+        public string ReferencesUrl { get; set; }
+
         /// <summary>
         /// Should we convert images/media?
         /// </summary>
