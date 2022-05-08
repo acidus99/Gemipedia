@@ -17,7 +17,10 @@ namespace Gemipedia.Converter.Models
         }
 
         public bool HasLinks
-            => (articles.Count > 0);
+            => (Count > 0);
+
+        public int Count
+            => articles.Count;
 
         public void Add(string title)
         {
@@ -71,7 +74,7 @@ namespace Gemipedia.Converter.Models
                 return false;
             }
             //links to pages that don't exist have a "new" class
-            if (element.ClassList.Contains("new"))
+            if (element.ClassList.Contains("new") || element.ClassList.Contains("internal"))
             {
                 return false;
             }
