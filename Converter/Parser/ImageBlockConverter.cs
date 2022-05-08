@@ -68,15 +68,10 @@ namespace Gemipedia.Converter.Parser
         }
 
         private IElement ParseVideo(IElement imageContainer)
-        {
-            var videoHtml = imageContainer.QuerySelector("div[videopayload]").GetAttribute("videopayload");
-            var context = BrowsingContext.New(Configuration.Default);
-            var parser = context.GetService<IHtmlParser>();
-            return parser.ParseDocument(videoHtml).QuerySelector("video");
-        }
+            => imageContainer.QuerySelector("video");
 
         private bool IsVideo(IElement imageContainer)
-            => (imageContainer.QuerySelector("div[videopayload]") != null);
+            => (imageContainer.QuerySelector("video") != null);
 
         private string GetImageUrl(IElement imageContainer)
         {
