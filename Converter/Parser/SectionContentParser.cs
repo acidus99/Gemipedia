@@ -92,6 +92,12 @@ namespace Gemipedia.Converter.Parser
                 return;
             }
 
+            if(element.ClassList.Contains("timeline-wrapper"))
+            {
+                AddItem(SpecialBlockConverter.ConvertTimeline(element));
+                return;
+            }
+
             //A Div we can just pass through?
             //e.g. highlighted pre-formatted text?
             //or columnized unsorted list
@@ -123,7 +129,7 @@ namespace Gemipedia.Converter.Parser
             //is it a data table?
             if (table.ClassList.Contains("wikitable"))
             {
-                AddItem(SpecialBlockConverter.ConvertTable(table));
+                AddItem(SpecialBlockConverter.ConvertWikiTable(table));
             }
 
             //is it a table just used to create a multicolumn view?
