@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 using AngleSharp;
 using AngleSharp.Html.Parser;
@@ -26,7 +25,7 @@ namespace Gemipedia.Converter.Parser
         
         private MediaItem ConvertImage(IElement imageContainer, IElement captionContainer)
         {
-            var url = GetImageUrl(imageContainer);
+            var url = CommonUtils.GetImageUrl(imageContainer.QuerySelector("img"));
             if (url == null)
             {
                 return null;
@@ -44,7 +43,6 @@ namespace Gemipedia.Converter.Parser
 
         private MediaItem ConvertVideo(IElement imageContainer, IElement captionContainer)
         {
-
             var videoElement = ParseVideo(imageContainer);
 
             string imageUrl = GetPosterUrl(videoElement);
@@ -73,30 +71,18 @@ namespace Gemipedia.Converter.Parser
         private bool IsVideo(IElement imageContainer)
             => (imageContainer.QuerySelector("video") != null);
 
-        private string GetImageUrl(IElement imageContainer)
-        {
-            //try the srcset
-            var url = GetImageFromSrcset(imageContainer.QuerySelector("img")?.GetAttribute("srcset") ?? "", "2x");
-            if (url != null)
-            {
-                return EnsureHttps(url);
-            }
-            return EnsureHttps(imageContainer.QuerySelector("img")?.GetAttribute("src") ?? null);
-        }
+
 
         private string GetPosterUrl(IElement videoElement)
-            => EnsureHttps(videoElement?.GetAttribute("poster") ?? null);
+            => CommonUtils.EnsureHttps(videoElement?.GetAttribute("poster") ?? null);
 
         private string GetVideoUrl(IElement videoElement)
-            => EnsureHttps(videoElement?.QuerySelector("source").GetAttribute("src") ?? null);
+            => CommonUtils.EnsureHttps(videoElement?.QuerySelector("source").GetAttribute("src") ?? null);
 
         private string GetVideoDescription(IElement videoElement)
             => "🎦 " + (videoElement?.QuerySelector("source").GetAttribute("data-title") ?? "Video File");
 
-        private string EnsureHttps(string url)
-            => (url != null && !url.StartsWith("https:")) ?
-                "https:" + url :
-                url;
+       
 
         private string GetDescription(IElement imageContainer, IElement captionContainer)
         {
@@ -129,17 +115,6 @@ namespace Gemipedia.Converter.Parser
             => (alt.Length > (ext.Length) + 1 &&
                 alt.EndsWith($".{ext}")) ? alt.Substring(0, alt.Length - (ext.Length) - 1) : alt;
 
-        private string GetImageFromSrcset(string srcset, string size)
-        {
-            if (srcset.Length > 0)
-            {
-                Regex parser = new Regex(@"(\S*[^,\s])(\s+([\d.]+)(x|w))?");
 
-                return parser.Matches(srcset)
-                    .Where(x => x.Success && x.Groups[2].Value.Trim() == size)
-                    .Select(x => x.Groups[1].Value).FirstOrDefault() ?? null; ; ;
-            }
-            return null;
-        }
     }
 }

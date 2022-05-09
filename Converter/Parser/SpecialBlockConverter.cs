@@ -117,7 +117,7 @@ namespace Gemipedia.Converter.Parser
             {
                 var media = new MediaItem
                 {
-                    Url = CommonUtils.MediaProxyUrl(img.GetAttribute("src")),
+                    Url = CommonUtils.MediaProxyUrl(CommonUtils.GetImageUrl(img)),
                     Caption = title
                 };
                 //try and add links from any areas to it
