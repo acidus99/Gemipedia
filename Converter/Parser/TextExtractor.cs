@@ -19,16 +19,10 @@ namespace Gemipedia.Converter.Parser
     {
         private static readonly Regex whitespace = new Regex(@"\s+", RegexOptions.Compiled);
 
-        public ArticleLinkCollection ArticleLinks;
+        public ArticleLinkCollection ArticleLinks = new ArticleLinkCollection();
         public StringBuilder buffer = new StringBuilder();
-        public bool ShouldCollapseNewlines { get; set; }
-        public bool ShouldConvertImages { get; set; }
-
-        public TextExtractor(bool collapseNewlines = false)
-        {
-            ArticleLinks = new ArticleLinkCollection();
-            ShouldCollapseNewlines = collapseNewlines;
-        }
+        public bool ShouldCollapseNewlines { get; set; } = false;
+        public bool ShouldConvertImages { get; set; } = false;
 
         /// <summary>
         /// gets text from the first node that is not null

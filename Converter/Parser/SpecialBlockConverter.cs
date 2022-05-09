@@ -45,7 +45,10 @@ namespace Gemipedia.Converter.Parser
         /// <returns></returns>
         public static SectionItem ConvertNavigationNotes(HtmlElement element)
         {
-            var textExtractor = new TextExtractor(true);
+            var textExtractor = new TextExtractor
+            {
+                ShouldCollapseNewlines = true
+            };
             var text = textExtractor.GetText(element);
             return new NavSuggestionsItem
             {

@@ -140,7 +140,10 @@ namespace Gemipedia.Converter.Parser
 
         private void AddHeader(IElement row)
         {
-            var textExtractor = new TextExtractor(collapseNewlines: true);
+            var textExtractor = new TextExtractor
+            {
+                ShouldCollapseNewlines = true
+            };
             var text = textExtractor.GetText(row);
             buffer.AppendLine($"### {text}");
             ArticleLinks.MergeCollection(textExtractor.ArticleLinks);
@@ -148,7 +151,10 @@ namespace Gemipedia.Converter.Parser
 
         private void AddNameValue(IElement nameCell, IElement valueCell)
         {
-            var textExtractor = new TextExtractor(collapseNewlines: true);
+            var textExtractor = new TextExtractor
+            {
+                ShouldCollapseNewlines = true
+            };
             var label = CleanLabel(textExtractor.GetText(nameCell));
 
             ArticleLinks.MergeCollection(textExtractor.ArticleLinks);
