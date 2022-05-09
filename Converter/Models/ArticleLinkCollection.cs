@@ -40,7 +40,7 @@ namespace Gemipedia.Converter.Models
             }
         }
 
-        public void Add(HtmlElement element)
+        public void Add(IElement element)
         {
             if (ShouldUseLink(element))
             {
