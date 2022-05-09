@@ -21,3 +21,8 @@
 - Fix: Tables don't support Row spans
 - Fix: Collect reference links from table captions
 - Fix: Navigation suggestions not rendered if more than 1 hyperlink in a sentence
+- Fix: attempt to support tables with malformed colspan/rowspan values (iPod article)
+- Fix: properly render tables with incorrect/excessive colspan values (iPod article)
+- Feature: Support timelines (extract the image, properly extract article links from MAP tag)
+- Fix: exclude navigation sections from section's references
+- Fix: exclude fragement from article title when collecting references
