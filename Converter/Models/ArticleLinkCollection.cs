@@ -24,7 +24,7 @@ namespace Gemipedia.Converter.Models
 
         public void Add(string title)
         {
-            if(title.Length == 0)
+            if(string.IsNullOrEmpty(title))
             {
                 return;
             }
@@ -44,8 +44,14 @@ namespace Gemipedia.Converter.Models
         {
             if (ShouldUseLink(element))
             {
-                Add(element.GetAttribute("title"));
+                Add(RemoveFragment(element.GetAttribute("title")));
             }
+        }
+
+        private string RemoveFragment(string title)
+        {
+            var index = title.IndexOf('#');
+            return index > 0 ? title.Substring(0, index) : title;
         }
 
         public void MergeCollection(ArticleLinkCollection collection)
