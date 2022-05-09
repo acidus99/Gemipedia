@@ -14,7 +14,7 @@ namespace Gemipedia
         static void LocalTesting()
         {
 
-            var title = "McDonnell F-101 Voodoo";
+            var title = "IPad";
             Console.WriteLine(title);
             var client = new WikipediaApiClient();
             var resp = client.GetArticle(title);
@@ -80,13 +80,14 @@ namespace Gemipedia
             cgi.Writer.WriteLine("# Gemipedia");
             cgi.Writer.WriteLine("Welcome to Gemipedia: A Gemini frontend to Wikipedia, focused on providing a 1st class reading experience.");
             cgi.Writer.WriteLine("");
+            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/view Go to Article");
+            cgi.Writer.WriteLine("");
             cgi.Writer.WriteLine("## Examples:");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Sabah")} Sabah");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("ALOHAnet")} ALOHAnet");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("McDonnell F-101 Voodoo")} McDonnell F-101 Voodoo");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Computer network")} Computer network");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Interface Message Processor")} Interface Message Processor");
-            RenderFooter(cgi);
         }
 
         static void ViewArticle(CgiWrapper cgi)
@@ -232,8 +233,9 @@ namespace Gemipedia
         {
             cgi.Writer.WriteLine();
             cgi.Writer.WriteLine("--");
-            cgi.Writer.WriteLine($"=> mailto:acidus@gemi.dev?subject=Gemipedia+issue&body=URL%3A{WebUtility.UrlEncode(cgi.RequestUrl.ToString())} Report Problem");
+            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/ Gemipedia Home");
             cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/view Go to Article");
+            cgi.Writer.WriteLine($"=> mailto:acidus@gemi.dev?subject=Gemipedia+issue&body=URL%3A{WebUtility.UrlEncode(cgi.RequestUrl.ToString())} 🐛Report Bug");
         }
 
         static ConverterSettings DefaultSettings
