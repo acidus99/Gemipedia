@@ -30,7 +30,7 @@ namespace Gemipedia.Converter.Models
 
         private void AddItem(SectionItem item)
         {
-            if (item is IArticleLinks)
+            if (item is IArticleLinks && !(item is NavSuggestionsItem))
             {
                 ArticleLinks.MergeCollection(((IArticleLinks)item).ArticleLinks);
             }
