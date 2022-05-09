@@ -30,6 +30,14 @@ namespace Gemipedia.Converter.Parser
             ShouldCollapseNewlines = collapseNewlines;
         }
 
+        /// <summary>
+        /// gets text from the first node that is not null
+        /// </summary>
+        /// <param name="nodes"></param>
+        /// <returns></returns>
+        public string GetText(params INode [] nodes)
+            => GetText(nodes.Where(x => x != null).FirstOrDefault());
+
         public string GetText(INode current)
         {
             if(current == null)
