@@ -26,3 +26,5 @@
 - Feature: Support timelines (extract the image, properly extract article links from MAP tag)
 - Fix: exclude navigation sections from section's references
 - Fix: exclude fragement from article title when collecting references
+- Feature: Speed up views with Disk cache for Wikipedia content
+    (especially important for sub-pages like gallery, references, since that needs would refetch article JSON)

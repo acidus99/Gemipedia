@@ -1,7 +1,6 @@
 ﻿- requestor only works on happy path. no HTTP/connection/DNS error handling
 - Converter control options
 - stream media bytes directly to client instead of current "store and forward"
-- caching shim for media/articles
 - Use actual MIME type based on file extension, actual filename for proxied media
 
 Better Rendering:
