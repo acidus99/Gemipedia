@@ -16,8 +16,16 @@ namespace Gemipedia.Converter.Parser.Tables
         public bool HasCaption
             => Caption.Length > 0;
 
+        /// <summary>
+        /// How many column units wide is this table. Many tables have rows with
+        /// a mismatched number of columns, or too many colspans. Assume that
+        /// the number of column units in the first row is accurate, and trim
+        /// other rows accordingly
+        /// </summary>
         public int MaxColumns
-            => Rows.Max(x => x.Cells.Count);
+            => (Rows.Count > 0) ?
+                Rows[0].Cells.Sum(x => x.ColSpan) :
+                0;
     }
 
     public class Row

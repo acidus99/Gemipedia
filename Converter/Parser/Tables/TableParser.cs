@@ -20,6 +20,8 @@ namespace Gemipedia.Converter.Parser.Tables
         Row currRow;
         Table table;
         TextExtractor textExtractor;
+        //used when adding row/colspans to fix mismatched tables
+        int currRowWidth;
 
         public ArticleLinkCollection ArticleLinks { get; private set; }
 
@@ -113,6 +115,19 @@ namespace Gemipedia.Converter.Parser.Tables
             return 1;
         }
 
+        private int RowWidthThrottle(int colSpan)
+        {
+            if(currRowWidth + colSpan <= table.MaxColumns)
+            {
+                currRowWidth += colSpan;
+                return colSpan;
+            }
+            var newColspan = Math.Max((table.MaxColumns - currRowWidth), 1);
+            currRowWidth += newColspan;
+            return newColspan;
+        }
+            
+
         private void UpdateForRowSpans()
         {
             for (int rowIndex = 1; rowIndex < table.Rows.Count; rowIndex++)
@@ -120,6 +135,7 @@ namespace Gemipedia.Converter.Parser.Tables
                 List<Cell> newRow = new List<Cell>();
                 Queue<Cell> oldRow = new Queue<Cell>(table.Rows[rowIndex].Cells);
                 Queue<Cell> prevRow = new Queue<Cell>(table.Rows[rowIndex - 1].Cells);
+                currRowWidth = 0;
                 while (prevRow.Count > 0)
                 {
                     var prevRowCell = prevRow.Dequeue();
@@ -131,7 +147,7 @@ namespace Gemipedia.Converter.Parser.Tables
                         {
                             IsRowSpanHolder = true,
                             RowSpan = prevRowCell.RowSpan - 1,
-                            ColSpan = prevRowCell.ColSpan,
+                            ColSpan = RowWidthThrottle(prevRowCell.ColSpan),
                             IsHeader = prevRowCell.IsHeader,
                         });
                     }
@@ -143,6 +159,7 @@ namespace Gemipedia.Converter.Parser.Tables
                             if (oldRow.Count > 0)
                             {
                                 var cell = oldRow.Dequeue();
+                                cell.ColSpan = RowWidthThrottle(cell.ColSpan);
                                 newRow.Add(cell);
                                 i += cell.ColSpan - 1;
                             }
