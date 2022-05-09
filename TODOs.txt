@@ -1,6 +1,4 @@
-
-- <Math> elements not supported
-
+﻿
 - requestor only works on happy path. no HTTP/connection/DNS error handling
 - Converter control options
 - stream media bytes directly to client instead of current "store and forward"
@@ -10,12 +8,15 @@
 
 Better Rendering:
 
-- table not properly padding text: German submarine U-48 (1939)
+- don't add links to list unless its a "See Also"
 
-- Tables don't support Row spans
+- add "related articles" into content (separate page?)
+- Add most popular links
 
--Title as link sometimes fails for going to wikipedia
-	e.g. "Military+tactics" vs "Military_tactics"
+- support more languages
+
+- table horizontal lines don't have "+" in right place for colspans
+- Article name is wrong (IPad instead of iPad). This is because of the API I am using
 
 
 COMPLETE:
@@ -25,6 +26,15 @@ COMPLETE:
 - Don't show a section if it doesn't have any content
 	(or it only has a navigation link to something else)
 - Tables => ASCII tables
+- <Math> elements not supported
 - Use the 2x thumbnail
 - Tables need better parsing. Right now the "TR" query finds tables inside of the table!
 https://en.wikipedia.org/wiki/Desecration_Smile
+-Title as link sometimes fails for going to wikipedia
+	e.g. "Military+tactics" vs "Military_tactics"
+
+- Streamline geo coordinates
+- Fix Table padding bug (Zero Width space characters!) - German submarine U-48 (1939)
+- Fix: Tables don't support Row spans
+- Fix: Navigation suggestions not rendered if more than 1 hyperlink in a sentence
+ 
