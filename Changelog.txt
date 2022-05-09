@@ -1,1 +1,23 @@
-﻿
+﻿Changelog:
+- Feature: Organize referenced links by section (+ don't show duplicates of links that appear in more than 1 section)
+- Feature: separate image gallery for article showing all the media
+- Feature: Don't show a section if it doesn't have any content
+- Feature: Render tables as ASCII tables
+- Feature: Support math elements (SVG images transcoded on the fly as PNG)
+- Feature: Use the 2x image for better resolution
+- Feature: Include video links in Image gallery
+- Feature: Show an image for video media using poster attribute
+- Fix: Better support for nested tables
+- Fix: Skip audio pronunciation links
+- Fix: Skip pronunciation helper links
+- Create separate page for reference links, include specific link for each section to show links for that section
+- Feature: show count for reference links per section, and for all references 
+- Feature: support SUP tag
+- Fix: remove meta data text (e.g. "Citation needed" and "original research" text/links)
+- Fix: Only display 1 format for geo coordinates
+- Feature: PDF for article
+- Fix: Link to original article on Wikipedia (needed underscore escaping)
+- Fix Table padding bug (Zero Width space characters!) - German submarine U-48 (1939)
+- Fix: Tables don't support Row spans
+- Fix: Collect reference links from table captions
+- Fix: Navigation suggestions not rendered if more than 1 hyperlink in a sentence
