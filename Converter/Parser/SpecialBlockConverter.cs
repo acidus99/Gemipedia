@@ -45,25 +45,13 @@ namespace Gemipedia.Converter.Parser
         /// <returns></returns>
         public static SectionItem ConvertNavigationNotes(HtmlElement element)
         {
-            var lines = element.TextContent.Split(".").Where(x => x.Trim().Length > 0).ToArray();
-            var tags = element.QuerySelectorAll("a");
-            if (lines.Length == tags.Length)
+            var textExtractor = new TextExtractor(true);
+            var text = textExtractor.GetText(element);
+            return new NavSuggestionsItem
             {
-                var item = new NavSuggestionsItem();
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    if (ArticleLinkCollection.ShouldUseLink(tags[i]))
-                    {
-                        item.Suggestions.Add(new NavSuggestion
-                        {
-                            ArticleTitle = CommonUtils.ArticleUrl(tags[i].GetAttribute("title")),
-                            Description = $"{CommonUtils.PrepareTextContent(lines[i])}."
-                        });
-                    }
-                }
-                return (item.Suggestions.Count > 0) ? item : null;
-            }
-            return null;
+                ArticleLinks = textExtractor.ArticleLinks,
+                Content = text
+            };
         }
 
         /// <summary>

@@ -17,6 +17,9 @@ namespace Gemipedia.Converter.Models
         //content and images
         public List<SectionItem> GeneralContent = new List<SectionItem>();
 
+        public bool HasNavSuggestions
+            => NavSuggestions.Count > 0;
+
         public List<NavSuggestionsItem> NavSuggestions = new List<NavSuggestionsItem>();
 
         public List<Section> SubSections { get; set; }=  new List<Section>();

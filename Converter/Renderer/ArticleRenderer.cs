@@ -60,11 +60,15 @@ namespace Gemipedia.Converter.Renderer
             sectionNum++;
 
             StringBuilder sb = new StringBuilder();
-
-            //render navigation items at top
-            foreach (var nav in section.NavSuggestions)
+            if (section.HasNavSuggestions)
             {
-                sb.Append(nav.Render());
+                //render navigation items at top
+                foreach (var nav in section.NavSuggestions)
+                {
+                    sb.Append(nav.Render());
+                }
+                //add a blank link, since nav suggestion can be long
+                sb.AppendLine();
             }
 
             //other content below, in order

@@ -40,19 +40,18 @@ namespace Gemipedia.Converter.Models
             => $"=> {Url} Video Still: {Caption}\n=> {VideoUrl} Source Video: {VideoDescription}\n";
     }
 
-    public class NavSuggestionsItem : SectionItem
+    public class NavSuggestionsItem : ContentItem
     {
-        public List<NavSuggestion> Suggestions = new List<NavSuggestion>();
-
         public override string Render()
-            => string.Join('\n', Suggestions
-                .Select(x => $"=> {x.ArticleTitle} {x.Description}\n"));
-    }
-
-    public class NavSuggestion
-    {
-        public string ArticleTitle;
-        public string Description;
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"({Content})");
+            foreach (var linkTitle in ArticleLinks.GetLinks())
+            {
+                sb.AppendLine($"=> {CommonUtils.ArticleUrl(linkTitle)} {linkTitle}");
+            }
+            return sb.ToString();
+        }
     }
 
     public class InfoboxItem : ContentItem
