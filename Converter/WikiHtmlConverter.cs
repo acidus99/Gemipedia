@@ -79,6 +79,8 @@ namespace Gemipedia.Converter
             RemoveMatchingTags(contentRoot, "span.geo-multi-punct");
             //citation need and other tags
             RemoveMatchingTags(contentRoot, ".noprint");
+            //remove the "V T E" meta navbars on certain items
+            RemoveMatchingTags(contentRoot, ".navbar");
         }
 
         private void RemoveMatchingTags(IElement element, string selector)
