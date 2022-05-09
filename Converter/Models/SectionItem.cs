@@ -25,7 +25,7 @@ namespace Gemipedia.Converter.Models
     {
         public string Url;
         public string Caption;
-        public ArticleLinkCollection ArticleLinks { get; set; }
+        public ArticleLinkCollection ArticleLinks { get; set; } = new ArticleLinkCollection();
 
         public override string Render()
             => $"=> {Url} {Caption}\n";
