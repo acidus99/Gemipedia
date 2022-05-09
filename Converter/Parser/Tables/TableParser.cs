@@ -28,7 +28,11 @@ namespace Gemipedia.Converter.Parser.Tables
         public TableParser()
         {
             table = new Table();
-            textExtractor = new TextExtractor(collapseNewlines: true);
+            textExtractor = new TextExtractor
+            {
+                ShouldConvertImages = true,
+                ShouldCollapseNewlines = true
+            };
             ArticleLinks = new ArticleLinkCollection();
         }
 
