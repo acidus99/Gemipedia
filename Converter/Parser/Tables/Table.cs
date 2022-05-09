@@ -18,9 +18,6 @@ namespace Gemipedia.Converter.Parser.Tables
 
         public int MaxColumns
             => Rows.Max(x => x.Cells.Count);
-
-        public ArticleLinkCollection ArticleLinks = new ArticleLinkCollection();
-
     }
 
     public class Row

@@ -45,7 +45,7 @@ namespace Gemipedia.Converter.Parser.Tables
             {
                 case "caption":
                     table.Caption = textExtractor.GetText(current);
-                    table.ArticleLinks.MergeCollection(textExtractor.ArticleLinks);
+                    ArticleLinks.MergeCollection(textExtractor.ArticleLinks);
                     break;
 
                 case "tr":
