@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+
 using System.Net;
 using AngleSharp;
 using AngleSharp.Html.Parser;
@@ -91,11 +93,24 @@ namespace Gemipedia.Converter.Parser.Tables
                 {
                     IsHeader = (cell.NodeName == "TH"),
                     Contents = contents,
-                    ColSpan = Convert.ToInt32(cell.GetAttribute("colspan") ?? "1"),
-                    RowSpan = Convert.ToInt32(cell.GetAttribute("rowspan") ?? "1"),
+                    ColSpan = ParseSpan(cell.GetAttribute("colspan")),
+                    RowSpan = ParseSpan(cell.GetAttribute("rowspan")),
                     IsRowSpanHolder = false
                 });
             }
+        }
+
+        //parse the value of a row or column span. Browsers are support liberal on this
+        // "3;" works. Defaults to 1 if you can't parse anything
+        private int ParseSpan(string attribValue)
+        {
+            try
+            {
+                var match = Regex.Match(attribValue, @"^(\d+)");
+                return match.Success ? Convert.ToInt32(match.Groups[1].Value) : 1;
+            } catch(Exception)
+            { }
+            return 1;
         }
 
         private void UpdateForRowSpans()
