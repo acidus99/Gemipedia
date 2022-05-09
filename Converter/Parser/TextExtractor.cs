@@ -21,7 +21,8 @@ namespace Gemipedia.Converter.Parser
 
         public ArticleLinkCollection ArticleLinks;
         public StringBuilder buffer = new StringBuilder();
-        bool ShouldCollapseNewlines;
+        public bool ShouldCollapseNewlines { get; set; }
+        public bool ShouldConvertImages { get; set; }
 
         public TextExtractor(bool collapseNewlines = false)
         {
@@ -80,6 +81,13 @@ namespace Gemipedia.Converter.Parser
                                 buffer.AppendLine();
                                 break;
 
+                            case "img":
+                                if(ShouldConvertImages)
+                                {
+                                    buffer.Append(ConvertImage(element));
+                                }
+                                break;
+
                             default:
                                 ExtractChildrenText(current);
                                 break;
@@ -102,6 +110,14 @@ namespace Gemipedia.Converter.Parser
 
         private string CollapseSpaces(string s)
             => whitespace.Replace(s, " ");
+
+        private string ConvertImage(HtmlElement element)
+        {
+            var alt = element.GetAttribute("alt");
+            return !string.IsNullOrEmpty(alt) ?
+                $"[Image: {alt}] " :
+                "[Image] ";
+        }
 
     }
 }
