@@ -32,6 +32,8 @@ namespace Gemipedia.Converter.Parser.Tables
         {
             ParseChildren(element);
             AppendRow();
+            //go back and place any rowspan placeholder cells
+            UpdateForRowSpans();
             return table;
         }
 
@@ -89,9 +91,59 @@ namespace Gemipedia.Converter.Parser.Tables
                 {
                     IsHeader = (cell.NodeName == "TH"),
                     Contents = contents,
-                    ColSpan = Convert.ToInt32(cell.GetAttribute("colspan") ?? "1")
-                }); ;
+                    ColSpan = Convert.ToInt32(cell.GetAttribute("colspan") ?? "1"),
+                    RowSpan = Convert.ToInt32(cell.GetAttribute("rowspan") ?? "1"),
+                    IsRowSpanHolder = false
+                });
             }
         }
+
+        private void UpdateForRowSpans()
+        {
+            for (int rowIndex = 1; rowIndex < table.Rows.Count; rowIndex++)
+            {
+                List<Cell> newRow = new List<Cell>();
+                Queue<Cell> oldRow = new Queue<Cell>(table.Rows[rowIndex].Cells);
+                Queue<Cell> prevRow = new Queue<Cell>(table.Rows[rowIndex - 1].Cells);
+                while (prevRow.Count > 0)
+                {
+                    var prevRowCell = prevRow.Dequeue();
+
+                    if (prevRowCell.RowSpan > 1)
+                    {
+                        //push on a placeholder
+                        newRow.Add(new Cell
+                        {
+                            IsRowSpanHolder = true,
+                            RowSpan = prevRowCell.RowSpan - 1,
+                            ColSpan = prevRowCell.ColSpan,
+                            IsHeader = prevRowCell.IsHeader,
+                        });
+                    }
+                    else
+                    {
+                        for (int i = 0; i < prevRowCell.ColSpan; i++)
+                        {
+                            //pull cell from current row == the colspan of 
+                            if (oldRow.Count > 0)
+                            {
+                                var cell = oldRow.Dequeue();
+                                newRow.Add(cell);
+                                i += cell.ColSpan - 1;
+                            }
+                        }
+                    }
+                }
+                //There should not be anything left in oldRow. If so, the
+                //number of cells in the source table were mismatched, so try
+                //and handle that
+                while (oldRow.Count > 0)
+                {
+                    newRow.Add(oldRow.Dequeue());
+                }
+                table.Rows[rowIndex].Cells = newRow;
+            }
+        }
+
     }
 }

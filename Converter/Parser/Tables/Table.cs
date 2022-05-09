@@ -44,6 +44,10 @@ namespace Gemipedia.Converter.Parser.Tables
           
         public int ColSpan = 1;
 
+        public int RowSpan = 1;
+        //is this a dummy cell, only present to hold open a row spanning cell from a row above?
+        public bool IsRowSpanHolder = false;
+
         public List<string> FormattedLines;
 
         public int LineHeight

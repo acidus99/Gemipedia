@@ -34,12 +34,14 @@ namespace Gemipedia.Converter.Parser.Tables
                 buffer.AppendLine($"### Table: {Table.Caption}");
             }
             buffer.AppendLine("```Table");
-            buffer.AppendLine(GenerateDividerLine(Table.Rows[0]));
+            buffer.AppendLine(GenerateDividerLine(Table.Rows[0], true));
 
-            foreach (var row in Table.Rows)
+            for(int i =0; i< Table.Rows.Count; i++)
             {
+                var row = Table.Rows[i];
                 RenderRow(row);
-                buffer.AppendLine(GenerateDividerLine(row));
+                //are we on the last row?
+                buffer.AppendLine(GenerateDividerLine(row, (i + 1) == Table.Rows.Count));
             }
             buffer.AppendLine("```");
             return buffer.ToString();
@@ -64,16 +66,23 @@ namespace Gemipedia.Converter.Parser.Tables
             }
         }
 
-        private string GenerateDividerLine(Row row)
+        private string GenerateDividerLine(Row row, bool IsEdge = false)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append('+');
             for(int i=0; i < row.Cells.Count; i++)
             {
+                //do we need to leave it open or draw a horizontal line?
+                //for the top/bottom edges, we always draw the line
                 var cell = row.Cells[i];
-
-                //how wide is the 
-                sb.Append(new string('-', cell.FormattedWidth));
+                if (!IsEdge && cell.RowSpan > 1)
+                {
+                    sb.Append(new string(' ', cell.FormattedWidth));
+                }
+                else
+                {
+                    sb.Append(new string('-', cell.FormattedWidth));
+                }
                 //do we need to add some extra for the cells we skipped?
                 sb.Append('+');
             }
@@ -104,6 +113,12 @@ namespace Gemipedia.Converter.Parser.Tables
 
         private List<string> FormatCell(Cell cell, int columnWidth)
         {
+            //is this a rowspan placeholder?
+            if (cell.IsRowSpanHolder)
+            {
+                return FormatPlaceholder(cell, columnWidth);
+            }
+
             var input = cell.IsHeader ? cell.Contents.ToUpper() : cell.Contents;
             int maxWidth = (columnWidth * cell.ColSpan) + (cell.ColSpan - 1);
 
@@ -152,6 +167,14 @@ namespace Gemipedia.Converter.Parser.Tables
             return lines;
         }
 
+        private List<string> FormatPlaceholder(Cell cell, int columWidth)
+        {
+            int maxWidth = (columWidth * cell.ColSpan) + (cell.ColSpan - 1);
+            var ret = new List<string>();
+            ret.Add(new string(' ', maxWidth));
+            return ret;
+        }
+
         private string PadCell(string s, int length, bool center)
         {
             int counter = 0;
@@ -185,7 +208,5 @@ namespace Gemipedia.Converter.Parser.Tables
             renderer.FormatContents();
             return renderer.Render();
         }
-
-
     }
 }
