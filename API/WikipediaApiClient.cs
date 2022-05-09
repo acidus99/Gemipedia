@@ -5,11 +5,15 @@ using System.Net;
 using Newtonsoft.Json.Linq;
 using Gemipedia.API.Models;
 
+using Gemipedia.Cache;
+
 namespace Gemipedia.API
 {
 
     public class WikipediaApiClient
     {
+        static DiskCache Cache = new DiskCache();
+
         WebClient client;
 
         public WikipediaApiClient()
@@ -22,8 +26,7 @@ namespace Gemipedia.API
         {
             var url = $"https://en.wikipedia.org/w/api.php?action=parse&page={WebUtility.UrlEncode(title)}&prop=text&format=json";
 
-            var json = client.DownloadString(url);
-                
+            var json = FetchString(url);
             var resp = JObject.Parse(json);
 
             if(resp["error"] != null)
@@ -44,7 +47,7 @@ namespace Gemipedia.API
         {
             var url = $"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={WebUtility.UrlEncode(query)}&format=json";
 
-            var json = client.DownloadString(url);
+            var json = FetchString(url);
             var resp = JObject.Parse(json);
 
             List<SearchResult> ret = new List<SearchResult>();
@@ -65,9 +68,45 @@ namespace Gemipedia.API
         private string Cleanse(JToken token)
             => token?.ToString() ?? "";
 
-        public byte [] FetchMedia(string fullUrl)
+        public byte [] GetMedia(string fullUrl)
+            => FetchBytes(fullUrl);
+
+        //Downloads a string, if its not already cached
+        private string FetchString(string url)
         {
-            return client.DownloadData(fullUrl);
+            //first check the cache
+            var contents = Cache.GetAsString(url);
+            if(contents != null)
+            {
+                return contents;
+            }
+            //fetch it
+            contents = client.DownloadString(url);
+            //cache it
+            Cache.Set(url, contents);
+            return contents;
         }
+
+        /// <summary>
+        /// Fetchs the bytes for a URL. If it exists in the cache, it gets pulled
+        /// otherwise a network request happens, and the results are cached
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        private byte [] FetchBytes(string url)
+        {
+            //first check the cache
+            var contents = Cache.GetAsBytes(url);
+            if (contents != null)
+            {
+                return contents;
+            }
+            //fetch it
+            contents = client.DownloadData(url);
+            //cache it
+            Cache.Set(url, contents);
+            return contents;
+        }
+
     }
 }

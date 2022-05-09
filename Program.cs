@@ -18,6 +18,8 @@ namespace Gemipedia
             Console.WriteLine(title);
             var client = new WikipediaApiClient();
             var resp = client.GetArticle(title);
+            //test caching
+            resp = client.GetArticle(title);
 
             var newConverter = new WikiHtmlConverter(DefaultSettings);
             newConverter.Convert(resp.Title, resp.HtmlText, Console.Out);
@@ -196,7 +198,7 @@ namespace Gemipedia
 
             var client = new WikipediaApiClient();
             cgi.Success("image/jpeg");
-            cgi.Out.Write(client.FetchMedia(url));
+            cgi.Out.Write(client.GetMedia(url));
         }
 
         static void ProxySvg(CgiWrapper cgi)
@@ -210,7 +212,7 @@ namespace Gemipedia
             var client = new WikipediaApiClient();
             cgi.Success("image/png");
 
-            var svgBytes = client.FetchMedia(url);
+            var svgBytes = client.GetMedia(url);
 
             cgi.Out.Write(SvgConverter.ConvertToPng(svgBytes));
         }
