@@ -231,7 +231,7 @@ namespace Gemipedia
         static ConverterSettings DefaultSettings
             => new ConverterSettings
             {
-                ExcludedSections = new string []{ "bibliography", "citations", "external_links", "notes", "references", "further reading" },
+                ExcludedSections = new string []{ "bibliography", "citations", "external_links", "notes", "references", "further_reading" },
                 ArticleLinkSections = new string[] {"see also"},
                 ArticleUrl = "/cgi-bin/wp.cgi/view",
                 MediaProxyUrl = "/cgi-bin/wp.cgi/media/media",
