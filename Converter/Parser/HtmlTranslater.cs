@@ -71,7 +71,14 @@ namespace Gemipedia.Converter.Parser
 
                 case NodeType.Element:
                     {
+                        
                         HtmlElement element = current as HtmlElement;
+                        //A MathElement is of type element, but it not an HtmlElement
+                        if (element == null)
+                        {
+                            break;
+                        }
+
                         if(IsInvisible(element))
                         {
                             break;
