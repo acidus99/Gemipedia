@@ -84,12 +84,14 @@ namespace Gemipedia
             cgi.Writer.WriteLine("");
             cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/view Go to Article");
             cgi.Writer.WriteLine("");
-            cgi.Writer.WriteLine("## Examples:");
-            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Sabah")} Sabah");
-            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("ALOHAnet")} ALOHAnet");
-            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("McDonnell F-101 Voodoo")} McDonnell F-101 Voodoo");
+            cgi.Writer.WriteLine("## Article Examples:");
+            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("History of Apple Inc.")} History of Apple Inc.");
+            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Blue Poles")} Blue Poles");
+            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Gemini (protocol)")} Gemini (protocol)");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Computer network")} Computer network");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Interface Message Processor")} Interface Message Processor");
+            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("ALOHAnet")} ALOHAnet");
+
         }
 
         static void ViewArticle(CgiWrapper cgi)
@@ -238,6 +240,7 @@ namespace Gemipedia
             cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/ Gemipedia Home");
             cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/view Go to Article");
             cgi.Writer.WriteLine($"=> mailto:acidus@gemi.dev?subject=Gemipedia+issue&body=URL%3A{WebUtility.UrlEncode(cgi.RequestUrl.ToString())} 🐛Report Bug");
+            cgi.Writer.WriteLine("All content licensed under CC BY-SA 3.0");
         }
 
         static ConverterSettings DefaultSettings
