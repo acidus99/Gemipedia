@@ -28,3 +28,6 @@
 - Fix: exclude fragement from article title when collecting references
 - Feature: Speed up views with Disk cache for Wikipedia content
     (especially important for sub-pages like gallery, references, since that needs would refetch article JSON)
+- Feature: Sharper looking math formulas by referencing Wikipedia's PNGs directly
+- Feature: Add White background to transparent images for better reading on clients with dark mode
+- Feature: Serve media with proper extension, mimetype, for better downloading (easier to tell if something is an animated GIF, etc)
