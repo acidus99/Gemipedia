@@ -33,10 +33,14 @@ namespace Gemipedia.Converter.Parser
             if (url.Length > 0 && caption.Length > 0)
             {
                 //not a media item, since it shouldn't be moved
-                return $"\n=> {CommonUtils.SvgProxyUrl(url)} Math Formula: {CommonUtils.PrepareTextContent(caption)}\n";
+                return $"\n=> {CommonUtils.MediaProxyUrl(MathSvgUrlAsPng(url))} Math Formula: {CommonUtils.PrepareTextContent(caption)}\n";
             }
             return "";
         }
+
+        //wikipedia has direct PNG versions of the SVG math images
+        private static string MathSvgUrlAsPng(string url)
+            => url.Replace("/svg/", "/png/");
 
         /// <summary>
         /// Convert a navigation note in a section
