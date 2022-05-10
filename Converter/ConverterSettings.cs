@@ -24,14 +24,7 @@ namespace Gemipedia.Converter
         /// </summary>
         public string MediaProxyUrl { get; set; }
 
-        /// <summary>
-        /// URL to use to proxy SVG images. actual media path passed via query string
-        /// </summary>
-        public string SvgProxyUrl { get; set; }
-
-
         public string ImageGallerUrl { get; set; }
-
 
         public string ReferencesUrl { get; set; }
 

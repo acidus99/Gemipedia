@@ -6,6 +6,7 @@ using Gemipedia.API;
 
 using Gemini.Cgi;
 using Gemipedia.Converter;
+using Gemipedia.Media;
 
 namespace Gemipedia
 {
@@ -14,7 +15,7 @@ namespace Gemipedia
         static void LocalTesting()
         {
 
-            var title = "IPad";
+            var title = "navy";
             Console.WriteLine(title);
             var client = new WikipediaApiClient();
             var resp = client.GetArticle(title);
@@ -37,7 +38,6 @@ namespace Gemipedia
             router.OnRequest("/search", Search);
             router.OnRequest("/view", ViewArticle);
             router.OnRequest("/images", ViewImages);
-            router.OnRequest("/svg", ProxySvg);
             router.OnRequest("/media", ProxyMedia);
             router.OnRequest("/refs", ViewRefs);
             router.OnRequest("", Welcome);
@@ -199,26 +199,11 @@ namespace Gemipedia
             Console.Error.WriteLine($"fetching '{url}'");
 
             var client = new WikipediaApiClient();
-            cgi.Success("image/jpeg");
-            cgi.Out.Write(client.GetMedia(url));
+
+            MediaContent media = MediaProcessor.ProcessImage(client.GetMedia(url));
+            cgi.Success(media.MimeType);
+            cgi.Out.Write(media.Data);
         }
-
-        static void ProxySvg(CgiWrapper cgi)
-        {
-            var url = cgi.Query;
-            if (!IsSafeMediaUrl(url))
-            {
-                cgi.Missing("cannot fetch media");
-                return;
-            }
-            var client = new WikipediaApiClient();
-            cgi.Success("image/png");
-
-            var svgBytes = client.GetMedia(url);
-
-            cgi.Out.Write(SvgConverter.ConvertToPng(svgBytes));
-        }
-
 
         static bool IsSafeMediaUrl(string url)
         {
@@ -249,9 +234,8 @@ namespace Gemipedia
                 ExcludedSections = new string []{ "bibliography", "citations", "external_links", "notes", "references", "further reading" },
                 ArticleLinkSections = new string[] {"see also"},
                 ArticleUrl = "/cgi-bin/wp.cgi/view",
-                MediaProxyUrl = "/cgi-bin/wp.cgi/media/thumb.jpg",
+                MediaProxyUrl = "/cgi-bin/wp.cgi/media/media",
                 ImageGallerUrl = "/cgi-bin/wp.cgi/images",
-                SvgProxyUrl = "/cgi-bin/wp.cgi/svg/image.png",
                 ReferencesUrl = "/cgi-bin/wp.cgi/refs",
             };
     }

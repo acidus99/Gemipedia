@@ -19,6 +19,7 @@
     <None Remove="Magick.NET-Q8-AnyCPU" />
     <None Remove="Converter\Parser\Tables\" />
     <None Remove="Cache\" />
+    <None Remove="Media\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -34,6 +35,7 @@
     <Folder Include="Converter\Models\" />
     <Folder Include="Converter\Parser\Tables\" />
     <Folder Include="Cache\" />
+    <Folder Include="Media\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gemini.Cgi\Gemini.Cgi.csproj" />
