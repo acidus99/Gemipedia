@@ -7,7 +7,7 @@ namespace Gemipedia.Converter.Models
     public class Section : IArticleLinks
     {
 
-        public ArticleLinkCollection ArticleLinks { get; private set; } = new ArticleLinkCollection();
+        public ArticleLinkCollection Links { get; private set; } = new ArticleLinkCollection();
 
         public bool HasSubSections => (SubSections.Count > 0);
 
@@ -32,7 +32,7 @@ namespace Gemipedia.Converter.Models
         {
             if (item is IArticleLinks && !(item is NavSuggestionsItem))
             {
-                ArticleLinks.MergeCollection(((IArticleLinks)item).ArticleLinks);
+                Links.Add(((IArticleLinks)item).Links);
             }
 
             if(item is InfoboxItem)

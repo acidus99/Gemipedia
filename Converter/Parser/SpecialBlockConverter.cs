@@ -53,12 +53,8 @@ namespace Gemipedia.Converter.Parser
             {
                 ShouldCollapseNewlines = true
             };
-            var text = textExtractor.GetText(element);
-            return new NavSuggestionsItem
-            {
-                ArticleLinks = textExtractor.ArticleLinks,
-                Content = text
-            };
+            textExtractor.Extract(element);
+            return new NavSuggestionsItem(textExtractor);
         }
 
         /// <summary>
@@ -83,7 +79,7 @@ namespace Gemipedia.Converter.Parser
             return new ContentItem
             {
                 Content = contents,
-                ArticleLinks = tableParser.ArticleLinks
+                Links = tableParser.Links
             };
         }
         
@@ -99,34 +95,33 @@ namespace Gemipedia.Converter.Parser
 
                 //attempt to get a meaningful title for the timeline form the first
                 //cell
-                var content = textExtractor.GetText(element.QuerySelector("th"), element.QuerySelector("td"));
+                textExtractor.Extract(element.QuerySelector("th"), element.QuerySelector("td"));
 
-                var media = ConvertTimeline(timeline, content);
-                if(media != null)
-                {
-                    media.ArticleLinks.MergeCollection(textExtractor.ArticleLinks);
-                    return media;
-                }
+                return ConvertTimeline(timeline, textExtractor);
             }
             return null;
         }
 
-        public static MediaItem ConvertTimeline(IElement timelineWrapper, string title = "")
+        public static MediaItem ConvertTimeline(IElement timelineWrapper, ITextContent textContent = null)
         {
             var img = timelineWrapper.QuerySelector("img[usemap]");
+            var title = (textContent != null) ? $"Timeline Image: {textContent.Content}" : "Timeline Image";
 
-            title = string.IsNullOrEmpty(title) ? "Timeline Image" : $"Timeline Image: {title}";
-
-            if(img != null)
+            if (img != null)
             {
                 var media = new MediaItem
                 {
                     Url = CommonUtils.MediaProxyUrl(CommonUtils.GetImageUrl(img)),
                     Caption = title
                 };
+                //add anything from
+                if(textContent != null)
+                {
+                    media.Links.Add(textContent.Links);
+                }
                 //try and add links from any areas to it
                 timelineWrapper.QuerySelectorAll("map area")
-                    .ToList().ForEach(x => media.ArticleLinks.Add(x));
+                    .ToList().ForEach(x => media.Links.Add(x));
 
                 return media;
 

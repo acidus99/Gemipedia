@@ -45,7 +45,7 @@ namespace Gemipedia.Converter.Models
             {
                 subSectionCount += GetSectionCount(sub);
             }
-            return subSectionCount + section.ArticleLinks.Count;
+            return subSectionCount + section.Links.Count;
         }
 
         public Section GetSection(int sectionNum)

@@ -16,11 +16,32 @@ namespace Gemipedia.Converter.Models
             articles = new Dictionary<string, ArticleLink>();
         }
 
+        public void Clear()
+            => articles.Clear();
+
         public bool HasLinks
             => (Count > 0);
 
         public int Count
             => articles.Count;
+
+        public void Add(ArticleLinkCollection collection)
+        {
+            foreach (string key in collection.articles.Keys)
+            {
+                if (!articles.ContainsKey(key))
+                {
+                    articles[key] = collection.articles[key];
+                }
+                else
+                {
+                    articles[key].Occurences++;
+                }
+            }
+        }
+
+        public void Add(IArticleLinks itemWithLinks)
+            => Add(itemWithLinks.Links);
 
         public void Add(string title)
         {
@@ -54,20 +75,7 @@ namespace Gemipedia.Converter.Models
             return index > 0 ? title.Substring(0, index) : title;
         }
 
-        public void MergeCollection(ArticleLinkCollection collection)
-        {
-            foreach(string key in collection.articles.Keys)
-            {
-                if (!articles.ContainsKey(key))
-                {
-                    articles[key] = collection.articles[key];
-                }
-                else
-                {
-                    articles[key].Occurences++;
-                }
-            }
-        }
+
 
         public List<string> GetLinks()
             => articles.Keys.OrderBy(x => x).Select(x => articles[x].Title).ToList();

@@ -42,7 +42,7 @@ namespace Gemipedia.Converter.Parser
             return new InfoboxItem
                 {
                     CustomTitle = title,
-                    ArticleLinks = ArticleLinks,
+                    Links = ArticleLinks,
                     Content = buffer.ToString(),
                     MediaItems = mediaItems
                 };
@@ -144,9 +144,9 @@ namespace Gemipedia.Converter.Parser
             {
                 ShouldCollapseNewlines = true
             };
-            var text = textExtractor.GetText(row);
-            buffer.AppendLine($"### {text}");
-            ArticleLinks.MergeCollection(textExtractor.ArticleLinks);
+            textExtractor.Extract(row);
+            buffer.AppendLine($"### {textExtractor.Content}");
+            ArticleLinks.Add(textExtractor);
         }
 
         private void AddNameValue(IElement nameCell, IElement valueCell)
@@ -155,12 +155,13 @@ namespace Gemipedia.Converter.Parser
             {
                 ShouldCollapseNewlines = true
             };
-            var label = CleanLabel(textExtractor.GetText(nameCell));
+            textExtractor.Extract(nameCell);
+            var label = CleanLabel(textExtractor.Content);
+            ArticleLinks.Add(textExtractor);
 
-            ArticleLinks.MergeCollection(textExtractor.ArticleLinks);
             HtmlTranslater htmlTranslater = new HtmlTranslater();
             var gemText = htmlTranslater.RenderGemtext(valueCell).Trim();
-            ArticleLinks.MergeCollection(htmlTranslater.ArticleLinks);
+            ArticleLinks.Add(htmlTranslater.Links);
 
             if (!gemText.Contains('\n'))
             {

@@ -18,7 +18,7 @@ namespace Gemipedia.Converter.Parser
     {
         int ListDepth = 0;
 
-        public ArticleLinkCollection ArticleLinks { get; set; } = new ArticleLinkCollection();
+        public ArticleLinkCollection Links { get; set; } = new ArticleLinkCollection();
 
         public string RenderGemtext(IElement element)
             => RenderContentNode(element, false);
@@ -89,7 +89,7 @@ namespace Gemipedia.Converter.Parser
                         {
 
                             case "a":
-                                ArticleLinks.Add(element);
+                                Links.Add(element);
                                 sb.Write(RenderChildren(current, preserveWhitespaceText));
                                 break;
 

@@ -119,7 +119,7 @@ namespace Gemipedia.Converter.Parser
                 AddItem(new ContentItem
                 {
                     Content = contents,
-                    ArticleLinks = translater.ArticleLinks
+                    Links = translater.Links
                 });
             }
         }

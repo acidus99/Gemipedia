@@ -88,9 +88,9 @@ namespace Gemipedia.Converter.Renderer
                 sb.Append(infoBox.Render());
             }
 
-            if(section.ArticleLinks.HasLinks && !ShouldExcludeSectionIndex(section))
+            if(section.Links.HasLinks && !ShouldExcludeSectionIndex(section))
             {
-                sb.AppendLine($"=> {CommonUtils.ReferencesUrl(Page.Title, sectionNum)} Section links: ({section.ArticleLinks.Count} Articles)");
+                sb.AppendLine($"=> {CommonUtils.ReferencesUrl(Page.Title, sectionNum)} Section links: ({section.Links.Count} Articles)");
             }
 
             foreach (var subSection in section.SubSections)

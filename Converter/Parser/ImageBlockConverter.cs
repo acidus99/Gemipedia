@@ -16,7 +16,10 @@ namespace Gemipedia.Converter.Parser
     /// </summary>
     public class ImageBlockParser
     {
-        TextExtractor textExtractor = new TextExtractor();
+        TextExtractor textExtractor = new TextExtractor
+        {
+            ShouldCollapseNewlines = true
+        };
 
         public MediaItem Convert(IElement imageContainer, IElement captionContainer)
             => IsVideo(imageContainer) ?
@@ -31,11 +34,10 @@ namespace Gemipedia.Converter.Parser
                 return null;
             }
 
-            textExtractor = new TextExtractor();
             var description = GetDescription(imageContainer, captionContainer);
             return new MediaItem
             {
-                ArticleLinks = textExtractor.ArticleLinks,
+                Links = GetLinks(),
                 Caption = description,
                 Url = CommonUtils.MediaProxyUrl(url),
             };
@@ -52,12 +54,11 @@ namespace Gemipedia.Converter.Parser
                 return null;
             }
 
-            textExtractor = new TextExtractor();
             var description = GetDescription(imageContainer, captionContainer);
 
             return new VideoItem
             {
-                ArticleLinks = textExtractor.ArticleLinks,
+                Links = GetLinks(),
                 Caption = description,
                 Url = CommonUtils.MediaProxyUrl(imageUrl),
                 VideoUrl = videoUrl,
@@ -82,12 +83,11 @@ namespace Gemipedia.Converter.Parser
         private string GetVideoDescription(IElement videoElement)
             => "🎦 " + (videoElement?.QuerySelector("source").GetAttribute("data-title") ?? "Video File");
 
-       
-
         private string GetDescription(IElement imageContainer, IElement captionContainer)
         {
+            textExtractor.Extract(captionContainer);
             //first see if there is a caption
-            var text = textExtractor.GetText(captionContainer);
+            var text = textExtractor.Content;
             if (!string.IsNullOrEmpty(text))
             {
                 return text;
@@ -96,6 +96,9 @@ namespace Gemipedia.Converter.Parser
             text = GetImageAlt(imageContainer);
             return (text.Length > 0) ? text : "Article Image";
         }
+
+        private ArticleLinkCollection GetLinks()
+            => textExtractor.Links;
 
         private string GetImageAlt(IElement element)
             => StripImageExtensions(element.QuerySelector("img")?.GetAttribute("alt") ?? "");
@@ -114,7 +117,5 @@ namespace Gemipedia.Converter.Parser
         private string StripExtension(string alt, string ext)
             => (alt.Length > (ext.Length) + 1 &&
                 alt.EndsWith($".{ext}")) ? alt.Substring(0, alt.Length - (ext.Length) - 1) : alt;
-
-
     }
 }

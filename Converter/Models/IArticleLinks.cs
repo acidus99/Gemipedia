@@ -4,6 +4,6 @@ namespace Gemipedia.Converter.Models
 {
     public interface IArticleLinks
     {
-        ArticleLinkCollection ArticleLinks { get; }
+        ArticleLinkCollection Links { get; }
     }
 }

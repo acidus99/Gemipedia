@@ -15,39 +15,41 @@ namespace Gemipedia.Converter.Parser
     /// <summary>
     /// Extracts text
     /// </summary>
-    public class TextExtractor
+    public class TextExtractor : ITextContent
     {
-        private static readonly Regex whitespace = new Regex(@"\s+", RegexOptions.Compiled);
+        public string Content
+            => ShouldCollapseNewlines ?
+                        CollapseNewlines(buffer.ToString()) :
+                        buffer.ToString();
 
-        public ArticleLinkCollection ArticleLinks = new ArticleLinkCollection();
-        public StringBuilder buffer = new StringBuilder();
+        public ArticleLinkCollection Links { get; private set; } = new ArticleLinkCollection();
+
         public bool ShouldCollapseNewlines { get; set; } = false;
         public bool ShouldConvertImages { get; set; } = false;
 
-        /// <summary>
-        /// gets text from the first node that is not null
-        /// </summary>
-        /// <param name="nodes"></param>
-        /// <returns></returns>
-        public string GetText(params INode [] nodes)
-            => GetText(nodes.Where(x => x != null).FirstOrDefault());
+        private static readonly Regex whitespace = new Regex(@"\s+", RegexOptions.Compiled);
 
-        public string GetText(INode current)
+        private StringBuilder buffer = new StringBuilder();
+
+
+        public void Extract(params INode[] nodes)
+            => Extract(nodes.Where(x => x != null).FirstOrDefault());
+
+        public void Extract(INode current)
         {
-            if(current == null)
+            Clear();
+            if (current == null)
             {
-                return "";
+                //nothing to do
+                return;
             }
-
-            buffer.Clear();
-            ArticleLinks = new ArticleLinkCollection();
             ExtractInnerTextHelper(current);
+        }
 
-            //converting new lines to space can lead to double spaces, so collapse those
-
-            return ShouldCollapseNewlines ?
-                CollapseNewlines(buffer.ToString()) :
-                buffer.ToString();
+        private void Clear()
+        {
+            Links.Clear();
+            buffer.Clear();
         }
 
         private void ExtractInnerTextHelper(INode current)
@@ -75,7 +77,7 @@ namespace Gemipedia.Converter.Parser
                         {
 
                             case "a":
-                                ArticleLinks.Add(element);
+                                Links.Add(element);
                                 ExtractChildrenText(current);
                                 break;
 

@@ -23,7 +23,7 @@ namespace Gemipedia.Converter.Parser.Tables
         //used when adding row/colspans to fix mismatched tables
         int currRowWidth;
 
-        public ArticleLinkCollection ArticleLinks { get; private set; }
+        public ArticleLinkCollection Links { get; private set; }
 
         public TableParser()
         {
@@ -33,7 +33,7 @@ namespace Gemipedia.Converter.Parser.Tables
                 ShouldConvertImages = true,
                 ShouldCollapseNewlines = true
             };
-            ArticleLinks = new ArticleLinkCollection();
+            Links = new ArticleLinkCollection();
         }
 
         public Table ParseTable(HtmlElement element)
@@ -54,8 +54,9 @@ namespace Gemipedia.Converter.Parser.Tables
             switch(current.NodeName.ToLower())
             {
                 case "caption":
-                    table.Caption = textExtractor.GetText(current);
-                    ArticleLinks.MergeCollection(textExtractor.ArticleLinks);
+                    textExtractor.Extract(current);
+                    table.Caption = textExtractor.Content;
+                    Links.Add(textExtractor);
                     break;
 
                 case "tr":
@@ -92,13 +93,13 @@ namespace Gemipedia.Converter.Parser.Tables
         {
             if (currRow != null)
             {
-                string contents = textExtractor.GetText(cell);
-                ArticleLinks.MergeCollection(textExtractor.ArticleLinks);
+                textExtractor.Extract(cell);
+                Links.Add(textExtractor);
 
                 currRow.Cells.Add(new Cell
                 {
                     IsHeader = (cell.NodeName == "TH"),
-                    Contents = contents,
+                    Contents = textExtractor.Content,
                     ColSpan = ParseSpan(cell.GetAttribute("colspan")),
                     RowSpan = ParseSpan(cell.GetAttribute("rowspan")),
                     IsRowSpanHolder = false
