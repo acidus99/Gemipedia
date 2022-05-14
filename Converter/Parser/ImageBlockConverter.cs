@@ -28,19 +28,29 @@ namespace Gemipedia.Converter.Parser
         
         private MediaItem ConvertImage(IElement imageContainer, IElement captionContainer)
         {
-            var url = CommonUtils.GetImageUrl(imageContainer.QuerySelector("img"));
+            var imgTag = imageContainer.QuerySelector("img");
+            var url = CommonUtils.GetImageUrl(imgTag);
             if (url == null)
             {
                 return null;
             }
 
             var description = GetDescription(imageContainer, captionContainer);
-            return new MediaItem
+            var media = new MediaItem
             {
                 Links = GetLinks(),
                 Caption = description,
                 Url = CommonUtils.MediaProxyUrl(url),
             };
+            //if this is an image map, extract those links too
+            if (imgTag.HasAttribute("usemap"))
+            {
+                //look for any maps
+                //try and add links from any areas to it
+                imageContainer.QuerySelectorAll("map area")
+                    .ToList().ForEach(x => media.Links.Add(x));
+            }
+            return media;
         }
 
         private MediaItem ConvertVideo(IElement imageContainer, IElement captionContainer)
