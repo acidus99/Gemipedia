@@ -69,12 +69,12 @@ namespace Gemipedia.Converter
         public static string GetImageUrl(IElement img)
         {
             //try the srcset
-            var url = GetImageFromSrcset(img.GetAttribute("srcset") ?? "", "2x");
+            var url = GetImageFromSrcset(img?.GetAttribute("srcset") ?? "", "2x");
             if (url != null)
             {
                 return EnsureHttps(url);
             }
-            return EnsureHttps(img.GetAttribute("src") ?? null);
+            return EnsureHttps(img?.GetAttribute("src") ?? null);
         }
 
         public static string EnsureHttps(string url)

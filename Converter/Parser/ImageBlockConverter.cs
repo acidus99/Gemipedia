@@ -28,7 +28,12 @@ namespace Gemipedia.Converter.Parser
         
         private MediaItem ConvertImage(IElement imageContainer, IElement captionContainer)
         {
+            //some image holders can contain <canvas> graphs, charts, etc. So escape if you don't find an img
             var imgTag = imageContainer.QuerySelector("img");
+            if(imgTag == null)
+            {
+                return null;
+            }
             var url = CommonUtils.GetImageUrl(imgTag);
             if (url == null)
             {
