@@ -130,18 +130,21 @@ namespace Gemipedia.Converter.Parser
             if (table.ClassList.Contains("wikitable"))
             {
                 AddItem(SpecialBlockConverter.ConvertWikiTable(table));
+                return;
             }
 
             //is it a table just used to create a multicolumn view?
             if (IsMulticolumnLayoutTable(table))
             {
                 ParseMulticolmnTable(table);
+                return;
             }
 
             if(table.ClassList.Contains("infobox"))
             {
                 InfoboxParser parser = new InfoboxParser();
                 AddItem(parser.Parse(table));
+                return;
             }
         }
 
