@@ -9,7 +9,6 @@ namespace Gemipedia.Cache
 	{
 		static readonly TimeSpan DefaultLifetime = TimeSpan.FromDays(2);
 
-
 		private TimeSpan Lifespan;
 
 		public DiskCache()
@@ -33,7 +32,6 @@ namespace Gemipedia.Cache
 			{
 				if (CacheEntryValid(filepath))
 				{
-					RecordHit(identifier);
 					return File.ReadAllText(filepath);
 				}
 			}
@@ -54,7 +52,6 @@ namespace Gemipedia.Cache
 			{
 				if (CacheEntryValid(filepath))
 				{
-					RecordHit(identifier);
 					return File.ReadAllBytes(filepath);
 				}
 			}
@@ -64,9 +61,6 @@ namespace Gemipedia.Cache
 			}
 			return null;
 		}
-
-		private void RecordHit(string identifier)
-			=> Console.Error.WriteLine("HIT! " + identifier);
 
 		public bool Set(string identifier, string contents)
         {
@@ -116,7 +110,6 @@ namespace Gemipedia.Cache
 
 		private string GetCacheKey(string identifier)
 			=> Convert.ToHexString(MD5.HashData(Encoding.UTF8.GetBytes(identifier)));
-
 	}
 }
 
