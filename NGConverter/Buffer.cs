@@ -14,9 +14,10 @@ namespace Gemipedia.NGConverter
 
         public bool HasContent => (sb.Length > 0);
 
-        public bool HasNewline { get; private set; }
+        public bool AtLineStart
+            => !HasContent || Content.EndsWith('\n');
 
-        public bool AllowNewlines { get; set; }
+        public bool InBlockquote { get; set; } = false;
 
         private StringBuilder sb;
 
@@ -24,41 +25,40 @@ namespace Gemipedia.NGConverter
         {
             sb = new StringBuilder();
             Links = new ArticleLinkCollection();
-            HasNewline = false;
         }
 
         public void Reset()
         {
             sb.Clear();
             Links = new ArticleLinkCollection();
-            HasNewline = false;
         }
 
         public void Append(string s)
         {
-            HasNewline = s.Contains("\n");
-            if(!AllowNewlines)
-            {
-                s = s.Replace('\n',' ');
-            }
+            HandleBlockQuote(s);
             sb.Append(s);
         }
 
+
         public void AppendLine(string s = "")
         {
-            HasNewline = true;
-            if (!AllowNewlines)
-            {
-                s = s.Replace('\n', ' ');
-            }
+            HandleBlockQuote(s);
             sb.AppendLine(s);
         }
 
-        public void EnsureEndsWithNewline()
+        public void EnsureAtLineStart()
         {
-            if(!Content.EndsWith("\n"))
+            if(!AtLineStart)
             {
                 sb.AppendLine();
+            }
+        }
+
+        public void HandleBlockQuote(string s)
+        {
+            if(InBlockquote && AtLineStart && s.Trim().Length > 0)
+            {
+                sb.Append(">");
             }
         }
 

@@ -22,28 +22,36 @@ namespace Gemipedia.NGConverter
 
         string[] blockElements = new string[] { "address", "article", "aside", "blockquote", "canvas", "dd", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hr", "li", "main", "nav", "noscript", "ol", "p", "pre", "section", "table", "tfoot", "ul", "video" };
 
-        public List<SectionItem> ConvertedItems = new List<SectionItem>();
+        private List<SectionItem> items = new List<SectionItem>();
 
         Buffer buffer = new Buffer();
-
-        bool InBlockquote = false;
-
-        public HtmlParser()
-        {
-        }
 
         public void Parse(INode current)
         {
             ParseHelper(current);
-            //flush any remaining content
-            FlushContentBlock();
+        }
+
+        public List<SectionItem> GetItems()
+        {
+            //still have anything in the buffer?
+            //if so flush it
+            if(buffer.HasContent)
+            {
+                AddItem(new ContentItem
+                {
+                    ArticleLinks = buffer.Links,
+                    Content = buffer.Content
+                });
+                buffer.Reset();
+            }
+            return items;
         }
 
         private void AddItem(SectionItem item)
         {
             if(item != null)
             {
-                ConvertedItems.Add(item);
+                items.Add(item);
             }
         }
 
@@ -61,7 +69,6 @@ namespace Gemipedia.NGConverter
             }
         }
 
-
         private void ParseChildern(INode node)
         {
             foreach (var child in node.ChildNodes)
@@ -75,7 +82,13 @@ namespace Gemipedia.NGConverter
             //if its not only whitespace add it.
             if (textNode.TextContent.Trim().Length > 0)
             {
-                buffer.Append(textNode.TextContent);
+                if(buffer.AtLineStart)
+                {
+                    buffer.Append(textNode.TextContent.TrimStart());
+                } else
+                {
+                    buffer.Append(textNode.TextContent);
+                }
             }
             //if its whitepsace, but doesn't have a newline
             else if (!textNode.TextContent.Contains('\n'))
@@ -101,22 +114,27 @@ namespace Gemipedia.NGConverter
                     break;
 
                 case "blockquote":
-                    ProcessBlockquote(element);
+                    buffer.EnsureAtLineStart();
+                    buffer.InBlockquote = true;
+                    ParseChildern(element);
+                    buffer.InBlockquote = false;
+                    break;
+
+                case "br":
+                    buffer.AppendLine();
                     break;
 
                 case "div":
                     ProcessDiv(element);
                     break;
 
-                case "li":
-                    ProcessLi(element);
-                    break;
-
-
                 case "p":
-                    FlushContentBlock(false);
+                    buffer.EnsureAtLineStart();
                     ParseChildern(element);
-                    FlushContentBlock();
+                    //make sure the paragraph ends with a new line
+                    buffer.EnsureAtLineStart();
+                    //add another blank line
+                    buffer.AppendLine();
                     break;
 
                 case "table":
@@ -126,9 +144,9 @@ namespace Gemipedia.NGConverter
                 default:
                     if (IsBlockElement(nodeName))
                     {
-                        FlushContentBlock(false);
+                        buffer.EnsureAtLineStart();
                         ParseChildern(element);
-                        FlushContentBlock(false);
+                        buffer.EnsureAtLineStart();
                     }
                     else
                     {
@@ -163,14 +181,6 @@ namespace Gemipedia.NGConverter
         private bool IsBlockElement(string tagName)
             => blockElements.Contains(tagName);
 
-        private void ProcessBlockquote(HtmlElement blockquote)
-        {
-            InBlockquote = true;
-            ParseChildern(blockquote);
-            FlushContentBlock();
-            InBlockquote = false;
-        }
-
         private void ProcessDiv(HtmlElement div)
         {
             //is it a media div?
@@ -184,54 +194,6 @@ namespace Gemipedia.NGConverter
             
         }
 
-        private void ProcessLi(HtmlElement li)
-        {
-            buffer.AllowNewlines = false;
-            ParseChildern(li);
-            if (buffer.HasContent)
-            {
-                AddItem(new ContentItem
-                {
-                    ArticleLinks = buffer.Links,
-                    Content = $"* {buffer.Content.Trim()}\n"
-                });
-                buffer.Reset();
-            }
-            buffer.AllowNewlines = true;
-        }
-
-        private void FlushContentBlock(bool addTrailingNewline = true)
-        {
-            if (buffer.HasContent)
-            {
-                var content = buffer.Content.Trim();
-                content += "\n";
-                content = ApplyState(content);
-                if (addTrailingNewline)
-                {
-                    //its a block so add an empty line to the end
-                    content += "\n";
-                }
-                AddItem(new ContentItem
-                {
-                    ArticleLinks = buffer.Links,
-                    Content = content
-                });
-                buffer.Reset();
-            }
-        }
-
-        private string ApplyState(string content)
-        {
-            if(InBlockquote)
-            {
-                var sb = new StringBuilder(content.Length + 10);
-                var lines = content.Trim().Split("\n").ToList();
-                lines.ForEach(x => sb.AppendLine($">{x}"));
-                return sb.ToString();
-            }
-            //otherwise return original content
-            return content;
-        }
+      
     }
 }

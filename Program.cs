@@ -16,7 +16,7 @@ namespace Gemipedia
         static void LocalTesting()
         {
 
-            var title = "McDonnell F-101 Voodoo";
+            var title = "pet door";
             Console.WriteLine(title);
             var client = new WikipediaApiClient();
             var resp = client.GetArticle(title);

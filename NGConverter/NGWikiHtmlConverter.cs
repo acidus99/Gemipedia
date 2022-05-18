@@ -57,7 +57,7 @@ namespace Gemipedia.NGConverter
                 htmlParser.Parse(node);
             }
 
-            section.AddItems(htmlParser.ConvertedItems);
+            section.AddItems(htmlParser.GetItems());
             ConvertSections(section.SubSections);
         }
  
