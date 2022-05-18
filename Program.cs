@@ -5,7 +5,8 @@ using System.Web;
 using Gemipedia.API;
 
 using Gemini.Cgi;
-using Gemipedia.Converter;
+using Gemipedia.NGConverter;
+using Gemipedia.NGConverter.Special;
 using Gemipedia.Media;
 
 namespace Gemipedia
@@ -15,14 +16,14 @@ namespace Gemipedia
         static void LocalTesting()
         {
 
-            var title = "navy";
+            var title = "McDonnell F-101 Voodoo";
             Console.WriteLine(title);
             var client = new WikipediaApiClient();
             var resp = client.GetArticle(title);
             //test caching
             resp = client.GetArticle(title);
 
-            var newConverter = new WikiHtmlConverter(DefaultSettings);
+            var newConverter = new NGWikiHtmlConverter(DefaultSettings);
             newConverter.Convert(resp.Title, resp.HtmlText, Console.Out);
         }
 
@@ -37,9 +38,9 @@ namespace Gemipedia
             CgiRouter router = new CgiRouter();
             router.OnRequest("/search", Search);
             router.OnRequest("/view", ViewArticle);
-            router.OnRequest("/images", ViewImages);
+            //router.OnRequest("/images", ViewImages);
             router.OnRequest("/media", ProxyMedia);
-            router.OnRequest("/refs", ViewRefs);
+            //router.OnRequest("/refs", ViewRefs);
             router.OnRequest("", Welcome);
             router.ProcessRequest();
         }
@@ -115,7 +116,7 @@ namespace Gemipedia
                     }
 
                     cgi.Success();
-                    var converter = new WikiHtmlConverter(DefaultSettings);
+                    var converter = new NGWikiHtmlConverter(DefaultSettings);
                     converter.Convert(resp.Title, resp.HtmlText, cgi.Writer);
                 }
                 else
@@ -124,7 +125,8 @@ namespace Gemipedia
                     cgi.Redirect($"/cgi-bin/wp.cgi/search?{cgi.RawQuery}");
                     return;
                 }
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 cgi.Writer.WriteLine("Boom! Hit Exception!");
                 cgi.Writer.WriteLine("```");
@@ -136,56 +138,56 @@ namespace Gemipedia
             RenderFooter(cgi);
         }
 
-        static void ViewImages(CgiWrapper cgi)
-        {
-            var client = new WikipediaApiClient();
-            var resp = client.GetArticle(cgi.SantiziedQuery);
+        //static void ViewImages(CgiWrapper cgi)
+        //{
+        //    var client = new WikipediaApiClient();
+        //    var resp = client.GetArticle(cgi.SantiziedQuery);
 
-            if (resp != null)
-            {
-                if (RedirectParser.IsArticleRedirect(resp.HtmlText))
-                {
-                    cgi.Redirect($"/cgi-bin/wp.cgi/images?{WebUtility.UrlEncode(RedirectParser.GetRedirectTitle(resp.HtmlText))}");
-                    return;
-                }
+        //    if (resp != null)
+        //    {
+        //        if (RedirectParser.IsArticleRedirect(resp.HtmlText))
+        //        {
+        //            cgi.Redirect($"/cgi-bin/wp.cgi/images?{WebUtility.UrlEncode(RedirectParser.GetRedirectTitle(resp.HtmlText))}");
+        //            return;
+        //        }
 
-                cgi.Success();
-                //var converter = new WikiHtmlConverter(DefaultSettings);
-                var converter = new WikiHtmlConverter(DefaultSettings);
-                converter.ConvertImageGallery(resp.Title, resp.HtmlText, cgi.Writer);
-            }
-            else
-            {
-                cgi.Success();
-                cgi.Writer.WriteLine("We could not access that article");
-            }
-            RenderFooter(cgi);
-        }
+        //        cgi.Success();
+        //        //var converter = new WikiHtmlConverter(DefaultSettings);
+        //        var converter = new WikiHtmlConverter(DefaultSettings);
+        //        converter.ConvertImageGallery(resp.Title, resp.HtmlText, cgi.Writer);
+        //    }
+        //    else
+        //    {
+        //        cgi.Success();
+        //        cgi.Writer.WriteLine("We could not access that article");
+        //    }
+        //    RenderFooter(cgi);
+        //}
 
-        static void ViewRefs(CgiWrapper cgi)
-        {
-            var client = new WikipediaApiClient();
+        //static void ViewRefs(CgiWrapper cgi)
+        //{
+        //    var client = new WikipediaApiClient();
 
 
-            var query = HttpUtility.ParseQueryString(cgi.RawQuery);
-            var title = query["name"] ?? "";
-            var section = Convert.ToInt32(query["section"] ?? "-1");            
+        //    var query = HttpUtility.ParseQueryString(cgi.RawQuery);
+        //    var title = query["name"] ?? "";
+        //    var section = Convert.ToInt32(query["section"] ?? "-1");            
 
-            var resp = client.GetArticle(title);
+        //    var resp = client.GetArticle(title);
 
-            if (resp != null)
-            {
-                cgi.Success();
-                var converter = new WikiHtmlConverter(DefaultSettings);
-                converter.ConvertReferences(resp.Title, resp.HtmlText, cgi.Writer, section);
-            }
-            else
-            {
-                cgi.Success();
-                cgi.Writer.WriteLine("We could not access that article");
-            }
-            RenderFooter(cgi);
-        }
+        //    if (resp != null)
+        //    {
+        //        cgi.Success();
+        //        var converter = new WikiHtmlConverter(DefaultSettings);
+        //        converter.ConvertReferences(resp.Title, resp.HtmlText, cgi.Writer, section);
+        //    }
+        //    else
+        //    {
+        //        cgi.Success();
+        //        cgi.Writer.WriteLine("We could not access that article");
+        //    }
+        //    RenderFooter(cgi);
+        //}
 
         static void ProxyMedia(CgiWrapper cgi)
         {
@@ -214,7 +216,7 @@ namespace Gemipedia
             }
             catch (Exception)
             { }
-            
+
             return false;
         }
 
