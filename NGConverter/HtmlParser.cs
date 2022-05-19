@@ -124,8 +124,34 @@ namespace Gemipedia.NGConverter
                     buffer.AppendLine();
                     break;
 
+                case "dd":
+                    buffer.EnsureAtLineStart();
+                    buffer.Append("* ");
+                    ParseChildern(element);
+                    buffer.EnsureAtLineStart();
+                    break;
+
                 case "div":
                     ProcessDiv(element);
+                    break;
+
+                case "dt":
+                    buffer.EnsureAtLineStart();
+                    ParseChildern(element);
+                    buffer.AppendLine(":");
+                    break;
+
+                case "i":
+                    buffer.Append("\"");
+                    ParseChildern(element);
+                    buffer.Append("\"");
+                    break;
+
+                case "li":
+                    buffer.EnsureAtLineStart();
+                    buffer.Append("* ");
+                    ParseChildern(element);
+                    buffer.EnsureAtLineStart();
                     break;
 
                 case "p":
@@ -138,6 +164,12 @@ namespace Gemipedia.NGConverter
                     break;
 
                 case "table":
+                    break;
+
+                case "u":
+                    buffer.Append("_");
+                    ParseChildern(element);
+                    buffer.Append("_");
                     break;
 
                 //will do things here
