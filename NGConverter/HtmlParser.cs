@@ -27,11 +27,12 @@ namespace Gemipedia.NGConverter
 
         Buffer buffer = new Buffer();
 
+        private bool inPreformatted = false;
+
         /// <summary>
         /// should we try and convert list items to links?
         /// </summary>
         public bool ConvertListItems { get; set; } = true;
-
 
         public void Parse(INode current)
         {
@@ -86,21 +87,30 @@ namespace Gemipedia.NGConverter
 
         private void ProcessTextNode(INode textNode)
         {
-            //if its not only whitespace add it.
-            if (textNode.TextContent.Trim().Length > 0)
+            if (inPreformatted)
             {
-                if(buffer.AtLineStart)
+                buffer.Append(textNode.TextContent);
+            }
+            else
+            {
+
+                //if its not only whitespace add it.
+                if (textNode.TextContent.Trim().Length > 0)
                 {
-                    buffer.Append(textNode.TextContent.TrimStart());
-                } else
+                    if (buffer.AtLineStart)
+                    {
+                        buffer.Append(textNode.TextContent.TrimStart());
+                    }
+                    else
+                    {
+                        buffer.Append(textNode.TextContent);
+                    }
+                }
+                //if its whitepsace, but doesn't have a newline
+                else if (!textNode.TextContent.Contains('\n'))
                 {
                     buffer.Append(textNode.TextContent);
                 }
-            }
-            //if its whitepsace, but doesn't have a newline
-            else if (!textNode.TextContent.Contains('\n'))
-            {
-                buffer.Append(textNode.TextContent);
             }
         }
 
@@ -180,6 +190,15 @@ namespace Gemipedia.NGConverter
                     buffer.AppendLine();
                     break;
 
+                case "pre":
+                    buffer.EnsureAtLineStart();
+                    buffer.AppendLine("```");
+                    inPreformatted = true;
+                    ParseChildern(element);
+                    inPreformatted = false;
+                    buffer.AppendLine("```");
+                    break;
+
                 case "table":
                     break;
 
@@ -239,12 +258,19 @@ namespace Gemipedia.NGConverter
                 return;
             }
 
-            //for now, don't process DIV children
+            //A Div we can just pass through?
+            //e.g. highlighted pre-formatted text?
+            //or columnized unsorted list
+            if (div.ClassList.Contains("mw-highlight") ||
+                div.ClassList.Contains("div-col"))
+            {
+                ParseChildern(div);
+                return;
+            }
         }
 
         private void ProcessLi(HtmlElement li)
         {
-
             if (TryConvertingToLink(li))
             {
                 return;
@@ -256,7 +282,6 @@ namespace Gemipedia.NGConverter
                 buffer.SetLineStart("* ");
                 ParseChildern(li);
                 buffer.EnsureAtLineStart();
-
             }
             else
             {
