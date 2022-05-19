@@ -27,6 +27,12 @@ namespace Gemipedia.NGConverter
 
         Buffer buffer = new Buffer();
 
+        /// <summary>
+        /// should we try and convert list items to links?
+        /// </summary>
+        public bool ConvertListItems { get; set; } = true;
+
+
         public void Parse(INode current)
         {
             ParseHelper(current);
@@ -238,7 +244,13 @@ namespace Gemipedia.NGConverter
 
         private void ProcessLi(HtmlElement li)
         {
-            if(listDepth == 1)
+
+            if (TryConvertingToLink(li))
+            {
+                return;
+            }
+
+            if (listDepth == 1)
             {
                 buffer.EnsureAtLineStart();
                 buffer.SetLineStart("* ");
@@ -253,6 +265,30 @@ namespace Gemipedia.NGConverter
                 ParseChildern(li);
                 buffer.EnsureAtLineStart();
             }
+        }
+
+        /// <summary>
+        /// See if a list element can be converted to a link and output it to the buffer.
+        /// Returns if list items was converted to a link or not
+        /// </summary>
+        /// <param name="li"></param>
+        /// <returns></returns>
+        private bool TryConvertingToLink(HtmlElement li)
+        {
+            if (ConvertListItems)
+            {
+                //if an list item starts with a link, make it a link
+                var links = li.QuerySelectorAll("a").ToList();
+                if (links.Count > 0 && ArticleLinkCollection.ShouldUseLink(links[0]) && li.TextContent.StartsWith(links[0].TextContent))
+                {
+                    buffer.EnsureAtLineStart();
+                    buffer.SetLineStart($"=> {CommonUtils.ArticleUrl(links[0].GetAttribute("title"))} ");
+                    ParseChildern(li);
+                    buffer.EnsureAtLineStart();
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
