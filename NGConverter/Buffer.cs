@@ -21,6 +21,8 @@ namespace Gemipedia.NGConverter
 
         private StringBuilder sb;
 
+        private string lineStart = null;
+
         public Buffer()
         {
             sb = new StringBuilder();
@@ -31,36 +33,57 @@ namespace Gemipedia.NGConverter
         {
             sb.Clear();
             Links = new ArticleLinkCollection();
+            lineStart = null;
+        }
+
+        public void SetLineStart(string s)
+        {
+            lineStart = s;
         }
 
         public void Append(string s)
         {
+            HandleLineStart(s);
             HandleBlockQuote(s);
             sb.Append(s);
         }
 
-
         public void AppendLine(string s = "")
         {
+            HandleLineStart(s);
             HandleBlockQuote(s);
             sb.AppendLine(s);
         }
 
         public void EnsureAtLineStart()
         {
-            if(!AtLineStart)
+            if(AtLineStart && lineStart != null)
+            {
+                lineStart = null;
+            }
+
+            if (!AtLineStart)
             {
                 sb.AppendLine();
             }
         }
 
-        public void HandleBlockQuote(string s)
+        public void HandleLineStart(string s)
         {
-            if(InBlockquote && AtLineStart && s.Trim().Length > 0)
+            //if we are adding something that is not whitespace, and we have a prefix
+            if(s.Trim().Length > 0 && lineStart != null)
+            {
+                sb.Append(lineStart);
+                lineStart = null;
+            }
+        }
+
+        private void HandleBlockQuote(string s)
+        {
+            if (InBlockquote && AtLineStart && s.Trim().Length > 0)
             {
                 sb.Append(">");
             }
         }
-
     }
 }
