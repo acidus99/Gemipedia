@@ -102,6 +102,5 @@ namespace Gemipedia.NGConverter.Models
 
             return true;
         }
-
     }
 }
