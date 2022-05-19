@@ -19,10 +19,11 @@ namespace Gemipedia.NGConverter
     /// </summary>
     public class HtmlParser
     {
-
         string[] blockElements = new string[] { "address", "article", "aside", "blockquote", "canvas", "dd", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hr", "li", "main", "nav", "noscript", "ol", "p", "pre", "section", "table", "tfoot", "ul", "video" };
 
         private List<SectionItem> items = new List<SectionItem>();
+
+        private int listDepth = 0;
 
         Buffer buffer = new Buffer();
 
@@ -126,7 +127,7 @@ namespace Gemipedia.NGConverter
 
                 case "dd":
                     buffer.EnsureAtLineStart();
-                    buffer.Append("* ");
+                    buffer.SetLineStart("* ");
                     ParseChildern(element);
                     buffer.EnsureAtLineStart();
                     break;
@@ -138,7 +139,10 @@ namespace Gemipedia.NGConverter
                 case "dt":
                     buffer.EnsureAtLineStart();
                     ParseChildern(element);
-                    buffer.AppendLine(":");
+                    if (!buffer.AtLineStart)
+                    {
+                        buffer.AppendLine(":");
+                    }
                     break;
 
                 case "i":
@@ -148,9 +152,16 @@ namespace Gemipedia.NGConverter
                     break;
 
                 case "li":
+                    ProcessLi(element);
+                    break;
+
+                case "ol":
+                case "ul":
+                    //block element
                     buffer.EnsureAtLineStart();
-                    buffer.Append("* ");
+                    listDepth++;
                     ParseChildern(element);
+                    listDepth--;
                     buffer.EnsureAtLineStart();
                     break;
 
@@ -223,9 +234,25 @@ namespace Gemipedia.NGConverter
             }
 
             //for now, don't process DIV children
-            
         }
 
-      
+        private void ProcessLi(HtmlElement li)
+        {
+            if(listDepth == 1)
+            {
+                buffer.EnsureAtLineStart();
+                buffer.SetLineStart("* ");
+                ParseChildern(li);
+                buffer.EnsureAtLineStart();
+
+            }
+            else
+            {
+                buffer.EnsureAtLineStart();
+                buffer.SetLineStart("* * ");
+                ParseChildern(li);
+                buffer.EnsureAtLineStart();
+            }
+        }
     }
 }
