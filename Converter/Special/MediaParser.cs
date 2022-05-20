@@ -9,7 +9,10 @@ namespace Gemipedia.Converter.Special
     /// </summary>
     public static class MediaParser
     {
-        static TextExtractor textExtractor;
+        static TextExtractor textExtractor = new TextExtractor
+        {
+            ShouldCollapseNewlines = true
+        };
 
         public static MediaItem Convert(IElement imageContainer, IElement captionContainer)
             => IsVideo(imageContainer) ?
@@ -21,13 +24,7 @@ namespace Gemipedia.Converter.Special
             var timeline = element.QuerySelector("div.timeline-wrapper");
             if (timeline != null)
             {
-                TextExtractor textExtractor = new TextExtractor
-                {
-                    ShouldCollapseNewlines = true
-                };
-
-                //attempt to get a meaningful title for the timeline form the first
-                //cell
+                //attempt to get a meaningful title for the timeline from the first cell
                 textExtractor.Extract(element.QuerySelector("th"), element.QuerySelector("td"));
 
                 return ConvertTimeline(timeline, textExtractor);
@@ -105,7 +102,6 @@ namespace Gemipedia.Converter.Special
                 return null;
             }
 
-            textExtractor = new TextExtractor();
             var description = GetDescription(imageContainer, captionContainer);
 
             return new VideoItem
