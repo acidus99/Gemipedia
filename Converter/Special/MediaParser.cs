@@ -71,15 +71,27 @@ namespace Gemipedia.Converter.Special
                 return null;
             }
             var url = CommonUtils.GetImageUrl(imgTag);
+            if (url == null)
+            {
+                return null;
+            }
 
-            textExtractor = new TextExtractor();
             var description = GetDescription(imageContainer, captionContainer);
-            return new MediaItem
+            var media = new MediaItem
             {
                 Links = textExtractor.Links,
                 Caption = description,
                 Url = CommonUtils.MediaProxyUrl(url),
             };
+            //if this is an image map, extract those links too
+            if (imgTag.HasAttribute("usemap"))
+            {
+                //look for any maps
+                //try and add links from any areas to it
+                imageContainer.QuerySelectorAll("map area")
+                    .ToList().ForEach(x => media.Links.Add(x));
+            }
+            return media;
         }
 
         private static MediaItem ConvertVideo(IElement imageContainer, IElement captionContainer)
