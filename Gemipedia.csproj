@@ -20,9 +20,9 @@
     <None Remove="Converter\Parser\Tables\" />
     <None Remove="Cache\" />
     <None Remove="Media\" />
-    <None Remove="NGConverter\" />
-    <None Remove="NGConverter\Models\" />
-    <None Remove="NGConverter\Special\" />
+    <None Remove="NGConverter\DomFilter\" />
+    <None Remove="Renderer\" />
+    <None Remove="Models\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -32,16 +32,10 @@
   <ItemGroup>
     <Folder Include="API\" />
     <Folder Include="API\Models\" />
-    <Folder Include="Legacy\" />
-    <Folder Include="Legacy\Parser\" />
-    <Folder Include="Legacy\Renderer\" />
-    <Folder Include="Legacy\Models\" />
-    <Folder Include="Legacy\Parser\Tables\" />
     <Folder Include="Cache\" />
     <Folder Include="Media\" />
-    <Folder Include="NGConverter\" />
-    <Folder Include="NGConverter\Models\" />
-    <Folder Include="NGConverter\Special\" />
+    <Folder Include="Renderer\" />
+    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gemini.Cgi\Gemini.Cgi.csproj" />
