@@ -31,7 +31,7 @@ namespace Gemipedia.Converter
         private void LoadDomFilters()
         {
             DomFilter.Global = new DomFilter();
-            //DomFilter.Global.AddRule("")
+            DomFilter.Global.AddRule("div.locmap");
         }
 
 
