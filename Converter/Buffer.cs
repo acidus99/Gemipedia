@@ -40,6 +40,13 @@ namespace Gemipedia.Converter
             lineStart = s;
         }
 
+        public void Append(ITextContent textContent)
+        {
+            //start consume the data
+            sb.Append(textContent.Content);
+            Links.Add(textContent.Links);
+        }
+
         public void Append(string s)
         {
             HandleLineStart(s);

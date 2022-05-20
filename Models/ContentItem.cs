@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Gemipedia.Models
 {
-    public class ContentItem : SectionItem, IArticleLinks
+    public class ContentItem : SectionItem, ITextContent
     {
         public ArticleLinkCollection Links { get; set; }
 

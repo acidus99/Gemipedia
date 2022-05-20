@@ -274,9 +274,15 @@ namespace Gemipedia.Converter
             }
 
             //div is a block element
-            buffer.EnsureAtLineStart();
-            ParseChildern(div);
-            buffer.EnsureAtLineStart();
+            if (IsInline(div))
+            {
+                ParseChildern(div);
+            } else
+            {
+                buffer.EnsureAtLineStart();
+                ParseChildern(div);
+                buffer.EnsureAtLineStart();
+            }
         }
 
         private void ProcessLi(HtmlElement li)
@@ -311,6 +317,13 @@ namespace Gemipedia.Converter
                 return;
             }
 
+            if (table.ClassList.Contains("infobox"))
+            {
+                InfoboxParser parser = new InfoboxParser();
+                AddItem(parser.Parse(table));
+                return;
+            }
+
             //is it a table just used to create a multicolumn view?
             if (IsMulticolumnLayoutTable(table))
             {
@@ -318,6 +331,9 @@ namespace Gemipedia.Converter
                 return;
             }
         }
+
+        private bool IsInline(HtmlElement element)
+            => element.GetAttribute("style")?.Contains("display:inline") ?? false;
 
         private bool IsMulticolumnLayoutTable(HtmlElement element)
             => element.GetAttribute("role") == "presentation" &&

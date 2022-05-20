@@ -10,9 +10,11 @@ namespace Gemipedia.Models
 
         public List<MediaItem> MediaItems = new List<MediaItem>();
 
+        public InfoboxItem(ITextContent textContent)
+            :base(textContent) { }
+
         public override string Render()
         {
-
             bool renderText = !string.IsNullOrEmpty(Content.Trim());
 
             var title = string.IsNullOrEmpty(CustomTitle)
