@@ -1,4 +1,5 @@
-﻿using AngleSharp.Dom;
+﻿using System.Linq;
+using AngleSharp.Dom;
 using Gemipedia.Models;
 
 namespace Gemipedia.Converter.Special
@@ -14,7 +15,53 @@ namespace Gemipedia.Converter.Special
             => IsVideo(imageContainer) ?
                 ConvertVideo(imageContainer, captionContainer) :
                 ConvertImage(imageContainer, captionContainer);
-        
+
+        public static MediaItem ConvertTimelineInTable(IElement element)
+        {
+            var timeline = element.QuerySelector("div.timeline-wrapper");
+            if (timeline != null)
+            {
+                TextExtractor textExtractor = new TextExtractor
+                {
+                    ShouldCollapseNewlines = true
+                };
+
+                //attempt to get a meaningful title for the timeline form the first
+                //cell
+                textExtractor.Extract(element.QuerySelector("th"), element.QuerySelector("td"));
+
+                return ConvertTimeline(timeline, textExtractor);
+            }
+            return null;
+        }
+
+        public static MediaItem ConvertTimeline(IElement timelineWrapper, ITextContent textContent = null)
+        {
+            var img = timelineWrapper.QuerySelector("img[usemap]");
+            var title = (textContent != null) ? $"Timeline Image: {textContent.Content}" : "Timeline Image";
+
+            if (img != null)
+            {
+                var media = new MediaItem
+                {
+                    Url = CommonUtils.MediaProxyUrl(CommonUtils.GetImageUrl(img)),
+                    Caption = title
+                };
+                //add anything from
+                if (textContent != null)
+                {
+                    media.Links.Add(textContent.Links);
+                }
+                //try and add links from any areas to it
+                timelineWrapper.QuerySelectorAll("map area")
+                    .ToList().ForEach(x => media.Links.Add(x));
+
+                return media;
+
+            }
+            return null;
+        }
+
         private static MediaItem ConvertImage(IElement imageContainer, IElement captionContainer)
         {
             //some image holders can contain <canvas> graphs, charts, etc. So escape if you don't find an img
@@ -73,8 +120,6 @@ namespace Gemipedia.Converter.Special
 
         private static string GetVideoDescription(IElement videoElement)
             => "🎦 " + (videoElement?.QuerySelector("source").GetAttribute("data-title") ?? "Video File");
-
-       
 
         private static string GetDescription(IElement imageContainer, IElement captionContainer)
         {

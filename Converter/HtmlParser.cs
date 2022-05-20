@@ -263,6 +263,12 @@ namespace Gemipedia.Converter
                 return;
             }
 
+            if (div.ClassList.Contains("timeline-wrapper"))
+            {
+                AddItem(MediaParser.ConvertTimeline(div));
+                return;
+            }
+
             //div is a block element
             buffer.EnsureAtLineStart();
             ParseChildern(div);

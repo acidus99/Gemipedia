@@ -11,8 +11,16 @@ namespace Gemipedia.Converter.Special
         /// </summary>
         /// <param name="element"></param>
         /// <returns></returns>
-        public static ContentItem ConvertWikiTable(HtmlElement element)
+        public static SectionItem ConvertWikiTable(HtmlElement element)
         {
+
+            //do we have a timeline?
+            var media = MediaParser.ConvertTimelineInTable(element);
+            if (media != null)
+            {
+                return media;
+            }
+
             TableParser tableParser = new TableParser();
             var table = tableParser.ParseTable(element);
 
