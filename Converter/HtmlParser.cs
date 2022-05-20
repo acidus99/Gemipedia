@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using AngleSharp;
-using AngleSharp.Html.Parser;
 using AngleSharp.Html.Dom;
 using AngleSharp.Dom;
-using System.Text;
 
 using Gemipedia.Converter.Filter;
-using Gemipedia.Models;
 using Gemipedia.Converter.Special;
+using Gemipedia.Models;
 
 namespace Gemipedia.Converter
 {
@@ -197,6 +192,7 @@ namespace Gemipedia.Converter
                     break;
 
                 case "table":
+                    ProcessTable(element);
                     break;
 
                 case "u":
@@ -294,6 +290,38 @@ namespace Gemipedia.Converter
                 ParseChildern(li);
                 buffer.EnsureAtLineStart();
             }
+        }
+
+        private void ProcessTable(HtmlElement table)
+        {
+            //is it a data table?
+            if (table.ClassList.Contains("wikitable"))
+            {
+                AddItem(WikiTableConverter.ConvertWikiTable(table));
+                return;
+            }
+
+            //is it a table just used to create a multicolumn view?
+            if (IsMulticolumnLayoutTable(table))
+            {
+                ParseMulticolmnTable(table);
+                return;
+            }
+        }
+
+        private bool IsMulticolumnLayoutTable(HtmlElement element)
+            => element.GetAttribute("role") == "presentation" &&
+                element.ClassList.Contains("multicol") &&
+                element.HasChildNodes &&
+                element.Children[0].NodeName == "TBODY" &&
+                element.Children[0].HasChildNodes &&
+                element.Children[0].Children[0].NodeName == "TR";
+
+        private void ParseMulticolmnTable(HtmlElement table)
+        {
+            table.Children[0].Children[0].Children
+                .Where(x => x.NodeName == "TD").ToList()
+                .ForEach(x => ParseChildern(x));
         }
 
         /// <summary>

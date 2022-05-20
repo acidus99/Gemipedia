@@ -23,6 +23,7 @@
     <None Remove="NGConverter\DomFilter\" />
     <None Remove="Renderer\" />
     <None Remove="Models\" />
+    <None Remove="Converter\Special\Tables\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -36,6 +37,7 @@
     <Folder Include="Media\" />
     <Folder Include="Renderer\" />
     <Folder Include="Models\" />
+    <Folder Include="Converter\Special\Tables\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gemini.Cgi\Gemini.Cgi.csproj" />
