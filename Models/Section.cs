@@ -42,13 +42,15 @@ namespace Gemipedia.Models
                 Links.Add(((IArticleLinks)item).Links);
             }
 
-            if(item is InfoboxItem)
+            if (item is InfoboxItem)
             {
                 Infoboxes.Add((InfoboxItem)item);
-            } else if(item is NavSuggestionsItem)
+            }
+            else if (item is NavSuggestionsItem)
             {
                 NavSuggestions.Add((NavSuggestionsItem)item);
-            } else
+            }
+            else
             {
                 GeneralContent.Add(item);
             }
