@@ -179,11 +179,15 @@ namespace Gemipedia.Converter
 
                 case "p":
                     buffer.EnsureAtLineStart();
+                    int size = buffer.Content.Length;
                     ParseChildern(element);
                     //make sure the paragraph ends with a new line
                     buffer.EnsureAtLineStart();
-                    //add another blank line
-                    buffer.AppendLine();
+                    if (buffer.Content.Length > size)
+                    {
+                        //add another blank line if this paragraph had content
+                        buffer.AppendLine();
+                    }
                     break;
 
                 case "pre":
