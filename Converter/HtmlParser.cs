@@ -37,13 +37,7 @@ namespace Gemipedia.Converter
 
         public List<SectionItem> GetItems()
         {
-            //still have anything in the buffer?
-            //if so flush it
-            if(buffer.HasContent)
-            {
-                AddItem(new ContentItem(buffer));
-                buffer.Reset();
-            }
+            FlushBuffer();           
             return items;
         }
 
@@ -51,7 +45,17 @@ namespace Gemipedia.Converter
         {
             if(item != null)
             {
+                FlushBuffer();
                 items.Add(item);
+            }
+        }
+
+        private void FlushBuffer()
+        {
+            if (buffer.HasContent)
+            {
+                items.Add(new ContentItem(buffer));
+                buffer.Reset();
             }
         }
 
