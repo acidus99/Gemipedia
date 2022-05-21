@@ -195,6 +195,7 @@ namespace Gemipedia.Converter
                     buffer.AppendLine("```");
                     inPreformatted = true;
                     ParseChildern(element);
+                    buffer.EnsureAtLineStart();
                     inPreformatted = false;
                     buffer.AppendLine("```");
                     break;
