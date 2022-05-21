@@ -199,6 +199,12 @@ namespace Gemipedia.Converter
                     buffer.AppendLine("```");
                     break;
 
+                case "sup":
+                    buffer.Append("^(");
+                    ParseChildern(element);
+                    buffer.Append(")");
+                    break;
+
                 case "table":
                     ProcessTable(element);
                     break;
