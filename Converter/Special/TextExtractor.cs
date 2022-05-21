@@ -25,6 +25,9 @@ namespace Gemipedia.Converter.Special
         public bool ShouldCollapseNewlines { get; set; } = false;
         public bool ShouldConvertImages { get; set; } = false;
 
+        //sets the character we use for newline replacement
+        public string NewlineReplacement { get; set; } = " ";
+
         private static readonly Regex whitespace = new Regex(@"\s+", RegexOptions.Compiled);
 
         private Buffer buffer = new Buffer();
@@ -114,7 +117,7 @@ namespace Gemipedia.Converter.Special
             => CollapseSpaces(ConvertNewlines(s));
 
         private string ConvertNewlines(string s)
-            => s.Replace("\n", ". ").Trim();
+            => s.Replace("\n", NewlineReplacement).Trim();
 
         private string CollapseSpaces(string s)
             => whitespace.Replace(s, " ");
