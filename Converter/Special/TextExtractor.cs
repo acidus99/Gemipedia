@@ -69,7 +69,13 @@ namespace Gemipedia.Converter.Special
                 case NodeType.Element:
                     {
                         HtmlElement element = current as HtmlElement;
-                        var nodeName = element.NodeName.ToLower();
+                        var nodeName = element?.NodeName.ToLower();
+
+                        if (!HtmlParser.ShouldProcessElement(element, nodeName))
+                        {
+                            return;
+                        }
+
                         switch (nodeName)
                         {
 
