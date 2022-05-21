@@ -10,10 +10,19 @@ namespace Gemipedia.Models
         public override string Render()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"({Content})");
-            foreach (var linkTitle in Links.GetLinks())
+
+            var links = Links.GetLinks();
+            if (links.Count == 1)
             {
-                sb.AppendLine($"=> {CommonUtils.ArticleUrl(linkTitle)} {linkTitle}");
+                sb.AppendLine($"=> {CommonUtils.ArticleUrl(links[0])} {Content}");
+            }
+            else
+            {
+                sb.AppendLine($"({Content})");
+                foreach (var linkTitle in links)
+                {
+                    sb.AppendLine($"=> {CommonUtils.ArticleUrl(linkTitle)} {linkTitle}");
+                }
             }
             return sb.ToString();
         }
