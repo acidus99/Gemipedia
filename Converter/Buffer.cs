@@ -77,7 +77,7 @@ namespace Gemipedia.Converter
         public void HandleLineStart(string s)
         {
             //if we are adding something that is not whitespace, and we have a prefix
-            if(s.Trim().Length > 0 && lineStart != null)
+            if(lineStart != null)
             {
                 sb.Append(lineStart);
                 lineStart = null;

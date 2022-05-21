@@ -105,7 +105,14 @@ namespace Gemipedia.Converter
                 //if its whitepsace, but doesn't have a newline
                 else if (!textNode.TextContent.Contains('\n'))
                 {
-                    buffer.Append(textNode.TextContent);
+                    if (buffer.AtLineStart)
+                    {
+                        buffer.Append(textNode.TextContent.TrimStart());
+                    }
+                    else
+                    {
+                        buffer.Append(textNode.TextContent);
+                    }
                 }
             }
         }
