@@ -33,3 +33,6 @@
 - Feature: Serve media with proper extension, mimetype, for better downloading (easier to tell if something is an animated GIF, etc)
 - Fix: Newlines in captions (Project Gutenberg article)
 - Feature: support image maps on all images, not just timelines (Broadway theatre article)
+- Fix: complete parser rewrite that supports more content without special case handling, and fixes rendering errors
+- Feature: Includes search snippet in search results
+- Feature: Use the 1.5x image if 2x image is not available

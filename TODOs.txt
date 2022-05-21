@@ -10,6 +10,16 @@ Definitions via Wikitionary: https://en.wiktionary.org/api/rest_v1/#/Page%20cont
 Links to other languages: https://en.wikipedia.org/w/rest.php/v1/page/McDonnell_F-101_Voodoo/links/language
 
 
+Landing page:
+     - Most popular articles API
+    - Better Search API
+        (show summaries, not sippets of search text
+    - Show news storeis based on Wikipedia front page
+
+    - Random articles in topcis?
+
+
+
 Better Rendering:
 
 - don't add links to list unless its a "See Also"
@@ -21,5 +31,8 @@ Better Rendering:
 - Article name is wrong (IPad instead of iPad). This is because of the API I am using
 - links inside of lists can be wrong since they are not started on a new line. See "IPad 2"
 
-- Handle naked divs? (already do this for naked div with single table. but naked div with timeline also happens because of easytimeline module)
-    https://fr.wikipedia.org/wiki/Chronologie_des_Macintosh
+
+Infobox:
+    - Find Geohack coorindates and display them. Map View!
+    - better handle tables (WW II article)
+    - handle places that use single row tables as multi columns (band album chronologies use this to show prev, curren and next album
