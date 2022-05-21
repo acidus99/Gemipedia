@@ -268,7 +268,12 @@ namespace Gemipedia.Converter
             //is it a media div?
             if (div.ClassList.Contains("thumb") && !div.ClassList.Contains("locmap"))
             {
-                AddItem(MediaParser.Convert(div, div.QuerySelector(".thumbcaption")));
+                if (div.ClassList.Contains("tmulti"))
+                {
+                    AddItems(MediaParser.ConvertMultiple(div));
+                    return;
+                }
+                AddItem(MediaParser.ConvertMedia(div, div.QuerySelector(".thumbcaption")));
                 return;
             }
 

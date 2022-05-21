@@ -39,7 +39,7 @@ namespace Gemipedia.Converter.Special
             var imgContainer = row.Children[0].Children[0];
             var captionContainer = (row.Children[0].ChildElementCount >= 2) ? row.Children[0].Children[1] : null;
 
-            var media = MediaParser.Convert(imgContainer, captionContainer);
+            var media = MediaParser.ConvertMedia(imgContainer, captionContainer);
             if (media != null)
             {
                 mediaItems.Add(media);

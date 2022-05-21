@@ -15,7 +15,7 @@ namespace Gemipedia.Converter.Special
             ShouldCollapseNewlines = true
         };
 
-        public static MediaItem Convert(IElement imageContainer, IElement captionContainer)
+        public static MediaItem ConvertMedia(IElement imageContainer, IElement captionContainer)
             => IsVideo(imageContainer) ?
                 ConvertVideo(imageContainer, captionContainer) :
                 ConvertImage(imageContainer, captionContainer);
@@ -74,7 +74,7 @@ namespace Gemipedia.Converter.Special
             return ret;
         }
 
-        private static MediaItem ConvertImage(IElement imageContainer, IElement captionContainer)
+        private static MediaItem ConvertImage(IElement imageContainer, IElement captionContainer, string defaultText = "Article Image")
         {
             //some image holders can contain <canvas> graphs, charts, etc. So escape if you don't find an img
             var imgTag = imageContainer.QuerySelector("img");
@@ -88,7 +88,7 @@ namespace Gemipedia.Converter.Special
                 return null;
             }
 
-            var description = GetDescription(imageContainer, captionContainer);
+            var description = GetDescription(imageContainer, captionContainer, defaultText);
             var media = new MediaItem
             {
                 Links = textExtractor.Links,
@@ -104,6 +104,20 @@ namespace Gemipedia.Converter.Special
                     .ToList().ForEach(x => media.Links.Add(x));
             }
             return media;
+        }
+
+        public static IEnumerable<MediaItem> ConvertMultiple(IElement tmulti)
+        {
+            List<MediaItem> ret = new List<MediaItem>();
+            foreach (var thumb in tmulti.QuerySelectorAll(".thumbimage"))
+            {
+                var media = ConvertImage(thumb, null, "Image from Montage");
+                if (media != null)
+                {
+                    ret.Add(media);
+                }
+            }
+            return ret;
         }
 
         private static MediaItem ConvertVideo(IElement imageContainer, IElement captionContainer)
@@ -144,7 +158,7 @@ namespace Gemipedia.Converter.Special
         private static string GetVideoDescription(IElement videoElement)
             => "🎦 " + (videoElement?.QuerySelector("source").GetAttribute("data-title") ?? "Video File");
 
-        private static string GetDescription(IElement imageContainer, IElement captionContainer)
+        private static string GetDescription(IElement imageContainer, IElement captionContainer, string defaultText = "Article Image")
         {
             //first see if there is a caption
             textExtractor.Extract(captionContainer);
@@ -155,7 +169,7 @@ namespace Gemipedia.Converter.Special
             }
             //fall back to the ALT text
             text = GetImageAlt(imageContainer);
-            return (text.Length > 0) ? text : "Article Image";
+            return (text.Length > 0) ? text : defaultText;
         }
 
         private static string GetImageAlt(IElement element)
