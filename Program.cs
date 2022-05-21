@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Web;
-using Gemipedia.API;
-
 
 using Gemini.Cgi;
+using Gemipedia.API;
 using Gemipedia.API.Models;
 using Gemipedia.Converter;
 using Gemipedia.Converter.Special;
@@ -19,7 +19,7 @@ namespace Gemipedia
     {
         static void LocalTesting()
         {
-            var title = "World War II";
+            var title = "Cat Scratch Fever (song)";
 
             var resp = GetArticle(title);
             var parsedPage = ParsePage(resp);
@@ -88,10 +88,14 @@ namespace Gemipedia
                 {
                     counter++;
                     cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(result.Title)} {counter}. {result.Title}");
+                    cgi.Writer.WriteLine($">{stripSnippet(result.Snippet)}");
                 }
             }
             RenderFooter(cgi);
         }
+
+        private static string stripSnippet(string s)
+            => WebUtility.HtmlDecode(Regex.Replace(s, @"<[^>]*>", "")) + "...";
 
         static void Welcome(CgiWrapper cgi)
         {
