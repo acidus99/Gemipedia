@@ -36,3 +36,4 @@
 - Fix: complete parser rewrite that supports more content without special case handling, and fixes rendering errors
 - Feature: Includes search snippet in search results
 - Feature: Use the 1.5x image if 2x image is not available
+- Feature: Support for Image Galleries (images would show up using generic media finder, but wasn't getting the appropriate caption)

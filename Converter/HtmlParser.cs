@@ -50,6 +50,15 @@ namespace Gemipedia.Converter
             }
         }
 
+        private void AddItems(IEnumerable<SectionItem> newItems)
+        {
+            if (newItems?.Count() > 0)
+            {
+                FlushBuffer();
+                items.AddRange(newItems);
+            }
+        }
+
         private void FlushBuffer()
         {
             if (buffer.HasContent)
@@ -175,13 +184,7 @@ namespace Gemipedia.Converter
                     break;
 
                 case "ol":
-                case "ul":
-                    //block element
-                    buffer.EnsureAtLineStart();
-                    listDepth++;
-                    ParseChildern(element);
-                    listDepth--;
-                    buffer.EnsureAtLineStart();
+                    ProcessList(element);
                     break;
 
                 case "p":
@@ -221,6 +224,10 @@ namespace Gemipedia.Converter
                     buffer.Append("_");
                     ParseChildern(element);
                     buffer.Append("_");
+                    break;
+
+                case "ul":
+                    ProcessUl(element);
                     break;
 
                 default:
@@ -327,6 +334,16 @@ namespace Gemipedia.Converter
             }
         }
 
+        private void ProcessList(HtmlElement element)
+        {
+            //block element
+            buffer.EnsureAtLineStart();
+            listDepth++;
+            ParseChildern(element);
+            listDepth--;
+            buffer.EnsureAtLineStart();
+        }
+
         private void ProcessTable(HtmlElement table)
         {
             if (table.ClassList.Contains("infobox"))
@@ -345,6 +362,18 @@ namespace Gemipedia.Converter
 
             //treat everying like a table?
             AddItem(WikiTableConverter.ConvertWikiTable(table));
+        }
+
+        private void ProcessUl(HtmlElement ul)
+        {
+            //gallery?
+            if (ul.ClassList.Contains("gallery"))
+            {
+                AddItems(MediaParser.ConvertGallery(ul));
+                return;
+            }
+
+            ProcessList(ul);
         }
 
         public static bool ShouldDisplayAsBlock(HtmlElement element)

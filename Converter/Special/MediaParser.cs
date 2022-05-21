@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using AngleSharp.Dom;
 using Gemipedia.Models;
 
@@ -57,6 +58,20 @@ namespace Gemipedia.Converter.Special
 
             }
             return null;
+        }
+
+        public static IEnumerable<MediaItem> ConvertGallery(IElement gallery)
+        {
+            List<MediaItem> ret = new List<MediaItem>();
+            foreach(var galleryItem in gallery.QuerySelectorAll("li.gallerybox"))
+            {
+                var media = ConvertImage(galleryItem, galleryItem.QuerySelector(".gallerytext"));
+                if(media != null)
+                {
+                    ret.Add(media);
+                }
+            }
+            return ret;
         }
 
         private static MediaItem ConvertImage(IElement imageContainer, IElement captionContainer)
