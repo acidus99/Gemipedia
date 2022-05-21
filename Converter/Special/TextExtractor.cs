@@ -16,37 +16,31 @@ namespace Gemipedia.Converter.Special
     {
         public string Content
             => ShouldCollapseNewlines ?
-                        CollapseNewlines(buffer.ToString()) :
-                        buffer.ToString();
+                        CollapseNewlines(buffer.Content) :
+                        buffer.Content;
 
-        public ArticleLinkCollection Links { get; private set; } = new ArticleLinkCollection();
+        public ArticleLinkCollection Links
+            => buffer.Links;
 
         public bool ShouldCollapseNewlines { get; set; } = false;
         public bool ShouldConvertImages { get; set; } = false;
 
         private static readonly Regex whitespace = new Regex(@"\s+", RegexOptions.Compiled);
 
-        private StringBuilder buffer = new StringBuilder();
-
+        private Buffer buffer = new Buffer();
 
         public void Extract(params INode[] nodes)
             => Extract(nodes.Where(x => x != null).FirstOrDefault());
 
         public void Extract(INode current)
         {
-            Clear();
+            buffer.Reset();
             if (current == null)
             {
                 //nothing to do
                 return;
             }
             ExtractInnerTextHelper(current);
-        }
-
-        private void Clear()
-        {
-            Links.Clear();
-            buffer.Clear();
         }
 
         private void ExtractInnerTextHelper(INode current)
@@ -95,7 +89,15 @@ namespace Gemipedia.Converter.Special
                                 break;
 
                             default:
-                                ExtractChildrenText(current);
+                                if(HtmlParser.ShouldDisplayAsBlock(element))
+                                {
+                                    buffer.EnsureAtLineStart();
+                                    ExtractChildrenText(current);
+                                    buffer.EnsureAtLineStart();
+                                } else
+                                {
+                                    ExtractChildrenText(current);
+                                }
                                 break;
                         }
                     }
@@ -112,7 +114,7 @@ namespace Gemipedia.Converter.Special
             => CollapseSpaces(ConvertNewlines(s));
 
         private string ConvertNewlines(string s)
-            => s.Replace("\n", " ").Trim();
+            => s.Replace("\n", ". ").Trim();
 
         private string CollapseSpaces(string s)
             => whitespace.Replace(s, " ");

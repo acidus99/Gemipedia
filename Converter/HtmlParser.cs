@@ -15,7 +15,7 @@ namespace Gemipedia.Converter
     /// </summary>
     public class HtmlParser
     {
-        string[] blockElements = new string[] { "address", "article", "aside", "blockquote", "canvas", "dd", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hr", "li", "main", "nav", "noscript", "ol", "p", "pre", "section", "table", "tfoot", "ul", "video" };
+        private static readonly string[] blockElements = new string[] { "address", "article", "aside", "blockquote", "canvas", "dd", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hr", "li", "main", "nav", "noscript", "ol", "p", "pre", "section", "table", "tfoot", "ul", "video" };
 
         private List<SectionItem> items = new List<SectionItem>();
 
@@ -248,11 +248,6 @@ namespace Gemipedia.Converter
         private static bool IsInvisible(HtmlElement element)
            => element.GetAttribute("style")?.Contains("display:none") ?? false;
 
-
-
-        private bool IsBlockElement(string tagName)
-            => blockElements.Contains(tagName);
-
         private void ProcessDiv(HtmlElement div)
         {
             //is it a media div?
@@ -344,7 +339,7 @@ namespace Gemipedia.Converter
             AddItem(WikiTableConverter.ConvertWikiTable(table));
         }
 
-        private bool ShouldDisplayAsBlock(HtmlElement element)
+        public static bool ShouldDisplayAsBlock(HtmlElement element)
         {
             var nodeName = element.NodeName.ToLower();
             if (!blockElements.Contains(nodeName))
@@ -355,7 +350,7 @@ namespace Gemipedia.Converter
             return !IsInline(element);
         }
 
-        private bool IsInline(HtmlElement element)
+        private static bool IsInline(HtmlElement element)
             => element.GetAttribute("style")?.Contains("display:inline") ?? false;
 
         private bool IsMulticolumnLayoutTable(HtmlElement element)
