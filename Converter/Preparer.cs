@@ -37,6 +37,8 @@ namespace Gemipedia.Converter
         }
 
         //Removes tags we no we want need, and which make rendering harder
+        //often we want to complete remove tags instead of skipping them later
+        ////with the Filter, since InfoBox parser won't already visit every element
         private static void RemoveTags(IElement contentRoot)
         {
 
@@ -58,6 +60,9 @@ namespace Gemipedia.Converter
             RemoveMatchingTags(contentRoot, ".noprint");
             //remove the "V T E" meta navbars on certain items
             RemoveMatchingTags(contentRoot, ".navbar");
+
+            //remove interactive elements
+            RemoveMatchingTags(contentRoot, "div.switcher-container");
         }
 
         private static void RemoveMatchingTags(IElement element, string selector)
