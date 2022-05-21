@@ -53,7 +53,7 @@ namespace Gemipedia.Renderer
             Writer.WriteLine($"=> {CommonUtils.ReferencesUrl(Page.Title)} List of all {parsedPage.GetReferenceCount()} referenced articles");
             Writer.WriteLine($"=> {CommonUtils.SearchUrl(Page.Title)} Search for articles that mention '{Page.Title}'");
             Writer.WriteLine($"=> {CommonUtils.PdfUrl(Page.EscapedTitle)} Download article PDF for offline access");
-            Writer.WriteLine($"=> {CommonUtils.WikipediaSourceUrl(Page.EscapedTitle)} 'Read {Page.Title}' on Wikipedia");
+            Writer.WriteLine($"=> {CommonUtils.WikipediaSourceUrl(Page.EscapedTitle)} Read '{Page.Title}' on Wikipedia");
         }
 
         private string RenderSection(Section section)
