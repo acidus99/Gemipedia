@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Web;
 
 using Gemini.Cgi;
@@ -19,7 +18,7 @@ namespace Gemipedia
     {
         static void LocalTesting()
         {
-            var title = "Cat Scratch Fever (song)";
+            var title = "PGM-11 Redstone";
 
             var resp = GetArticle(title);
             var parsedPage = ParsePage(resp);
@@ -48,6 +47,9 @@ namespace Gemipedia
 
         static void Main(string[] args)
         {
+
+            CommonUtils.Settings = DefaultSettings;
+
             if (!CgiWrapper.IsRunningAsCgi)
             {
                 LocalTesting();
@@ -73,8 +75,8 @@ namespace Gemipedia
             }
 
             cgi.Success();
-            cgi.Writer.WriteLine($"Results for '{cgi.SantiziedQuery}'.");
-            var searchResults = client.Search(cgi.SantiziedQuery);
+            cgi.Writer.WriteLine($"Articles containing '{cgi.SantiziedQuery}'.");
+            var searchResults = client.SearchBetter(cgi.SantiziedQuery);
             if (searchResults.Count == 0)
             {
                 //TODO use "suggest API here
@@ -88,14 +90,16 @@ namespace Gemipedia
                 {
                     counter++;
                     cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(result.Title)} {counter}. {result.Title}");
-                    cgi.Writer.WriteLine($">{stripSnippet(result.Snippet)}");
+                    if (!string.IsNullOrEmpty(result.ThumbnailUrl))
+                    {
+                        cgi.Writer.WriteLine($"=> {CommonUtils.MediaProxyUrl(result.ThumbnailUrl)} Featured Image: {result.Title}");
+                    }
+                    cgi.Writer.WriteLine($">{ result.SummaryText}");
+                    cgi.Writer.WriteLine();
                 }
             }
             RenderFooter(cgi);
         }
-
-        private static string stripSnippet(string s)
-            => WebUtility.HtmlDecode(Regex.Replace(s, @"<[^>]*>", "")) + "...";
 
         static void Welcome(CgiWrapper cgi)
         {

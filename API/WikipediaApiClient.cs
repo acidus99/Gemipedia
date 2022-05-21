@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text.RegularExpressions;
 
 using Newtonsoft.Json.Linq;
 using Gemipedia.API.Models;
@@ -42,28 +43,45 @@ namespace Gemipedia.API
                 HtmlText = Cleanse(resp["parse"]["text"]["*"]),
             };
         }
-
-        public List<SearchResult> Search(string query)
+        private string GetThumbnailUrl(JObject thumb)
         {
-            var url = $"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={WebUtility.UrlEncode(query)}&format=json";
+            //result["thumbnail"]?["url"]? doesn't seem to work
+            if (thumb != null)
+            {
+                var url = thumb["url"]?.ToString() ?? "";
+                if (url.Length > 0)
+                {
+                    return CommonUtils.EnsureHttps(url);
+                }
+            }
+            return "";
+        }
+
+        private string StripHtml(string s)
+            => WebUtility.HtmlDecode(Regex.Replace(s, @"<[^>]*>", "")) + "...";
+
+        public List<SearchResult> SearchBetter(string query)
+        {
+            var url = $"https://en.wikipedia.org/w/rest.php/v1/search/page?q={WebUtility.UrlEncode(query)}&limit=25";
 
             var json = FetchString(url);
             var resp = JObject.Parse(json);
 
             List<SearchResult> ret = new List<SearchResult>();
 
-            foreach(JObject result in (resp["query"]["search"] as JArray))
+            foreach (JObject result in (resp["pages"] as JArray))
             {
                 ret.Add(new SearchResult
                 {
                     Title = Cleanse(result["title"]),
-                    PageId = Convert.ToInt64(Cleanse(result["pageid"])),
-                    WordCount = Convert.ToInt32(Cleanse(result["wordcount"])),
-                    Snippet = Cleanse(result["snippet"])
+                    Excerpt = StripHtml(Cleanse(result["excerpt"])),
+                    Description = Cleanse(result["description"]),
+                    ThumbnailUrl = GetThumbnailUrl(result["thumbnail"] as JObject)
                 });
             }
             return ret;
         }
+
 
         private string Cleanse(JToken token)
             => token?.ToString() ?? "";
