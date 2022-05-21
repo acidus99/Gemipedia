@@ -209,18 +209,8 @@ namespace Gemipedia.Converter
                     buffer.Append("_");
                     break;
 
-                //will do things here
                 default:
-                    if (IsBlockElement(nodeName))
-                    {
-                        buffer.EnsureAtLineStart();
-                        ParseChildern(element);
-                        buffer.EnsureAtLineStart();
-                    }
-                    else
-                    {
-                        ParseChildern(element);
-                    }
+                    ProcessGenericTag(element);
                     break;
             }
         }
@@ -252,6 +242,8 @@ namespace Gemipedia.Converter
         private bool IsInvisible(HtmlElement element)
            => element.GetAttribute("style")?.Contains("display:none") ?? false;
 
+
+
         private bool IsBlockElement(string tagName)
             => blockElements.Contains(tagName);
 
@@ -277,15 +269,29 @@ namespace Gemipedia.Converter
                 return;
             }
 
-            //div is a block element
-            if (IsInline(div))
+            //fall through to generic handling
+            ProcessGenericTag(div);
+        }
+
+        private void ProcessGenericTag(HtmlElement element)
+        {
+            //is this a math element?
+            if(element.ClassList.Contains("mwe-math-element"))
             {
-                ParseChildern(div);
-            } else
+                //math elements have to be displayed at the start of the like
+                buffer.EnsureAtLineStart();
+                buffer.AppendLine(MathConverter.ConvertMath(element));
+            }
+
+            if (ShouldDisplayAsBlock(element))
             {
                 buffer.EnsureAtLineStart();
-                ParseChildern(div);
+                ParseChildern(element);
                 buffer.EnsureAtLineStart();
+            }
+            else
+            {
+                ParseChildern(element);
             }
         }
 
@@ -334,6 +340,17 @@ namespace Gemipedia.Converter
                 ParseMulticolmnTable(table);
                 return;
             }
+        }
+
+        private bool ShouldDisplayAsBlock(HtmlElement element)
+        {
+            var nodeName = element.NodeName.ToLower();
+            if (!blockElements.Contains(nodeName))
+            {
+                return false;
+            }
+            //its a block, display it as inline?
+            return !IsInline(element);
         }
 
         private bool IsInline(HtmlElement element)
