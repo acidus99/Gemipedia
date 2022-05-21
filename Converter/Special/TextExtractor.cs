@@ -78,7 +78,6 @@ namespace Gemipedia.Converter.Special
 
                         switch (nodeName)
                         {
-
                             case "a":
                                 Links.Add(element);
                                 ExtractChildrenText(current);
@@ -121,9 +120,13 @@ namespace Gemipedia.Converter.Special
         private string ConvertImage(HtmlElement element)
         {
             var alt = element.GetAttribute("alt");
+            if(string.IsNullOrEmpty(alt))
+            {
+                alt = element.GetAttribute("title");
+            }
             return !string.IsNullOrEmpty(alt) ?
                 $"[Image: {alt}] " :
-                "[Image] ";
+                "";
         }
     }
 }

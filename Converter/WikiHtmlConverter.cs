@@ -31,10 +31,15 @@ namespace Gemipedia.Converter
         private void LoadDomFilters()
         {
             DomFilter.Global = new DomFilter();
+            //locmaps have overlays we can't display
             DomFilter.Global.AddRule("div.locmap");
+            //if its not for mobile don't display
             DomFilter.Global.AddRule(".nomobile");
-            DomFilter.Global.AddRule(".nosidebar");
+            //side category and meta index tables
+            DomFilter.Global.AddRule("table.sidebar");
             DomFilter.Global.AddRule("table.navbox-vertical");
+            //dialogs at top that say something is wrong with the article
+            DomFilter.Global.AddRule("table.metadata");
         }
 
 
