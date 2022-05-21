@@ -30,20 +30,24 @@ namespace Gemipedia.Converter.Special
             return new InfoboxItem(buffer)
             {
                 CustomTitle = title,
-                MediaItems = mediaItems
+                MediaItems = mediaItems.Where(x=>x != null).ToList()
             };
         }
 
         private void AddMedia(IElement row)
         {
+            //check for a montage
+            var multi = row.QuerySelector("div.thumb.tmulti");
+            if(multi != null)
+            {
+                mediaItems.AddRange(MediaParser.ConvertMultiple(multi));
+                return;
+            }
+
             var imgContainer = row.Children[0].Children[0];
             var captionContainer = (row.Children[0].ChildElementCount >= 2) ? row.Children[0].Children[1] : null;
 
-            var media = MediaParser.ConvertMedia(imgContainer, captionContainer);
-            if (media != null)
-            {
-                mediaItems.Add(media);
-            }
+            mediaItems.Add(MediaParser.ConvertMedia(imgContainer, captionContainer));
         }
 
         private void AddHeader(IElement row)
