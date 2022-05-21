@@ -32,6 +32,9 @@ namespace Gemipedia.Converter
         {
             DomFilter.Global = new DomFilter();
             DomFilter.Global.AddRule("div.locmap");
+            DomFilter.Global.AddRule(".nomobile");
+            DomFilter.Global.AddRule(".nosidebar");
+            DomFilter.Global.AddRule("table.navbox-vertical");
         }
 
 

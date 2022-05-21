@@ -221,7 +221,7 @@ namespace Gemipedia.Converter
             }
         }
 
-        private bool ShouldProcessElement(HtmlElement element,string normalizedTagName)
+        public static bool ShouldProcessElement(HtmlElement element,string normalizedTagName)
         {
             //A MathElement is of type element, but it not an HtmlElement
             //so it will be null
@@ -245,7 +245,7 @@ namespace Gemipedia.Converter
             return true;
         }
 
-        private bool IsInvisible(HtmlElement element)
+        private static bool IsInvisible(HtmlElement element)
            => element.GetAttribute("style")?.Contains("display:none") ?? false;
 
 
@@ -326,13 +326,6 @@ namespace Gemipedia.Converter
 
         private void ProcessTable(HtmlElement table)
         {
-            //is it a data table?
-            if (table.ClassList.Contains("wikitable"))
-            {
-                AddItem(WikiTableConverter.ConvertWikiTable(table));
-                return;
-            }
-
             if (table.ClassList.Contains("infobox"))
             {
                 InfoboxParser parser = new InfoboxParser();
@@ -346,6 +339,9 @@ namespace Gemipedia.Converter
                 ParseMulticolmnTable(table);
                 return;
             }
+
+            //treat everying like a table?
+            AddItem(WikiTableConverter.ConvertWikiTable(table));
         }
 
         private bool ShouldDisplayAsBlock(HtmlElement element)
