@@ -54,6 +54,37 @@ namespace Gemipedia.Converter.Special
             buffer.Links.Add(textExtractor);
         }
 
+        private void AddWideValue(IElement valueCell)
+        {
+            //step 1, extract out the name
+            var parser = new HtmlParser
+            {
+                ConvertListItems = false
+            };
+            parser.Parse(valueCell);
+            //review HTML, append together any content items via a tmp
+            //buffer, and add any media to our collection
+            var htmlBuffer = new Buffer();
+            foreach (SectionItem item in parser.GetItems())
+            {
+                if (item is MediaItem)
+                {
+                    var media = (MediaItem)item;
+                    buffer.Links.Add(media.Links);
+                    mediaItems.Add(media);
+                }
+                else if (item is ContentItem)
+                {
+                    var contentItem = (ContentItem)item;
+                    htmlBuffer.Append(contentItem);
+                }
+            }
+
+            buffer.Links.Add(htmlBuffer);
+            buffer.EnsureAtLineStart();
+            buffer.Append(htmlBuffer.Content);
+        }
+
         private void AddNameValue(IElement nameCell, IElement valueCell)
         {
             //step 1, extract out the name
@@ -63,9 +94,6 @@ namespace Gemipedia.Converter.Special
 
 
             //step 2: extract text but consider newlines
-
-
-
             var parser = new HtmlParser
             {
                 ConvertListItems = false
@@ -171,14 +199,19 @@ namespace Gemipedia.Converter.Special
             {
                 AddHeader(row);
             }
-            else if (row.Children.Length == 2)
-            {
-                AddNameValue(row.Children[0], row.Children[1]);
-            }
             else if (IsMedia(row))
             {
                 AddMedia(row);
             }
+            else if(row.Children.Length == 1)
+            {
+                AddWideValue(row.Children[0]);
+            }
+            else if (row.Children.Length == 2)
+            {
+                AddNameValue(row.Children[0], row.Children[1]);
+            }
+
         }
 
         //some info box data cells have multiple lines of text, separated by
