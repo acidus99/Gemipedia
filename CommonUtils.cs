@@ -65,8 +65,14 @@ namespace Gemipedia
         /// <returns></returns>
         public static string GetImageUrl(IElement img)
         {
-            //try the srcset
+            //try srcset 2x
             var url = GetImageFromSrcset(img?.GetAttribute("srcset") ?? "", "2x");
+            if (!string.IsNullOrEmpty(url))
+            {
+                return EnsureHttps(url);
+            }
+            //try srcset 1.5
+            url = GetImageFromSrcset(img?.GetAttribute("srcset") ?? "", "1.5x");
             if (!string.IsNullOrEmpty(url))
             {
                 return EnsureHttps(url);
