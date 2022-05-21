@@ -13,7 +13,7 @@ namespace Gemipedia.Converter.Filter
 		public string TagName { get; set; } = null;
 
 		public bool HasClass
-			=> !String.IsNullOrEmpty(TagName);
+			=> !String.IsNullOrEmpty(ClassName);
 
 		public bool HasID
 			=> !String.IsNullOrEmpty(ID);

@@ -16,7 +16,7 @@ namespace Gemipedia.Converter.Filter
 
         public static DomFilter Global = new DomFilter();
 
-		Dictionary<String, FilterRule> TagFilters;
+		Dictionary<String, List<FilterRule>> TagFilters;
 
 		List<FilterRule> JustClassRules;
 
@@ -24,7 +24,7 @@ namespace Gemipedia.Converter.Filter
 
 		public DomFilter()
 		{
-			TagFilters = new Dictionary<string, FilterRule>();
+            TagFilters = new Dictionary<string, List<FilterRule>>();
             JustClassRules = new List<FilterRule>();
             JustIDs = new List<FilterRule>();
 		}
@@ -34,15 +34,23 @@ namespace Gemipedia.Converter.Filter
             //check for tag-specific rules
             if (TagFilters.ContainsKey(normalizedTagName))
             {
-                var rule = TagFilters[normalizedTagName];
-                if(rule.HasClass)
+                foreach (var rule in TagFilters[normalizedTagName])
                 {
-                    return !element.ClassList.Contains(rule.ClassName);
-                } else if(rule.HasID)
-                {
-                    return (element.Id ?? "") != rule.ID;
+                    if (rule.HasClass)
+                    {
+                        if (element.ClassList.Contains(rule.ClassName))
+                        {
+                            return false;
+                        }
+                    }
+                    else if (rule.HasID)
+                    {
+                        if ((element.Id ?? "") == rule.ID)
+                        {
+                            return false;
+                        }
+                    }
                 }
-                return true;
             }
 
             if (element.ClassList.Length > 0)
@@ -98,7 +106,11 @@ namespace Gemipedia.Converter.Filter
 
             if(rule.HasTag)
             {
-                TagFilters.Add(rule.TagName, rule);
+                if(!TagFilters.ContainsKey(rule.TagName))
+                {
+                    TagFilters[rule.TagName] = new List<FilterRule>();
+                }
+                TagFilters[rule.TagName].Add(rule);
             } else if(rule.HasClass)
             {
                 JustClassRules.Add(rule);
@@ -111,7 +123,7 @@ namespace Gemipedia.Converter.Filter
         private string ClipAfter(string s, string c)
         {
             int x = s.IndexOf(c);
-            if (x > 0 && x + 1 != s.Length)
+            if (x >= 0 && x + 1 != s.Length)
             {
                 return s.Substring(x + 1);
             }
