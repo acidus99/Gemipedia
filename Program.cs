@@ -4,9 +4,14 @@ using System.Net;
 using System.Web;
 using Gemipedia.API;
 
+
 using Gemini.Cgi;
+using Gemipedia.API.Models;
 using Gemipedia.Converter;
+using Gemipedia.Converter.Special;
+using Gemipedia.Models;
 using Gemipedia.Media;
+using Gemipedia.Renderer;
 
 namespace Gemipedia
 {
@@ -14,16 +19,31 @@ namespace Gemipedia
     {
         static void LocalTesting()
         {
+            var title = "World War II";
 
-            var title = "navy";
-            Console.WriteLine(title);
-            var client = new WikipediaApiClient();
-            var resp = client.GetArticle(title);
-            //test caching
-            resp = client.GetArticle(title);
+            var resp = GetArticle(title);
+            var parsedPage = ParsePage(resp);
+            RenderArticle(parsedPage, Console.Out);
+        }
 
+        static WikipediaApiClient client = new WikipediaApiClient();
+
+        private static ParseResponse GetArticle(CgiWrapper cgi)
+            => GetArticle(cgi.SantiziedQuery);
+
+        private static ParseResponse GetArticle(string title)
+            => client.GetArticle(title);
+
+        private static ParsedPage ParsePage(ParseResponse resp)
+        {
             var newConverter = new WikiHtmlConverter(DefaultSettings);
-            newConverter.Convert(resp.Title, resp.HtmlText, Console.Out);
+            return newConverter.Convert(resp.Title, resp.HtmlText);
+        }
+
+        private static void RenderArticle(ParsedPage page, TextWriter output)
+        {
+            var renderer = new ArticleRenderer(DefaultSettings);
+            renderer.RenderArticle(page, Console.Out);
         }
 
         static void Main(string[] args)
@@ -54,7 +74,6 @@ namespace Gemipedia
 
             cgi.Success();
             cgi.Writer.WriteLine($"Results for '{cgi.SantiziedQuery}'.");
-            var client = new WikipediaApiClient();
             var searchResults = client.Search(cgi.SantiziedQuery);
             if (searchResults.Count == 0)
             {
@@ -102,8 +121,7 @@ namespace Gemipedia
                 return;
             }
 
-            var client = new WikipediaApiClient();
-            var resp = client.GetArticle(cgi.SantiziedQuery);
+            var resp = GetArticle(cgi);
             try
             {
                 if (resp != null)
@@ -115,8 +133,9 @@ namespace Gemipedia
                     }
 
                     cgi.Success();
-                    var converter = new WikiHtmlConverter(DefaultSettings);
-                    converter.Convert(resp.Title, resp.HtmlText, cgi.Writer);
+
+                    var parsedPage = ParsePage(resp);
+                    RenderArticle(parsedPage, cgi.Writer);
                 }
                 else
                 {
@@ -124,7 +143,8 @@ namespace Gemipedia
                     cgi.Redirect($"/cgi-bin/wp.cgi/search?{cgi.RawQuery}");
                     return;
                 }
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 cgi.Writer.WriteLine("Boom! Hit Exception!");
                 cgi.Writer.WriteLine("```");
@@ -138,8 +158,8 @@ namespace Gemipedia
 
         static void ViewImages(CgiWrapper cgi)
         {
-            var client = new WikipediaApiClient();
-            var resp = client.GetArticle(cgi.SantiziedQuery);
+
+            var resp = GetArticle(cgi);
 
             if (resp != null)
             {
@@ -150,9 +170,9 @@ namespace Gemipedia
                 }
 
                 cgi.Success();
-                //var converter = new WikiHtmlConverter(DefaultSettings);
-                var converter = new WikiHtmlConverter(DefaultSettings);
-                converter.ConvertImageGallery(resp.Title, resp.HtmlText, cgi.Writer);
+                var page = ParsePage(resp);
+                var gallery = new GalleryRenderer();
+                gallery.RenderGallery(page, cgi.Writer);
             }
             else
             {
@@ -164,20 +184,18 @@ namespace Gemipedia
 
         static void ViewRefs(CgiWrapper cgi)
         {
-            var client = new WikipediaApiClient();
-
-
             var query = HttpUtility.ParseQueryString(cgi.RawQuery);
             var title = query["name"] ?? "";
-            var section = Convert.ToInt32(query["section"] ?? "-1");            
+            var section = Convert.ToInt32(query["section"] ?? "-1");
 
-            var resp = client.GetArticle(title);
+            var resp = GetArticle(title);
 
             if (resp != null)
             {
                 cgi.Success();
-                var converter = new WikiHtmlConverter(DefaultSettings);
-                converter.ConvertReferences(resp.Title, resp.HtmlText, cgi.Writer, section);
+                var page = ParsePage(resp);
+                var refs = new ReferencesRenderer(DefaultSettings);
+                refs.RenderReferences(page, cgi.Writer, section);
             }
             else
             {
@@ -195,11 +213,6 @@ namespace Gemipedia
                 cgi.Missing("cannot fetch media");
                 return;
             }
-
-            Console.Error.WriteLine($"fetching '{url}'");
-
-            var client = new WikipediaApiClient();
-
             MediaContent media = MediaProcessor.ProcessImage(client.GetMedia(url));
             cgi.Success(media.MimeType);
             cgi.Out.Write(media.Data);
@@ -214,7 +227,7 @@ namespace Gemipedia
             }
             catch (Exception)
             { }
-            
+
             return false;
         }
 

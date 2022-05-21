@@ -3,6 +3,13 @@
 - stream media bytes directly to client instead of current "store and forward"
 - Use actual MIME type based on file extension, actual filename for proxied media
 
+
+Definitions via Wikitionary: https://en.wiktionary.org/api/rest_v1/#/Page%20content/get_page_definition__term_
+
+
+Links to other languages: https://en.wikipedia.org/w/rest.php/v1/page/McDonnell_F-101_Voodoo/links/language
+
+
 Better Rendering:
 
 - don't add links to list unless its a "See Also"

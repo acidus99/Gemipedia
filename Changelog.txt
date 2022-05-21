@@ -31,5 +31,5 @@
 - Feature: Sharper looking math formulas by referencing Wikipedia's PNGs directly
 - Feature: Add White background to transparent images for better reading on clients with dark mode
 - Feature: Serve media with proper extension, mimetype, for better downloading (easier to tell if something is an animated GIF, etc)
-- Fix: Newlines in captions
-- Feature: support image maps on all images, not just timelines
+- Fix: Newlines in captions (Project Gutenberg article)
+- Feature: support image maps on all images, not just timelines (Broadway theatre article)
