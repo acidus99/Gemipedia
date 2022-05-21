@@ -255,9 +255,10 @@ namespace Gemipedia
                 ExcludedSections = new string []{ "bibliography", "citations", "external_links", "notes", "references", "further_reading" },
                 ArticleLinkSections = new string[] {"see also"},
                 ArticleUrl = "/cgi-bin/wp.cgi/view",
-                MediaProxyUrl = "/cgi-bin/wp.cgi/media/media",
                 ImageGallerUrl = "/cgi-bin/wp.cgi/images",
+                MediaProxyUrl = "/cgi-bin/wp.cgi/media/media",
                 ReferencesUrl = "/cgi-bin/wp.cgi/refs",
+                SearchUrl = "/cgi-bin/wp.cgi/search",
             };
     }
 }

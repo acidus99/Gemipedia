@@ -54,6 +54,9 @@ namespace Gemipedia
         public static string ReferencesUrl(string title, int sectionNum)
              => $"{Settings.ReferencesUrl}?name={WebUtility.UrlEncode(title)}&section={sectionNum}";
 
+        public static string SearchUrl(string query)
+            => $"{Settings.SearchUrl}?{WebUtility.UrlEncode(query)}";
+
         public static string PrepareTextContent(string s)
             => s.Trim().Replace("\n", "");
 

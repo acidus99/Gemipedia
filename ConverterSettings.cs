@@ -19,14 +19,16 @@ namespace Gemipedia
         /// </summary>
         public string[] ArticleLinkSections { get; set; }
 
+        public string ImageGallerUrl { get; set; }
+
         /// <summary>
         /// URL to use to proxy media. actual media path passed via query string
         /// </summary>
         public string MediaProxyUrl { get; set; }
 
-        public string ImageGallerUrl { get; set; }
-
         public string ReferencesUrl { get; set; }
+
+        public string SearchUrl { get; set; }
 
         /// <summary>
         /// Should we convert images/media?
