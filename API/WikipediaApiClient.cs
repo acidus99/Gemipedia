@@ -23,7 +23,7 @@ namespace Gemipedia.API
             client.Headers.Add(HttpRequestHeader.UserAgent, "GeminiProxy/0.1 (gemini://gemi.dev/; acidus@gemi.dev) gemini-proxy/0.1");
         }
 
-        public ParseResponse GetArticle(string title)
+        public Article GetArticle(string title)
         {
             var url = $"https://en.wikipedia.org/w/api.php?action=parse&page={WebUtility.UrlEncode(title)}&prop=text&format=json";
 
@@ -36,13 +36,14 @@ namespace Gemipedia.API
                 return null;
             }
 
-            return new ParseResponse
+            return new Article
             {
                 Title = Cleanse(resp["parse"]["title"]),
                 PageId = Convert.ToInt64(Cleanse(resp["parse"]["pageid"])),
                 HtmlText = Cleanse(resp["parse"]["text"]["*"]),
             };
         }
+
         private string GetThumbnailUrl(JObject thumb)
         {
             //result["thumbnail"]?["url"]? doesn't seem to work
@@ -59,6 +60,16 @@ namespace Gemipedia.API
 
         private string StripHtml(string s)
             => WebUtility.HtmlDecode(Regex.Replace(s, @"<[^>]*>", "")) + "...";
+
+        public string GetTodayFeed()
+        {
+            var url = $"https://en.wikipedia.org/api/rest_v1/feed/featured/{DateTime.Now.ToString("yyyy/mm/dd")}";
+            var json = FetchString(url);
+            var resp = JObject.Parse(json);
+
+            return "";
+        }
+
 
         public List<SearchResult> SearchBetter(string query)
         {

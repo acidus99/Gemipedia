@@ -18,7 +18,7 @@ namespace Gemipedia
     {
         static void LocalTesting()
         {
-            var title = "PGM-11 Redstone";
+            var title = "SCP Foundation";
 
             var resp = GetArticle(title);
             var parsedPage = ParsePage(resp);
@@ -27,13 +27,13 @@ namespace Gemipedia
 
         static WikipediaApiClient client = new WikipediaApiClient();
 
-        private static ParseResponse GetArticle(CgiWrapper cgi)
+        private static Article GetArticle(CgiWrapper cgi)
             => GetArticle(cgi.SantiziedQuery);
 
-        private static ParseResponse GetArticle(string title)
+        private static Article GetArticle(string title)
             => client.GetArticle(title);
 
-        private static ParsedPage ParsePage(ParseResponse resp)
+        private static ParsedPage ParsePage(Article resp)
         {
             var newConverter = new WikiHtmlConverter(DefaultSettings);
             return newConverter.Convert(resp.Title, resp.HtmlText);
@@ -111,6 +111,10 @@ namespace Gemipedia
             cgi.Writer.WriteLine("");
             cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/view Go to Article");
             cgi.Writer.WriteLine("");
+
+            
+
+
             cgi.Writer.WriteLine("## Article Examples:");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("History of Apple Inc.")} History of Apple Inc.");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Blue Poles")} Blue Poles");
