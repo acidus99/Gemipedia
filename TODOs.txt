@@ -12,13 +12,12 @@ Links to other languages: https://en.wikipedia.org/w/rest.php/v1/page/McDonnell_
 
 Landing page:
      - Most popular articles API
-    - Better Search API
-        (show summaries, not sippets of search text
     - Show news storeis based on Wikipedia front page
 
     - Random articles in topcis?
 
 
+Better montage support? Perhaps a new media type that has multiple images but just one caption?
 
 Better Rendering:
 
