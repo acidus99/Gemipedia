@@ -29,11 +29,5 @@ namespace Gemipedia
         public string ReferencesUrl { get; set; }
 
         public string SearchUrl { get; set; }
-
-        /// <summary>
-        /// Should we convert images/media?
-        /// </summary>
-        public bool ShouldConvertMedia { get; set; } = true;
-
     }
 }
