@@ -50,11 +50,11 @@ namespace Gemipedia
 
             CommonUtils.Settings = DefaultSettings;
 
-            if (!CgiWrapper.IsRunningAsCgi)
-            {
-                LocalTesting();
-                return;
-            }
+            //if (!CgiWrapper.IsRunningAsCgi)
+            //{
+            //    LocalTesting();
+            //    return;
+            //}
 
             CgiRouter router = new CgiRouter();
             router.OnRequest("/search", Search);
@@ -62,6 +62,7 @@ namespace Gemipedia
             router.OnRequest("/images", ViewImages);
             router.OnRequest("/media", ProxyMedia);
             router.OnRequest("/refs", ViewRefs);
+            router.OnRequest("/featured", ViewFeatured);
             router.OnRequest("", Welcome);
             router.ProcessRequest();
         }
@@ -76,7 +77,7 @@ namespace Gemipedia
 
             cgi.Success();
             cgi.Writer.WriteLine($"Articles containing '{cgi.SantiziedQuery}'.");
-            var searchResults = client.SearchBetter(cgi.SantiziedQuery);
+            var searchResults = client.Search(cgi.SantiziedQuery);
             if (searchResults.Count == 0)
             {
                 //TODO use "suggest API here
@@ -110,10 +111,11 @@ namespace Gemipedia
             cgi.Writer.WriteLine("Welcome to Gemipedia: A Gemini frontend to Wikipedia, focused on providing a 1st class reading experience.");
             cgi.Writer.WriteLine("");
             cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/view Go to Article");
+            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/search Search for Articles containing a phrase");
             cgi.Writer.WriteLine("");
 
-            
-
+            cgi.Writer.WriteLine("## Featured Content");
+            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/featured Featured Article and 25 most popular articles (updated daily)");
 
             cgi.Writer.WriteLine("## Article Examples:");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("History of Apple Inc.")} History of Apple Inc.");
@@ -123,6 +125,43 @@ namespace Gemipedia
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Interface Message Processor")} Interface Message Processor");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("ALOHAnet")} ALOHAnet");
 
+        }
+
+        static void ViewFeatured(CgiWrapper cgi)
+        {
+            CommonUtils.Settings = DefaultSettings;
+
+            cgi.Success();
+
+            cgi.Writer.WriteLine($"# Gemipedia Featured Content {DateTime.Now.ToString("yyyy-MM-dd")}");
+            cgi.Writer.WriteLine("Compelling content pulled every day from the from page of Wikipedia");
+
+            cgi.Writer.WriteLine("## Daily Featured Article");
+
+            var featured = client.GetFeaturedContent();
+
+            cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(featured.FeaturedArticle.Title)} {featured.FeaturedArticle.Title}");
+            if (!string.IsNullOrEmpty(featured.FeaturedArticle.ThumbnailUrl))
+            {
+                cgi.Writer.WriteLine($"=> {CommonUtils.MediaProxyUrl(featured.FeaturedArticle.ThumbnailUrl)} Featured Image: {featured.FeaturedArticle.Title}");
+            }
+            cgi.Writer.WriteLine($">{ featured.FeaturedArticle.Excerpt}");
+            cgi.Writer.WriteLine();
+
+            cgi.Writer.WriteLine("### 25 most viewed articles on Wikipedia today");
+            int counter = 0;
+            foreach (var article in featured.PopularArticles)
+            {
+                counter++;
+                cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(article.Title)} {counter}. {article.Title}");
+                if (!string.IsNullOrEmpty(article.ThumbnailUrl))
+                {
+                    cgi.Writer.WriteLine($"=> {CommonUtils.MediaProxyUrl(article.ThumbnailUrl)} Featured Image: {article.Title}");
+                }
+                cgi.Writer.WriteLine($">{article.SummaryText}");
+                cgi.Writer.WriteLine();
+            }
+            RenderFooter(cgi);
         }
 
         static void ViewArticle(CgiWrapper cgi)
