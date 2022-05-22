@@ -14,8 +14,8 @@ namespace Gemipedia.Renderer
         ConverterSettings Settings;
         TextWriter Writer;
         ParsedPage Page;
-        
-        int sectionNum;
+
+        SectionRenderer sectionRenderer;
 
         public ArticleRenderer(ConverterSettings settings)
         {
@@ -26,10 +26,12 @@ namespace Gemipedia.Renderer
         {
             Writer = writer;
             Page = parsedPage;
+            sectionRenderer = new SectionRenderer(Settings, parsedPage.Title);
+
             RenderArticleHeader();
             foreach(var section in parsedPage.Sections)
             {
-                Writer.Write(RenderSection(section));
+                Writer.Write(sectionRenderer.RenderSection(section));
             }
             RenderArticleFooter(parsedPage);
         }
@@ -56,74 +58,6 @@ namespace Gemipedia.Renderer
             Writer.WriteLine($"=> {CommonUtils.WikipediaSourceUrl(Page.EscapedTitle)} Read '{Page.Title}' on Wikipedia");
         }
 
-        private string RenderSection(Section section)
-        {
-            sectionNum++;
-
-            StringBuilder sb = new StringBuilder();
-            if (section.HasNavSuggestions)
-            {
-                //render navigation items at top
-                foreach (var nav in section.NavSuggestions)
-                {
-                    sb.Append(nav.Render());
-                }
-                //add a blank link, since nav suggestion can be long
-                sb.AppendLine();
-            }
-
-            //other content below, in order
-            foreach (SectionItem item in section.GeneralContent)
-            {
-                //skip media items if configured to do so
-                if(!Settings.ShouldConvertMedia && item is MediaItem)
-                {
-                    continue;
-                }
-                sb.Append(item.Render());
-            }
-
-            foreach (var infoBox in section.Infoboxes)
-            {
-                //skip media items if configured to do so
-                sb.Append(infoBox.Render());
-            }
-
-            if(section.Links.HasLinks && !ShouldExcludeSectionIndex(section))
-            {
-                sb.AppendLine($"=> {CommonUtils.ReferencesUrl(Page.Title, sectionNum)} Section links: ({section.Links.Count} Articles)");
-            }
-
-            foreach (var subSection in section.SubSections)
-            {
-                sb.Append(RenderSection(subSection));
-            }
-
-            //if a section has no content, don't write anything
-            if(sb.Length == 0)
-            {
-                return "";
-            }
-
-            StringBuilder completeSection = new StringBuilder();
-            if (!section.IsSpecial)
-            {
-                if (section.SectionDepth == 2)
-                {
-                    completeSection.AppendLine($"## {section.Title}");
-                }
-                else
-                {
-                    //all other sections are at a level 3
-                    completeSection.AppendLine($"### {section.Title}");
-                }
-            }
-            completeSection.Append(sb.ToString());
-            return completeSection.ToString();
-        }
-
-        private bool ShouldExcludeSectionIndex(Section section)
-            => Settings.ArticleLinkSections.Contains(section.Title?.ToLower());
 
     }
 }
