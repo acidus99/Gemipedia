@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 
@@ -12,8 +13,10 @@ namespace Gemipedia.API
 	public static class ResponseParser
 	{
 
-		public static Article ParseArticleResponse(JObject response)
+		public static Article ParseArticleResponse(string json)
         {
+            var response = ParseJson(json);
+
             if (response["error"] != null)
             {
                 //error loading page!
@@ -28,13 +31,14 @@ namespace Gemipedia.API
             };
         }
 
-        public static List<SearchResult> ParseSearchResponse(JObject response)
+        public static List<ArticleSummary> ParseSearchResponse(string json)
         {
-            List<SearchResult> ret = new List<SearchResult>();
+            var response = ParseJson(json);
+            List<ArticleSummary> ret = new List<ArticleSummary>();
 
             foreach (JObject result in (response["pages"] as JArray))
             {
-                ret.Add(new SearchResult
+                ret.Add(new ArticleSummary
                 {
                     Title = Cleanse(result["title"]),
                     Excerpt = StripHtml(Cleanse(result["excerpt"])),
@@ -45,23 +49,60 @@ namespace Gemipedia.API
             return ret;
         }
 
+        public static FeaturedContent ParseFeaturedContentResponse(string json)
+        {
+            var response = ParseJson(json);
+
+            return new FeaturedContent
+            {
+                FeaturedArticle = ParseArticleSummary(response["tfa"] as JObject),
+                PopularArticles = ParsePopularArticles(response["mostread"] as JObject)
+            };
+        }
+
+        private static List<ArticleSummary> ParsePopularArticles(JObject articles)
+        {
+            List<ArticleSummary> ret = new List<ArticleSummary>();
+            foreach(JObject article in (articles["articles"] as JArray).Take(25))
+            {
+                ret.Add(ParseArticleSummary(article));
+            }
+            return ret;
+        }
+
+        private static ArticleSummary ParseArticleSummary(JObject summary)
+        {
+            return new ArticleSummary
+            {
+                Title = Cleanse(summary["normalizedtitle"]),
+                Description = Cleanse(summary["description"]),
+                //already text formatted!
+                Excerpt = Cleanse(summary["extract"]),
+                ThumbnailUrl = GetThumbnailUrl(summary["thumbnail"] as JObject)
+            };
+        }
+
         private static string GetThumbnailUrl(JObject thumb)
         {
             //result["thumbnail"]?["url"]? doesn't seem to work
             if (thumb != null)
             {
-                var url = thumb["url"]?.ToString() ?? "";
+                var url = thumb["url"]?.ToString() ??
+                            thumb["source"]?.ToString() ?? "";
                 if (url.Length > 0)
                 {
                     return CommonUtils.EnsureHttps(url);
                 }
             }
+
             return "";
         }
 
         private static string Cleanse(JToken token)
             => token?.ToString() ?? "";
 
+        private static JObject ParseJson(string json)
+            => JObject.Parse(json);
 
         private static string StripHtml(string s)
             => WebUtility.HtmlDecode(Regex.Replace(s, @"<[^>]*>", "")) + "...";

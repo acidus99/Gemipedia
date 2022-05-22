@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Gemipedia.API.Models
 {
-    public class SearchResult
+    public class ArticleSummary
     {
         public string Title { get; set; }
         public long PageId { get; set; }
@@ -15,6 +15,5 @@ namespace Gemipedia.API.Models
 
         public string SummaryText
             => !String.IsNullOrEmpty(Description) ? Description : Excerpt;
-
     }
 }

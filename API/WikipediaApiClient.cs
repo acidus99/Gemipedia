@@ -31,11 +31,10 @@ namespace Gemipedia.API
             return ResponseParser.ParseArticleResponse(FetchString(url));
         }
 
-        public string GetTodayFeed()
+        public FeaturedContent GetFeaturedContent()
         {
-            var url = $"https://en.wikipedia.org/api/rest_v1/feed/featured/{DateTime.Now.ToString("yyyy/mm/dd")}";
-            var json = FetchString(url);
-            return "";
+            var url = $"https://en.wikipedia.org/api/rest_v1/feed/featured/{DateTime.Now.ToString("yyyy/MM/dd")}";
+            return ResponseParser.ParseFeaturedContentResponse(FetchString(url));
         }
 
         /// <summary>
@@ -43,7 +42,7 @@ namespace Gemipedia.API
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public List<SearchResult> Search(string query)
+        public List<ArticleSummary> Search(string query)
         {
             var url = $"https://en.wikipedia.org/w/rest.php/v1/search/page?q={WebUtility.UrlEncode(query)}&limit=25";
             return ResponseParser.ParseSearchResponse(FetchString(url));
