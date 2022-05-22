@@ -37,3 +37,5 @@
 - Feature: Includes search snippet in search results
 - Feature: Use the 1.5x image if 2x image is not available
 - Feature: Support for Image Galleries (images would show up using generic media finder, but wasn't getting the appropriate caption)
+- Feature: Add links to search for other pages about an article
+- Feature: Added Featured Content view from front page of Wikipedia. Contains Featured Article and most popular pages
