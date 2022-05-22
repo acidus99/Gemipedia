@@ -1,6 +1,0 @@
-﻿Refactored parsing/Gemtext generation into explicit classes. First way was super fast, since it did everything in one pass. But the code was a mess
-and it prevented me from doing certain things.
-
-Once refactored, I easily implemented:
-- Don't display empty sections
-- organizing index of references by section
