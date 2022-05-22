@@ -80,6 +80,7 @@ namespace Gemipedia.Converter.Special
                 else if (item is ContentItem)
                 {
                     var contentItem = (ContentItem)item;
+                    htmlBuffer.EnsureAtLineStart();
                     htmlBuffer.Append(contentItem);
                 }
             }
