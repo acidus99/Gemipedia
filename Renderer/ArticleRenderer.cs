@@ -14,24 +14,23 @@ namespace Gemipedia.Renderer
         ConverterSettings Settings;
         TextWriter Writer;
         ParsedPage Page;
-
-        SectionRenderer sectionRenderer;
+        int sectionID;
 
         public ArticleRenderer(ConverterSettings settings)
         {
             Settings = settings;
+            sectionID = 0;
         }
 
         public void RenderArticle(ParsedPage parsedPage, TextWriter writer)
         {
             Writer = writer;
             Page = parsedPage;
-            sectionRenderer = new SectionRenderer(Settings, parsedPage.Title);
 
             RenderArticleHeader();
             foreach(var section in parsedPage.Sections)
             {
-                Writer.Write(sectionRenderer.RenderSection(section));
+                Writer.Write(RenderSection(section));
             }
             RenderArticleFooter(parsedPage);
         }
@@ -58,6 +57,72 @@ namespace Gemipedia.Renderer
             Writer.WriteLine($"=> {CommonUtils.WikipediaSourceUrl(Page.EscapedTitle)} Read '{Page.Title}' on Wikipedia");
         }
 
+        public string RenderSection(Section section)
+        {
+            sectionID++;
 
+            SimpleBuffer buffer = new SimpleBuffer();
+            if (section.HasNavSuggestions)
+            {
+                //render navigation items at top
+                foreach (var nav in section.NavSuggestions)
+                {
+                    ContentRenderer.RenderNavSuggestion(buffer, nav);
+                }
+                //add a blank link, since nav suggestion can be long
+                buffer.AppendLine();
+            }
+
+            //other content below, in order
+            foreach (SectionItem item in section.GeneralContent)
+            {
+                if (item is MediaItem)
+                {
+                    ContentRenderer.RenderMedia(buffer, item as MediaItem);
+                }
+                else if (item is ContentItem)
+                {
+                    buffer.Append(((ContentItem)item).Content);
+                }
+            }
+            foreach (var infoBox in section.Infoboxes)
+            {
+                ContentRenderer.RenderInfobox(buffer, infoBox);
+            }
+
+            if (section.Links.HasLinks && !ShouldExcludeSectionIndex(section))
+            {
+                buffer.EnsureAtLineStart();
+                buffer.AppendLine($"=> {CommonUtils.ReferencesUrl(Page.Title, sectionID)} Section links: ({section.Links.Count} Articles)");
+            }
+
+            foreach (var subSection in section.SubSections)
+            {
+                buffer.Append(RenderSection(subSection));
+            }
+
+            //if a section has no content, don't write anything
+            if (!buffer.HasContent)
+            {
+                return "";
+            }
+
+            if (!section.IsSpecial)
+            {
+                if (section.SectionDepth == 2)
+                {
+                    buffer.PrependLine($"## {section.Title}");
+                }
+                else
+                {
+                    //all other sections are at a level 3
+                    buffer.PrependLine($"### {section.Title}");
+                }
+            }
+            return buffer.Content;
+        }
+
+        private static bool ShouldExcludeSectionIndex(Section section)
+            => CommonUtils.Settings.ArticleLinkSections.Contains(section.Title?.ToLower());
     }
 }
