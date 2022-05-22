@@ -83,7 +83,6 @@ namespace Gemipedia.Models
             return null;
         }
 
-
         private void CollectorHelper(Section section, List<MediaItem> images)
         {
             images.AddRange(section.GeneralContent.Where(x => x is MediaItem).Select(x => (MediaItem)x));

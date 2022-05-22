@@ -5,11 +5,5 @@ namespace Gemipedia.Models
     {
         string Content { get; }
     }
-
-    public class TextContent : ITextContent
-    {
-        public string Content { get; set; }
-        public ArticleLinkCollection Links { get; set; }
-    }
 }
 

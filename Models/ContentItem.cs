@@ -3,9 +3,12 @@ namespace Gemipedia.Models
 {
     public class ContentItem : SectionItem, ITextContent
     {
-        public ArticleLinkCollection Links { get; set; }
-
         public string Content { get; set; }
+
+        public bool HasContent
+            => (Content.Trim().Length > 0);
+
+        public ArticleLinkCollection Links { get; set; }
 
         public ContentItem() { }
 
@@ -14,9 +17,6 @@ namespace Gemipedia.Models
             Content = textContent.Content;
             Links = textContent.Links;
         }
-
-        public override string Render()
-            => Content;
     }
 }
 

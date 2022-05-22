@@ -2,6 +2,6 @@
 {
     public abstract class SectionItem
     {
-        public abstract string Render();
+        
     }
 }
