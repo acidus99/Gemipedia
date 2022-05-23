@@ -1,16 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Web;
-
-using Gemini.Cgi;
-using Gemipedia.API;
-using Gemipedia.API.Models;
-using Gemipedia.Converter;
-using Gemipedia.Converter.Special;
-using Gemipedia.Models;
-using Gemipedia.Media;
-using Gemipedia.Renderer;
+﻿using Gemini.Cgi;
 
 namespace Gemipedia.Cgi
 {
