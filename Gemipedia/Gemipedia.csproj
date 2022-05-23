@@ -1,7 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
@@ -13,14 +12,9 @@
     <None Remove="Converter\" />
     <None Remove=".gitignore" />
     <None Remove=".gitattributes" />
-    <None Remove="Converter\Parser\" />
-    <None Remove="Converter\Renderer\" />
-    <None Remove="Converter\Models\" />
     <None Remove="Magick.NET-Q8-AnyCPU" />
-    <None Remove="Converter\Parser\Tables\" />
     <None Remove="Cache\" />
     <None Remove="Media\" />
-    <None Remove="NGConverter\DomFilter\" />
     <None Remove="Renderer\" />
     <None Remove="Models\" />
     <None Remove="Converter\Special\Tables\" />
@@ -40,6 +34,6 @@
     <Folder Include="Converter\Special\Tables\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Gemini.Cgi\Gemini.Cgi.csproj" />
+    <ProjectReference Include="..\..\Gemini.Cgi\Gemini.Cgi.csproj" />
   </ItemGroup>
 </Project>

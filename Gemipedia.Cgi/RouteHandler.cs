@@ -12,62 +12,15 @@ using Gemipedia.Models;
 using Gemipedia.Media;
 using Gemipedia.Renderer;
 
-namespace Gemipedia
+
+namespace Gemipedia.Cgi
 {
-    class Program
-    {
-        static void LocalTesting()
-        {
-            var title = "SCP Foundation";
+	public static class RouteHandler
+	{
 
-            var resp = GetArticle(title);
-            var parsedPage = ParsePage(resp);
-            RenderArticle(parsedPage, Console.Out);
-        }
+        #region Routes
 
-        static WikipediaApiClient client = new WikipediaApiClient();
-
-        private static Article GetArticle(CgiWrapper cgi)
-            => GetArticle(cgi.SantiziedQuery);
-
-        private static Article GetArticle(string title)
-            => client.GetArticle(title);
-
-        private static ParsedPage ParsePage(Article resp)
-        {
-            var newConverter = new WikiHtmlConverter(DefaultSettings);
-            return newConverter.Convert(resp.Title, resp.HtmlText);
-        }
-
-        private static void RenderArticle(ParsedPage page, TextWriter output)
-        {
-            var renderer = new ArticleRenderer(DefaultSettings);
-            renderer.RenderArticle(page, Console.Out);
-        }
-
-        static void Main(string[] args)
-        {
-
-            CommonUtils.Settings = DefaultSettings;
-
-            //if (!CgiWrapper.IsRunningAsCgi)
-            //{
-            //    LocalTesting();
-            //    return;
-            //}
-
-            CgiRouter router = new CgiRouter();
-            router.OnRequest("/search", Search);
-            router.OnRequest("/view", ViewArticle);
-            router.OnRequest("/images", ViewImages);
-            router.OnRequest("/media", ProxyMedia);
-            router.OnRequest("/refs", ViewRefs);
-            router.OnRequest("/featured", ViewFeatured);
-            router.OnRequest("", Welcome);
-            router.ProcessRequest();
-        }
-
-        static void Search(CgiWrapper cgi)
+        public static void Search(CgiWrapper cgi)
         {
             if (!cgi.HasQuery)
             {
@@ -102,10 +55,8 @@ namespace Gemipedia
             RenderFooter(cgi);
         }
 
-        static void Welcome(CgiWrapper cgi)
+        public static void Welcome(CgiWrapper cgi)
         {
-            CommonUtils.Settings = DefaultSettings;
-
             cgi.Success();
             cgi.Writer.WriteLine("# Gemipedia");
             cgi.Writer.WriteLine("Welcome to Gemipedia: A Gemini frontend to Wikipedia, focused on providing a 1st class reading experience.");
@@ -127,10 +78,9 @@ namespace Gemipedia
 
         }
 
-        static void ViewFeatured(CgiWrapper cgi)
-        {
-            CommonUtils.Settings = DefaultSettings;
 
+        public static void ViewFeatured(CgiWrapper cgi)
+        {
             cgi.Success();
 
             cgi.Writer.WriteLine($"# Gemipedia Featured Content {DateTime.Now.ToString("yyyy-MM-dd")}");
@@ -164,7 +114,7 @@ namespace Gemipedia
             RenderFooter(cgi);
         }
 
-        static void ViewArticle(CgiWrapper cgi)
+        public static void ViewArticle(CgiWrapper cgi)
         {
             if (!cgi.HasQuery)
             {
@@ -207,7 +157,7 @@ namespace Gemipedia
             RenderFooter(cgi);
         }
 
-        static void ViewImages(CgiWrapper cgi)
+        public static void ViewImages(CgiWrapper cgi)
         {
 
             var resp = GetArticle(cgi);
@@ -233,7 +183,7 @@ namespace Gemipedia
             RenderFooter(cgi);
         }
 
-        static void ViewRefs(CgiWrapper cgi)
+        public static void ViewRefs(CgiWrapper cgi)
         {
             var query = HttpUtility.ParseQueryString(cgi.RawQuery);
             var title = query["name"] ?? "";
@@ -245,7 +195,7 @@ namespace Gemipedia
             {
                 cgi.Success();
                 var page = ParsePage(resp);
-                var refs = new ReferencesRenderer(DefaultSettings);
+                var refs = new ReferencesRenderer(CommonUtils.Settings);
                 refs.RenderReferences(page, cgi.Writer, section);
             }
             else
@@ -256,7 +206,7 @@ namespace Gemipedia
             RenderFooter(cgi);
         }
 
-        static void ProxyMedia(CgiWrapper cgi)
+        public static void ProxyMedia(CgiWrapper cgi)
         {
             var url = cgi.Query;
             if (!IsSafeMediaUrl(url))
@@ -267,6 +217,29 @@ namespace Gemipedia
             MediaContent media = MediaProcessor.ProcessImage(client.GetMedia(url));
             cgi.Success(media.MimeType);
             cgi.Out.Write(media.Data);
+        }
+
+
+        #endregion
+
+        static WikipediaApiClient client = new WikipediaApiClient();
+
+        private static Article GetArticle(CgiWrapper cgi)
+            => GetArticle(cgi.SantiziedQuery);
+
+        private static Article GetArticle(string title)
+            => client.GetArticle(title);
+
+        private static ParsedPage ParsePage(Article resp)
+        {
+            var newConverter = new WikiHtmlConverter(CommonUtils.Settings);
+            return newConverter.Convert(resp.Title, resp.HtmlText);
+        }
+
+        private static void RenderArticle(ParsedPage page, TextWriter output)
+        {
+            var renderer = new ArticleRenderer(CommonUtils.Settings);
+            renderer.RenderArticle(page, Console.Out);
         }
 
         static bool IsSafeMediaUrl(string url)
@@ -291,17 +264,5 @@ namespace Gemipedia
             cgi.Writer.WriteLine($"=> mailto:acidus@gemi.dev?subject=Gemipedia+issue&body=URL%3A{WebUtility.UrlEncode(cgi.RequestUrl.ToString())} 🐛Report Bug");
             cgi.Writer.WriteLine("All content licensed under CC BY-SA 3.0");
         }
-
-        static ConverterSettings DefaultSettings
-            => new ConverterSettings
-            {
-                ExcludedSections = new string []{ "bibliography", "citations", "external_links", "notes", "references", "further_reading" },
-                ArticleLinkSections = new string[] {"see also"},
-                ArticleUrl = "/cgi-bin/wp.cgi/view",
-                ImageGallerUrl = "/cgi-bin/wp.cgi/images",
-                MediaProxyUrl = "/cgi-bin/wp.cgi/media/media",
-                ReferencesUrl = "/cgi-bin/wp.cgi/refs",
-                SearchUrl = "/cgi-bin/wp.cgi/search",
-            };
     }
 }
