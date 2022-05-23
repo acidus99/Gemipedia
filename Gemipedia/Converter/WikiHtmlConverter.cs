@@ -39,7 +39,7 @@ namespace Gemipedia.Converter
             DomFilter.Global.AddRule("table.sidebar");
             DomFilter.Global.AddRule("table.navbox-vertical");
             //dialogs at top that say something is wrong with the article
-            DomFilter.Global.AddRule("table.metadata");
+            DomFilter.Global.AddRule(".metadata");
             DomFilter.Global.AddRule("div.navbox");
         }
 
