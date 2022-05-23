@@ -14,7 +14,7 @@ using AngleSharp.Dom;
 
 namespace Gemipedia
 {
-    internal static class CommonUtils
+    public static class CommonUtils
     {
         static public ConverterSettings Settings { get;  set; }
 
