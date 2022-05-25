@@ -90,26 +90,41 @@ namespace Gemipedia.Cgi
 
             var featured = client.GetFeaturedContent();
 
-            cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(featured.FeaturedArticle.Title)} {featured.FeaturedArticle.Title}");
-            if (!string.IsNullOrEmpty(featured.FeaturedArticle.ThumbnailUrl))
+            if (featured.FeaturedArticle != null)
             {
-                cgi.Writer.WriteLine($"=> {CommonUtils.MediaProxyUrl(featured.FeaturedArticle.ThumbnailUrl)} Featured Image: {featured.FeaturedArticle.Title}");
+
+                cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(featured.FeaturedArticle.Title)} {featured.FeaturedArticle.Title}");
+                if (!string.IsNullOrEmpty(featured.FeaturedArticle.ThumbnailUrl))
+                {
+                    cgi.Writer.WriteLine($"=> {CommonUtils.MediaProxyUrl(featured.FeaturedArticle.ThumbnailUrl)} Featured Image: {featured.FeaturedArticle.Title}");
+                }
+                cgi.Writer.WriteLine($">{ featured.FeaturedArticle.Excerpt}");
+                cgi.Writer.WriteLine();
             }
-            cgi.Writer.WriteLine($">{ featured.FeaturedArticle.Excerpt}");
-            cgi.Writer.WriteLine();
+            else
+            {
+                cgi.Writer.WriteLine("(Featured article was unavailable)");
+            }
 
             cgi.Writer.WriteLine("### 25 most viewed articles on Wikipedia today");
-            int counter = 0;
-            foreach (var article in featured.PopularArticles)
+
+            if (featured.PopularArticles.Count > 0)
             {
-                counter++;
-                cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(article.Title)} {counter}. {article.Title}");
-                if (!string.IsNullOrEmpty(article.ThumbnailUrl))
+                int counter = 0;
+                foreach (var article in featured.PopularArticles)
                 {
-                    cgi.Writer.WriteLine($"=> {CommonUtils.MediaProxyUrl(article.ThumbnailUrl)} Featured Image: {article.Title}");
+                    counter++;
+                    cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(article.Title)} {counter}. {article.Title}");
+                    if (!string.IsNullOrEmpty(article.ThumbnailUrl))
+                    {
+                        cgi.Writer.WriteLine($"=> {CommonUtils.MediaProxyUrl(article.ThumbnailUrl)} Featured Image: {article.Title}");
+                    }
+                    cgi.Writer.WriteLine($">{article.SummaryText}");
+                    cgi.Writer.WriteLine();
                 }
-                cgi.Writer.WriteLine($">{article.SummaryText}");
-                cgi.Writer.WriteLine();
+            } else
+            {
+                cgi.Writer.WriteLine("(Daily popular articles were unavailable)");
             }
             RenderFooter(cgi);
         }
