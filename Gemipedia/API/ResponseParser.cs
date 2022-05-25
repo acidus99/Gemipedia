@@ -52,7 +52,6 @@ namespace Gemipedia.API
         public static FeaturedContent ParseFeaturedContentResponse(string json)
         {
             var response = ParseJson(json);
-
             return new FeaturedContent
             {
                 FeaturedArticle = ParseArticleSummary(response["tfa"] as JObject),
@@ -63,25 +62,28 @@ namespace Gemipedia.API
         private static List<ArticleSummary> ParsePopularArticles(JObject articles)
         {
             List<ArticleSummary> ret = new List<ArticleSummary>();
-            foreach(JObject article in (articles["articles"] as JArray).Take(25))
+
+            if (articles != null)
             {
-                ret.Add(ParseArticleSummary(article));
+                foreach (JObject article in (articles["articles"] as JArray).Take(25))
+                {
+                    ret.Add(ParseArticleSummary(article));
+                }
             }
             return ret;
         }
 
         private static ArticleSummary ParseArticleSummary(JObject summary)
-        {
-            return new ArticleSummary
-            {
-                Title = Cleanse(summary["normalizedtitle"]),
-                Description = Cleanse(summary["description"]),
-                //already text formatted!
-                Excerpt = Cleanse(summary["extract"]),
-                ThumbnailUrl = GetThumbnailUrl(summary["thumbnail"] as JObject)
-            };
-        }
-
+            => (summary != null) ?
+                new ArticleSummary
+                {
+                    Title = Cleanse(summary["normalizedtitle"]),
+                    Description = Cleanse(summary["description"]),
+                    //already text formatted!
+                    Excerpt = Cleanse(summary["extract"]),
+                    ThumbnailUrl = GetThumbnailUrl(summary["thumbnail"] as JObject)
+                } : null;
+        
         private static string GetThumbnailUrl(JObject thumb)
         {
             //result["thumbnail"]?["url"]? doesn't seem to work
@@ -106,7 +108,6 @@ namespace Gemipedia.API
 
         private static string StripHtml(string s)
             => WebUtility.HtmlDecode(Regex.Replace(s, @"<[^>]*>", "")) + "...";
-
     }
 }
 
