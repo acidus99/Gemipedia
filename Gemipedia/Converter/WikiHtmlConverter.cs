@@ -41,6 +41,8 @@ namespace Gemipedia.Converter
             //dialogs at top that say something is wrong with the article
             DomFilter.Global.AddRule(".metadata");
             DomFilter.Global.AddRule("div.navbox");
+            //geo
+            DomFilter.Global.AddRule("span#coordinates");
         }
 
 
