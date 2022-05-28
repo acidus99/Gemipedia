@@ -58,6 +58,8 @@ namespace Gemipedia.Converter
             RemoveMatchingTags(contentRoot, "span.geo-multi-punct");
             //citation need and other tags
             RemoveMatchingTags(contentRoot, ".noprint");
+            RemoveMatchingTags(contentRoot, ".mbox");
+            RemoveMatchingTags(contentRoot, ".mbox-small");
             //remove the "V T E" meta navbars on certain items
             RemoveMatchingTags(contentRoot, ".navbar");
 
