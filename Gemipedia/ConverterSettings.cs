@@ -4,7 +4,7 @@ namespace Gemipedia
     public class ConverterSettings
     {
         /// <summary>
-        /// URL to use to view an artical. Actual artical passed via query string
+        /// URL to use to view an article. Actual artical passed via query string
         /// </summary>
         public string ArticleUrl { get; set; }
 
