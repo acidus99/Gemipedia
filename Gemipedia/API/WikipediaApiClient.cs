@@ -33,8 +33,25 @@ namespace Gemipedia.API
 
         public FeaturedContent GetFeaturedContent()
         {
+            //if you fetch the most popular content early in the day, there aren't any popular articles
             var url = $"https://en.wikipedia.org/api/rest_v1/feed/featured/{DateTime.Now.ToString("yyyy/MM/dd")}";
-            return ResponseParser.ParseFeaturedContentResponse(FetchString(url));
+
+            var featured = ResponseParser.ParseFeaturedContentResponse(FetchString(url));
+
+            if(featured.PopularArticles.Count == 0)
+            {
+                //clear the cache
+                Cache.Clear(url);
+
+                var yesterday = DateTime.Now.Subtract(new TimeSpan(24, 0, 0));
+                //fetch yesterdays most popular articles
+                url = $"https://en.wikipedia.org/api/rest_v1/feed/featured/{yesterday.ToString("yyyy/MM/dd")}";
+                var oldFeatured = ResponseParser.ParseFeaturedContentResponse(FetchString(url));
+
+                featured.PopularArticles = oldFeatured.PopularArticles;
+            }
+
+            return featured;
         }
 
         /// <summary>
