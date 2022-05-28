@@ -22,6 +22,21 @@ namespace Gemipedia.Cache
 			Lifespan = lifetime;
         }
 
+		public void Clear(string identifier)
+        {
+			//get the key
+			var cacheKey = GetCacheKey(identifier);
+			var filepath = GetPath(cacheKey);
+			try
+			{
+				File.Delete(filepath);
+			}
+			catch (Exception)
+			{
+
+			}
+		}
+
 		public string GetAsString(string identifier)
         {
 
