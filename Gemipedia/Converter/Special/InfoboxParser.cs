@@ -83,6 +83,12 @@ namespace Gemipedia.Converter.Special
                     htmlBuffer.EnsureAtLineStart();
                     htmlBuffer.Append(contentItem);
                 }
+                else if (item is GeoItem)
+                {
+                    var geoItem = (GeoItem)item;
+                    htmlBuffer.EnsureAtLineStart();
+                    htmlBuffer.AppendLine($"=> {geoItem.Url} 🌍 {geoItem.Title}");
+                }
             }
 
             buffer.Links.Add(htmlBuffer);
@@ -120,6 +126,11 @@ namespace Gemipedia.Converter.Special
                 {
                     var contentItem = (ContentItem)item;
                     htmlBuffer.Append(contentItem);
+                } else if(item is GeoItem)
+                {
+                    var geoItem = (GeoItem)item;
+                    htmlBuffer.EnsureAtLineStart();
+                    htmlBuffer.AppendLine($"=> {geoItem.Url} 🌍 {geoItem.Title}");
                 }
             }
 
@@ -127,7 +138,7 @@ namespace Gemipedia.Converter.Special
             var htmlContent = htmlBuffer.Content.Trim();
 
             buffer.EnsureAtLineStart();
-            if (!htmlContent.Contains('\n'))
+            if (!htmlContent.Contains('\n') && !htmlContent.StartsWith("=> "))
             {
                 buffer.AppendLine($"{label}: {htmlContent}");
             }
@@ -216,7 +227,6 @@ namespace Gemipedia.Converter.Special
             {
                 AddNameValue(row.Children[0], row.Children[1]);
             }
-
         }
 
         //some info box data cells have multiple lines of text, separated by

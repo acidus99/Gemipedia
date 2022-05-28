@@ -9,6 +9,12 @@ namespace Gemipedia
         public string ArticleUrl { get; set; }
 
         /// <summary>
+        /// URL to use to view geographic data.
+        /// </summary>
+        public string GeoUrl { get; set; }
+
+
+        /// <summary>
         /// Section titles we should exclude from the converted output
         /// </summary>
         public string[] ExcludedSections { get; set; }

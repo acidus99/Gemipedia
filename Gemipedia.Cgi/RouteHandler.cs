@@ -129,6 +129,24 @@ namespace Gemipedia.Cgi
             RenderFooter(cgi);
         }
 
+        public static void ViewGeo(CgiWrapper cgi)
+        {
+            GeohackParser geoparser = null;
+            try
+            {
+                geoparser = new GeohackParser(cgi.Query);
+            }
+            catch (Exception)
+            {
+                cgi.BadRequest("Invalid geo information");
+                return;
+            }
+            cgi.Success();
+
+            var renderer  = new GeoRenderer();
+            renderer.RenderGeo(geoparser, cgi.Writer);
+        }
+
         public static void ViewArticle(CgiWrapper cgi)
         {
             if (!cgi.HasQuery)
