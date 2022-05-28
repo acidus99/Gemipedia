@@ -22,12 +22,12 @@ namespace Gemipedia.Renderer
             Writer.WriteLine($"=> {CommonUtils.ArticleUrl(geohack.ArticleName)} Back to article");
             Writer.WriteLine();
             Writer.WriteLine($"Place: {geohack.GetPrettyName()}");
-            Writer.WriteLine($"Latitude: {geohack.Latitude}");
-            Writer.WriteLine($"Longitude: {geohack.Longitude}");
-
-
-            Writer.WriteLine($"=> {AppleMapsUrl(geohack)} Open in iOS Maps app");
-            Writer.WriteLine($"=> {GeoUrl(geohack)} Open in default Andriod Maps app");
+            Writer.WriteLine($"Latitude: {geohack.Latitude.ToString("#.####")}");
+            Writer.WriteLine($"Longitude: {geohack.Longitude.ToString("#.####")}");
+            Writer.WriteLine();
+            Writer.WriteLine($"=> {OpenStreetMAps(geohack)} Open in OpenStreetMaps.org");
+            Writer.WriteLine($"=> {AppleMapsUrl(geohack)} Open in Apple Maps app");
+            Writer.WriteLine($"=> {GeoUrl(geohack)} Open in default Andriod Maps app (uses geo: URI)");
             Writer.WriteLine();
         }
 
@@ -35,6 +35,9 @@ namespace Gemipedia.Renderer
             => $"https://maps.apple.com/?ll={geohack.Latitude},{geohack.Longitude}";
 
         private string GeoUrl(GeohackParser geohack)
-            => $"geo:{geohack.Latitude},{geohack.Longitude}";
+            => $"geo:{geohack.Latitude},{geohack.Longitude}?z=15";
+
+        private string OpenStreetMAps(GeohackParser geohack)
+            => $"https://www.openstreetmap.org/?mlat={geohack.Latitude}&mlon={geohack.Longitude}&zoom=15";
     }
 }
