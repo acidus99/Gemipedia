@@ -1,11 +1,20 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using System.Web;
 namespace Gemipedia.Converter.Special
 {
+	/// <summary>
+    /// Parses the URLs used by Geohack.toolforge.org
+    /// </summary>
 	public class GeohackParser
 	{
 		public string ArticleName { get; private set; }
+
+		public bool IsEarth
+			=> (Globe.ToLower() == "earth");
+
+		public string Globe { get; private set; }
 
 		public string GeohackUrl { get; private set; }
 
@@ -17,11 +26,57 @@ namespace Gemipedia.Converter.Special
 
 		public string Title { get; private set; }
 
+		public string Type { get; private set; }
+
 		public string GetPrettyName()
 			=> Title.Length > 0 ? Title : ArticleName;
 
+		public bool HasTypeDescription
+			=> GetTypeDescription().Length > 0;
+
+		public string GetTypeDescription()
+        {
+			switch(Type)
+            {
+				case "airport":
+				case "city":
+				case "country":
+				case "event":
+				case "forest":
+				case "glacier":
+				case "landmark":
+				case "montain":
+				case "river":
+				case "satellite":
+				case "state":
+					return Type.Substring(0, 1).ToUpper() + Type.Substring(1);
+
+				case "edu":
+					return "Educational Institute";
+
+				case "railwaystation":
+					return "Railway Station";
+
+				case "adm1st":
+				case "adm2nd":
+				case "adm3rd":
+					return "Municipality";
+
+				case "waterbody":
+					return "Body of water";
+
+				default:
+					return "";
+
+			}
+        }
+
 		Regex DegreeMinuteSecondDirection = new Regex(@"(\d+)_(\d+)_(\d+)_([NS])_(\d+)_(\d+)_(\d+)_([EW])", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		Regex DegreeDirection = new Regex(@"([\-\.\d]+)_([NS])_([\-\.\d]+)_([EW])", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+		NameValueCollection QueryString;
+
+		string ParamString => QueryString["params"];
 
 		public GeohackParser(string geohackUrl)
 		{
@@ -33,29 +88,34 @@ namespace Gemipedia.Converter.Special
 
 			GeohackUrl = geohackUrl;
 
-			var query = HttpUtility.ParseQueryString(url.Query);
-			ParseLonLot(query["params"]);
+			QueryString = HttpUtility.ParseQueryString(url.Query);
 
-			ArticleName = query["pagename"]?.Replace("_", " ") ?? "";
-			Title = query["title"] ?? "";
-			Language = query["language"] ?? "en";
+			ParseLatLon();
+			ArticleName = ParseArticleName();
+			Globe = ExtractParam("globe") ?? "earth";
+			Language = QueryString["language"] ?? "en";
+			Title = QueryString["title"] ?? "";
+			Type = ExtractParam("type");
 		}
 
-		private void ParseLonLot(string param)
+		private void ParseLatLon()
         {
-			if (DegreeMinuteSecondDirection.IsMatch(param))
+			if (DegreeMinuteSecondDirection.IsMatch(ParamString))
 			{
-				ParseDMSD(param);
+				ParseDMSD(ParamString);
 			}
-			else if (DegreeDirection.IsMatch(param))
+			else if (DegreeDirection.IsMatch(ParamString))
 			{
-				ParseDD(param);
+				ParseDD(ParamString);
 			}
 			else
 			{
-				throw new ApplicationException("Unknown lon/lat format");
+				throw new ApplicationException("Unknown lat/lon format");
 			}
         }
+
+		private string ParseArticleName()
+			=> QueryString["pagename"]?.Replace("_", " ") ?? "";
 
 		private void ParseDMSD(string dms)
         {
@@ -99,6 +159,16 @@ namespace Gemipedia.Converter.Special
 				Longitude *= -1;
 			}
 		}
+
+		private string ExtractParam(string paramName)
+        {
+			var match = Regex.Match(ParamString, @$"_?{paramName}\:([a-zA-Z0-9]+)_?");
+			if(match.Success && match.Groups.Count > 1)
+            {
+				return match.Groups[1].ToString();
+            }
+			return null;
+        }
 
 	}
 }
