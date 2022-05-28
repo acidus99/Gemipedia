@@ -18,6 +18,12 @@ namespace Gemipedia
     {
         static public ConverterSettings Settings { get;  set; }
 
+        public static string ArticleUrl(string title)
+            => $"{Settings.ArticleUrl}?{WebUtility.UrlEncode(title)}";
+
+        public static string ImageGalleryUrl(string title)
+            => $"{Settings.ImageGallerUrl}?{WebUtility.UrlEncode(title)}";
+
         public static string MediaProxyUrl(string url)
         {
             //we need to have an extension on the filename of the media proxy URL, so clients
@@ -36,17 +42,8 @@ namespace Gemipedia
             return $"{Settings.MediaProxyUrl}{ext}?{WebUtility.UrlEncode(url)}";
         }
 
-        public static string ArticleUrl(string title)
-            => $"{Settings.ArticleUrl}?{WebUtility.UrlEncode(title)}";
-
-        public static string ImageGalleryUrl(string title)
-            => $"{Settings.ImageGallerUrl}?{WebUtility.UrlEncode(title)}";
-
         public static string PdfUrl(string escapedTitle)
             => $"https://en.wikipedia.org/api/rest_v1/page/pdf/{WebUtility.UrlEncode(escapedTitle)}";
-
-        public static string WikipediaSourceUrl(string escapedTitle)
-            => $"https://en.wikipedia.org/wiki/{WebUtility.UrlEncode(escapedTitle)}";
 
         public static string ReferencesUrl(string title)
              => $"{Settings.ReferencesUrl}?name={WebUtility.UrlEncode(title)}";
@@ -56,6 +53,9 @@ namespace Gemipedia
 
         public static string SearchUrl(string query)
             => $"{Settings.SearchUrl}?{WebUtility.UrlEncode(query)}";
+
+        public static string WikipediaSourceUrl(string escapedTitle)
+            => $"https://en.wikipedia.org/wiki/{WebUtility.UrlEncode(escapedTitle)}";
 
         public static string PrepareTextContent(string s)
             => s.Trim().Replace("\n", "");
