@@ -145,6 +145,7 @@ namespace Gemipedia.Cgi
 
             var renderer  = new GeoRenderer();
             renderer.RenderGeo(geoparser, cgi.Writer);
+            RenderFooter(cgi);
         }
 
         public static void ViewArticle(CgiWrapper cgi)
