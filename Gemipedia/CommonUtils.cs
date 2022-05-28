@@ -21,6 +21,10 @@ namespace Gemipedia
         public static string ArticleUrl(string title)
             => $"{Settings.ArticleUrl}?{WebUtility.UrlEncode(title)}";
 
+        public static string GeoUrl(string geohackUrl)
+            => $"{Settings.ArticleUrl}?{WebUtility.UrlEncode(geohackUrl)}";
+
+
         public static string ImageGalleryUrl(string title)
             => $"{Settings.ImageGallerUrl}?{WebUtility.UrlEncode(title)}";
 

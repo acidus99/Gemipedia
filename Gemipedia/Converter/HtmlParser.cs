@@ -138,8 +138,7 @@ namespace Gemipedia.Converter
             switch (nodeName)
             {
                 case "a":
-                    buffer.Links.Add(element);
-                    ParseChildern(element);
+                    ProcessAnchor(element);
                     break;
 
                 case "blockquote":
@@ -262,6 +261,19 @@ namespace Gemipedia.Converter
 
         private static bool IsInvisible(HtmlElement element)
            => element.GetAttribute("style")?.Contains("display:none") ?? false;
+
+        private void ProcessAnchor(HtmlElement anchor)
+        {
+            if (GeoParser.IsGeoLink(anchor))
+            {
+                AddItem(GeoParser.ParseGeo(anchor));
+            }
+            else
+            {
+                buffer.Links.Add(anchor);
+                ParseChildern(anchor);
+            }
+        } 
 
         private void ProcessDiv(HtmlElement div)
         {
