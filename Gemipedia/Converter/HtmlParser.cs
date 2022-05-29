@@ -25,6 +25,8 @@ namespace Gemipedia.Converter
 
         private bool inPreformatted = false;
 
+        public bool HasGeminiFormatting { get; private set; } = false;
+
         /// <summary>
         /// should we try and convert list items to links?
         /// </summary>
@@ -98,7 +100,6 @@ namespace Gemipedia.Converter
             }
             else
             {
-
                 //if its not only whitespace add it.
                 if (textNode.TextContent.Trim().Length > 0)
                 {
@@ -142,6 +143,7 @@ namespace Gemipedia.Converter
                     break;
 
                 case "blockquote":
+                    HasGeminiFormatting = true;
                     buffer.EnsureAtLineStart();
                     buffer.InBlockquote = true;
                     ParseChildern(element);
@@ -153,6 +155,7 @@ namespace Gemipedia.Converter
                     break;
 
                 case "dd":
+                    HasGeminiFormatting = true;
                     buffer.EnsureAtLineStart();
                     buffer.SetLineStart("* ");
                     ParseChildern(element);
@@ -200,6 +203,7 @@ namespace Gemipedia.Converter
                     break;
 
                 case "pre":
+                    HasGeminiFormatting = true;
                     buffer.EnsureAtLineStart();
                     buffer.AppendLine("```");
                     inPreformatted = true;
@@ -271,8 +275,8 @@ namespace Gemipedia.Converter
             else
             {
                 buffer.Links.Add(anchor);
-                ParseChildern(anchor);
             }
+            ParseChildern(anchor);
         } 
 
         private void ProcessDiv(HtmlElement div)
@@ -311,6 +315,7 @@ namespace Gemipedia.Converter
             //is this a math element?
             if(element.ClassList.Contains("mwe-math-element"))
             {
+                HasGeminiFormatting = true;
                 //math elements have to be displayed at the start of the like
                 buffer.EnsureAtLineStart();
                 buffer.AppendLine(MathConverter.ConvertMath(element));
@@ -337,6 +342,7 @@ namespace Gemipedia.Converter
 
             if (listDepth == 1)
             {
+                HasGeminiFormatting = true;
                 buffer.EnsureAtLineStart();
                 buffer.SetLineStart("* ");
                 ParseChildern(li);
@@ -344,6 +350,7 @@ namespace Gemipedia.Converter
             }
             else
             {
+                HasGeminiFormatting = true;
                 buffer.EnsureAtLineStart();
                 buffer.SetLineStart("* * ");
                 ParseChildern(li);
@@ -376,7 +383,7 @@ namespace Gemipedia.Converter
                 ParseMulticolmnTable(table);
                 return;
             }
-
+            HasGeminiFormatting = true;
             //treat everying like a table?
             AddItem(WikiTableConverter.ConvertWikiTable(table));
         }
@@ -436,6 +443,7 @@ namespace Gemipedia.Converter
                 var links = li.QuerySelectorAll("a").ToList();
                 if (links.Count > 0 && ArticleLinkCollection.ShouldUseLink(links[0]) && li.TextContent.StartsWith(links[0].TextContent))
                 {
+                    HasGeminiFormatting = true;
                     buffer.EnsureAtLineStart();
                     buffer.SetLineStart($"=> {CommonUtils.ArticleUrl(links[0].GetAttribute("title"))} ");
                     ParseChildern(li);
