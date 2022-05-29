@@ -143,6 +143,13 @@ namespace Gemipedia.Converter.Special
 
         private void AddWideValue(IElement valueCell)
         {
+            //some articles embed tables inside of infoboxes
+            if(IsNestedTable(valueCell))
+            {
+                ParseNestedTable(valueCell);
+                return;
+            }
+
             //step 1, extract out the name
             var parser = new HtmlParser
             {
@@ -185,7 +192,6 @@ namespace Gemipedia.Converter.Special
 
             if (rows?.Length >= 1 && rows[0].ChildElementCount == 1)
             {
-                
                 textExtractor.Extract(rows[0]);
 
                 var title = textExtractor.Content.Trim();
@@ -207,9 +213,20 @@ namespace Gemipedia.Converter.Special
                 (row.Children[0].ChildElementCount >= 1) &&
                 (row.Children[0].Children?[0].QuerySelector("img") != null);
 
-        private void ParseRow(IElement row, int index)
+        private bool IsNestedTable(IElement wideCell)
+            => wideCell.ChildElementCount == 1 && wideCell.Children[0].NodeName.ToLower() == "table" &&
+                wideCell.Children[0].QuerySelector("tr").ChildElementCount == 2;
+
+        private void ParseNestedTable(IElement wideCell)
         {
-            if(shouldSkipFirst && index == 0)
+            var table = wideCell.Children[0];
+            var tableBodyRows = table.QuerySelector("tbody")?.Children ?? null;
+            ParseTableRows(tableBodyRows);
+        }
+
+        private void ParseRow(IElement row, int index, bool isNestedTable)
+        {
+            if(!isNestedTable && shouldSkipFirst && index == 0)
             {
                 return;
             }
@@ -241,7 +258,7 @@ namespace Gemipedia.Converter.Special
             }
         }
 
-        private void ParseTableRows(IHtmlCollection<IElement> rows)
+        private void ParseTableRows(IHtmlCollection<IElement> rows, bool isNestedTable = false)
         {
             if (rows == null)
             {
@@ -249,7 +266,7 @@ namespace Gemipedia.Converter.Special
             }
             for (int i = 0; i < rows.Length; i++)
             {
-                ParseRow(rows[i], i);
+                ParseRow(rows[i], i, isNestedTable);
             }
         }
     }
