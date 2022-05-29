@@ -11,7 +11,6 @@ namespace Gemipedia.Models
     [DebuggerDisplay("Section '{Title}'")]
     public class Section : IArticleLinks
     {
-
         public List<INode> Nodes = new List<INode>();
 
         public ArticleLinkCollection Links { get; private set; } = new ArticleLinkCollection();
