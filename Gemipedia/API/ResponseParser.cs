@@ -42,17 +42,11 @@ namespace Gemipedia.API
                 
                 foreach (JObject result in (response["query"]["geosearch"] as JArray).Skip(1))
                 {
-                    try
+                    ret.Add(new ArticleSummary
                     {
-                        ret.Add(new ArticleSummary
-                        {
-                            Title = Cleanse(result["title"]),
-                            Distance = (int)Math.Round(Convert.ToDouble(result["dist"]?.ToString() ?? "0"))
-                        });
-                    } catch(Exception ex)
-                    {
-                        int x = 4;
-                    }
+                        Title = Cleanse(result["title"]),
+                        Distance = (int)Math.Round(Convert.ToDouble(result["dist"]?.ToString() ?? "0"))
+                    });
                 }
             }
 
