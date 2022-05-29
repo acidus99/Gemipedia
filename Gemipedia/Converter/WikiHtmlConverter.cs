@@ -66,9 +66,11 @@ namespace Gemipedia.Converter
         private void ConvertSection(Section section)
         {
             HtmlParser htmlParser = new HtmlParser();
-            foreach(var node in section.Nodes)
+
+            while (section.Nodes.Count > 0)
             {
-                htmlParser.Parse(node);
+                htmlParser.Parse(section.Nodes[0]);
+                section.Nodes.RemoveAt(0);
             }
 
             section.AddItems(htmlParser.GetItems());
