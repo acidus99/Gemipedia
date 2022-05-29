@@ -16,7 +16,7 @@ namespace Gemipedia.Console
         {
             CommonUtils.Settings = DefaultSettings;
 
-            var title = "F101";
+            var title = "Statue of Liberty";
 
             var article = GetArticle(title);
             var newConverter = new WikiHtmlConverter(CommonUtils.Settings);

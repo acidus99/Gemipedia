@@ -31,11 +31,38 @@ namespace Gemipedia.API
             };
         }
 
-        public static List<ArticleSummary> ParseSearchResponse(string json)
+        public static List<ArticleSummary> ParseGeoSearch(string json)
         {
             var response = ParseJson(json);
             List<ArticleSummary> ret = new List<ArticleSummary>();
 
+            if (response["query"] != null && response["query"]["geosearch"] != null)
+            {
+                //skip the first since that's the article we are on
+                
+                foreach (JObject result in (response["query"]["geosearch"] as JArray).Skip(1))
+                {
+                    try
+                    {
+                        ret.Add(new ArticleSummary
+                        {
+                            Title = Cleanse(result["title"]),
+                            Distance = (int)Math.Round(Convert.ToDouble(result["dist"]?.ToString() ?? "0"))
+                        });
+                    } catch(Exception ex)
+                    {
+                        int x = 4;
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        public static List<ArticleSummary> ParseSearchResponse(string json)
+        {
+            var response = ParseJson(json);
+            List<ArticleSummary> ret = new List<ArticleSummary>();
             foreach (JObject result in (response["pages"] as JArray))
             {
                 ret.Add(new ArticleSummary

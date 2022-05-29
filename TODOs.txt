@@ -1,21 +1,12 @@
 ﻿- requestor only works on happy path. no HTTP/connection/DNS error handling
-- Converter control options
 - stream media bytes directly to client instead of current "store and forward"
-- Use actual MIME type based on file extension, actual filename for proxied media
-
 
 Definitions via Wikitionary: https://en.wiktionary.org/api/rest_v1/#/Page%20content/get_page_definition__term_
 
-
 Links to other languages: https://en.wikipedia.org/w/rest.php/v1/page/McDonnell_F-101_Voodoo/links/language
 
-
 Landing page:
-     - Most popular articles API
-    - Show news storeis based on Wikipedia front page
-
     - Random articles in topcis?
-
 
 Better montage support? Perhaps a new media type that has multiple images but just one caption?
 
@@ -24,14 +15,14 @@ Better Rendering:
 - don't add links to list unless its a "See Also"
 - add "related articles" into content (separate page?)
 - Add most popular links
-- Better selection of defalt video type (lots of devices can't do ogg, etc)
+- Better selection of default video type (lots of devices can't do ogg, etc)
 - support more languages
 - table horizontal lines don't have "+" in right place for colspans
 - Article name is wrong (IPad instead of iPad). This is because of the API I am using
-- links inside of lists can be wrong since they are not started on a new line. See "IPad 2"
-
 
 Infobox:
-    - Find Geohack coorindates and display them. Map View!
     - better handle tables (WW II article)
     - handle places that use single row tables as multi columns (band album chronologies use this to show prev, curren and next album
+	
+Geography:
+Add "Search for articles near X" feature on main page

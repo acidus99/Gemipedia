@@ -39,3 +39,5 @@
 - Feature: Support for Image Galleries (images would show up using generic media finder, but wasn't getting the appropriate caption)
 - Feature: Add links to search for other pages about an article
 - Feature: Added Featured Content view from front page of Wikipedia. Contains Featured Article and most popular pages
+- Feature: Geographic view! Extracts coordinates and provides links to OpenStreetMaps and native Map apps
+- Feature: Find articles near another article

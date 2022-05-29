@@ -20,6 +20,12 @@ namespace Gemipedia.API
             client.Headers.Add(HttpRequestHeader.UserAgent, "GeminiProxy/0.1 (gemini://gemi.dev/; acidus@gemi.dev) gemini-proxy/0.1");
         }
 
+        public List<ArticleSummary> GeoSearch(double lat, double lon)
+        {
+            var url = $"https://en.wikipedia.org/w/api.php?action=query&format=json&list=geosearch&gscoord={lat}%7C{lon}&gsradius=5000&gslimit=100";
+            return ResponseParser.ParseGeoSearch(FetchString(url));
+        }
+
         /// <summary>
         /// Gets an article
         /// </summary>

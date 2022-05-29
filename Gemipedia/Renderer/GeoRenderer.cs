@@ -46,13 +46,14 @@ namespace Gemipedia.Renderer
 
             Writer.WriteLine("## Extras");
             Writer.WriteLine($"=> {geohack.GeohackUrl} Open in GeoHack Launcher");
+            Writer.WriteLine($"=> /cgi-bin/wp.cgi/latlon?lat={geohack.Latitude}&lon={geohack.Longitude}&title={WebUtility.UrlEncode(geohack.ArticleName)} Search for nearby articles");
         }
 
         private string AppleMapsUrl(GeohackParser geohack)
-            => $"https://maps.apple.com/?ll={geohack.Latitude},{geohack.Longitude}";
+            => $"https://maps.apple.com/?q={geohack.Latitude},{geohack.Longitude}&t=m";
 
         private string GeoUrl(GeohackParser geohack)
-            => $"geo:{geohack.Latitude},{geohack.Longitude}?z=15";
+            => $"geo:{geohack.Latitude},{geohack.Longitude}?z=5";
 
         private string OpenStreetMAps(GeohackParser geohack)
             => $"https://www.openstreetmap.org/?mlat={geohack.Latitude}&mlon={geohack.Longitude}&zoom=15";

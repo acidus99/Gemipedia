@@ -55,6 +55,44 @@ namespace Gemipedia.Cgi
             RenderFooter(cgi);
         }
 
+        public static void SearchLatLon(CgiWrapper cgi)
+        {
+            if(!cgi.HasQuery)
+            {
+                cgi.Redirect("/cgi-bin/wp.cgi/");
+                return;
+            }
+
+            var query = HttpUtility.ParseQueryString(cgi.Query);
+
+            cgi.Success();
+
+            var lat = Convert.ToDouble(query["lat"] ?? "0");
+            var lon = Convert.ToDouble(query["lon"] ?? "0");
+            var title = query["title"] ?? "";
+
+            cgi.Writer.WriteLine($"Articles near '{title}'");
+
+            var searchResults = client.GeoSearch(lat, lon);
+            if (searchResults.Count == 0)
+            {
+                cgi.Writer.WriteLine("No results found.");
+                return;
+            }
+            else
+            {
+                int counter = 0;
+                foreach (var result in searchResults)
+                {
+                    counter++;
+                    cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(result.Title)} {counter}. {result.Title}");
+                    cgi.Writer.WriteLine($"* Distance away: {result.Distance} m");
+                    cgi.Writer.WriteLine();
+                }
+            }
+            RenderFooter(cgi);
+        }
+
         public static void Welcome(CgiWrapper cgi)
         {
             cgi.Success();
@@ -75,9 +113,7 @@ namespace Gemipedia.Cgi
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Computer network")} Computer network");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Interface Message Processor")} Interface Message Processor");
             cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("ALOHAnet")} ALOHAnet");
-
         }
-
 
         public static void ViewFeatured(CgiWrapper cgi)
         {
@@ -92,7 +128,6 @@ namespace Gemipedia.Cgi
 
             if (featured.FeaturedArticle != null)
             {
-
                 cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(featured.FeaturedArticle.Title)} {featured.FeaturedArticle.Title}");
                 if (!string.IsNullOrEmpty(featured.FeaturedArticle.ThumbnailUrl))
                 {
@@ -193,7 +228,6 @@ namespace Gemipedia.Cgi
 
         public static void ViewImages(CgiWrapper cgi)
         {
-
             var resp = GetArticle(cgi);
 
             if (resp != null)
