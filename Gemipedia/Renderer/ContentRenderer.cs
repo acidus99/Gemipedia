@@ -7,27 +7,10 @@ namespace Gemipedia.Renderer
 {
     public static class ContentRenderer
     {
-        public static void RenderInfobox(SimpleBuffer buffer, InfoboxItem infoBox)
+        public static void RenderGeo(SimpleBuffer buffer, GeoItem geo)
         {
             buffer.EnsureAtLineStart();
-
-            if (infoBox.HasContent)
-            {
-                var title = string.IsNullOrEmpty(infoBox.CustomTitle)
-                    ? "Quick Facts" :
-                        $"Quick Facts: {infoBox.CustomTitle}";
-
-                buffer.AppendLine($"## {title}");
-            }
-            foreach (var media in infoBox.MediaItems)
-            {
-                RenderMedia(buffer, media);
-            }
-            if (infoBox.HasContent)
-            {
-                buffer.EnsureAtLineStart();
-                buffer.AppendLine(infoBox.Content);
-            }
+            buffer.AppendLine($"=> {geo.Url} 🌍 {geo.Title}");
         }
 
         public static void RenderMedia(SimpleBuffer buffer, MediaItem media)

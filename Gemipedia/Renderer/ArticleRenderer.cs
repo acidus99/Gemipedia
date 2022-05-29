@@ -43,6 +43,7 @@ namespace Gemipedia.Renderer
             {
                 Writer.WriteLine($"=> {CommonUtils.ImageGalleryUrl(Page.Title)} Gallery: {count} images");
             }
+            //TODO: Geo here!
             Writer.WriteLine($"=> {CommonUtils.SearchUrl(Page.Title)} Other articles that mention '{Page.Title}'");
             Writer.WriteLine();
         }
@@ -55,6 +56,44 @@ namespace Gemipedia.Renderer
             Writer.WriteLine($"=> {CommonUtils.SearchUrl(Page.Title)} Search for articles that mention '{Page.Title}'");
             Writer.WriteLine($"=> {CommonUtils.PdfUrl(Page.EscapedTitle)} Download article PDF for offline access");
             Writer.WriteLine($"=> {CommonUtils.WikipediaSourceUrl(Page.EscapedTitle)} Read '{Page.Title}' on Wikipedia");
+        }
+
+        public void RenderInfobox(SimpleBuffer buffer, InfoboxItem infobox)
+        {
+            var title = string.IsNullOrEmpty(infobox.CustomTitle)
+                ? "Quick Facts" :
+                    $"Quick Facts: {infobox.CustomTitle}";
+
+            buffer.EnsureAtLineStart();
+            buffer.AppendLine($"## {title}");
+
+            var navSuggestions = infobox.NavSuggestions;
+            if (navSuggestions.Count() > 0)
+            {
+                //render navigation items at top
+                foreach (var nav in navSuggestions)
+                {
+                    ContentRenderer.RenderNavSuggestion(buffer, nav);
+                }
+                //add a blank link, since nav suggestion can be long
+                buffer.AppendLine();
+            }
+
+            foreach (var geo in infobox.GeoItems)
+            {
+                ContentRenderer.RenderGeo(buffer, geo);
+            }
+
+            foreach (var media in infobox.MediaItems)
+            {
+                ContentRenderer.RenderMedia(buffer, media as MediaItem);
+            }
+
+            buffer.EnsureAtLineStart();
+            foreach (var item in infobox.ContentItems)
+            {
+                buffer.Append(item.Content);
+            }
         }
 
         public string RenderSection(Section section)
@@ -87,7 +126,7 @@ namespace Gemipedia.Renderer
             }
             foreach (var infoBox in section.Infoboxes)
             {
-                ContentRenderer.RenderInfobox(buffer, infoBox);
+                RenderInfobox (buffer, infoBox);
             }
 
             if (section.Links.HasLinks && !ShouldExcludeSectionIndex(section))
