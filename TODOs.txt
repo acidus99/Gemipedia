@@ -22,11 +22,9 @@ Better Rendering:
 
 - Rendering bugs:
     - Empty list entries (Karl Marx infobox)
-
     - tables nested inside tables (Vietnam administrative districts)
 
 Infobox:
-    - better handle tables (WW II article)
     - handle places that use single row tables as multi columns (band album chronologies use this to show prev, curren and next album
 	
 Geography:
