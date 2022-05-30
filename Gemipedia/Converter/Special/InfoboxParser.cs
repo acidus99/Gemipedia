@@ -60,23 +60,61 @@ namespace Gemipedia.Converter.Special
             infobox.AddItem(MediaParser.ConvertMedia(imgContainer, captionContainer));
         }
 
+        private void AddTwoCells(IElement left, IElement right)
+        {
+            if (left.NodeName.ToLower() == "th")
+            {
+                AddNameValue(left, right);
+            }
+            else if (IsComparingRow(left, right))
+            {
+                AddTwoRichCells(left, right);
+            } else
+            {
+                AddNameValue(left, right);
+            }
+        }
+
+        private void AddRichCell(string label, RichContent content)
+        {
+            if (content.NoContent)
+            {
+                //just a placeholder label
+                infobox.AddItem(new ContentItem
+                {
+                    Content = label + ":\n"
+                });
+                return;
+            }
+
+            //Shoudl the label and content be on the same line or not?
+            var labelSuffix = content.IsSingleLine ? ": " : ":\n";
+            infobox.AddItem(new ContentItem
+            {
+                Links = textExtractor.Links,
+                Content = label + labelSuffix
+            });
+
+            infobox.AddItems(content.Items);
+        }
+
+        private void AddTwoRichCells(IElement leftCell, IElement rightCell)
+        {
+            var content = ParseRichCell(leftCell);
+            AddRichCell("[Left Column]", content);
+
+            content = ParseRichCell(rightCell);
+            AddRichCell("[Right Column]", content);
+        }
+
         private void AddNameValue(IElement nameCell, IElement valueCell)
         {
-
             //step 1, extract out the name
             textExtractor.Extract(nameCell);
             var label = CleanLabel(textExtractor.Content);
 
-            var parser = new HtmlParser
-            {
-                ConvertListItems = false,
-            };
-            parser.Parse(valueCell);
-
-            var items = parser.GetItems();
-            var contentItems = items.Where(x => x is ContentItem).Select(x => x as ContentItem).ToList();
-
-            if(contentItems.Count == 0)
+            var valueContent = ParseRichCell(valueCell);
+            if(valueContent.NoContent)
             {
                 //just a placeholder label
                 infobox.AddItem(new ContentItem
@@ -87,46 +125,75 @@ namespace Gemipedia.Converter.Special
                 return;
             }
 
+            //Shoudl the label and content be on the same line or not?
+            var labelSuffix = valueContent.IsSingleLine ? ": " : ":\n";
+            infobox.AddItem(new ContentItem
+            {
+                Links = textExtractor.Links,
+                Content = label + labelSuffix
+            });
+
+            infobox.AddItems(valueContent.Items);
+        }
+
+        private RichContent ParseRichCell(IElement cell)
+        {
+            var parser = new HtmlParser
+            {
+                ConvertListItems = false,
+            };
+            parser.Parse(cell);
+
+            var items = parser.GetItems();
+            var contentItems = items.Where(x => x is ContentItem).Select(x => x as ContentItem).ToList();
+
+            if (contentItems.Count == 0)
+            {
+                // no interesting content
+                return new RichContent
+                {
+                    Items = items,
+                    NoContent = true
+                };
+            }
             if (parser.HasGeminiFormatting || contentItems.Count > 1)
             {
-                //we need separate name/values
-                infobox.AddItem(new ContentItem
+                return new RichContent
                 {
-                    Links = textExtractor.Links,
-                    Content = label + ":" + "\n"
-                });
-
-                infobox.AddItems(EnsureNewline(items));
-                return;
+                    Items = EnsureNewline(items)
+                };
             }
-           
+
             //lets see if it has multiple lines or not
             var content = contentItems[0].Content.Trim();
 
             if (!content.Contains('\n'))
             {
-                //name and value on same line
-                infobox.AddItem(new ContentItem
+                return new RichContent
                 {
-                    Links = textExtractor.Links,
-                    Content = label + ": "
-                });
-                infobox.AddItems(EnsureNewline(items));
+                    IsSingleLine = true,
+                    Items = EnsureNewline(items)
+                };
             }
             else
             {
-                //we need separate name/values
-                infobox.AddItem(new ContentItem
-                {
-                    Links = textExtractor.Links,
-                    Content = label + ":" + "\n"
-                });
+                //convert it to lines
                 buffer.Reset();
                 buffer.Links.Add(contentItems[0]);
                 //convert to a list
-                content.Split("\n", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList()
-                    .ForEach(x => buffer.AppendLine($"* {x}"));
-                infobox.AddItem(new ContentItem(buffer));
+                foreach(var line in content.Split("\n", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                {
+                    buffer.AppendLine($"* {line}");
+                }
+
+                //remove all the content items (only 1) since since we reformatted that into a list
+                items.RemoveAll(x => x is ContentItem);
+                items.Add(new ContentItem(buffer));
+
+                return new RichContent
+                {
+                    Items = items
+                };
             }
         }
 
@@ -205,6 +272,10 @@ namespace Gemipedia.Converter.Special
             return "";
         }
 
+        //are these 2 cells being compared to each other?
+        private bool IsComparingRow(IElement left, IElement right)
+            => left.HasAttribute("style") && left.GetAttribute("style").Replace(" ", "").Contains("border-right:1px");
+
         private bool IsHeader(IElement row, int index)
             => (row.ChildElementCount == 1) && row.Children[0].NodeName == "TH";
 
@@ -221,7 +292,7 @@ namespace Gemipedia.Converter.Special
         {
             var table = wideCell.Children[0];
             var tableBodyRows = table.QuerySelector("tbody")?.Children ?? null;
-            ParseTableRows(tableBodyRows);
+            ParseTableRows(tableBodyRows, true);
         }
 
         private void ParseRow(IElement row, int index, bool isNestedTable)
@@ -254,7 +325,7 @@ namespace Gemipedia.Converter.Special
             }
             else if (row.Children.Length == 2)
             {
-                AddNameValue(row.Children[0], row.Children[1]);
+                AddTwoCells(row.Children[0], row.Children[1]);
             }
         }
 
@@ -269,5 +340,13 @@ namespace Gemipedia.Converter.Special
                 ParseRow(rows[i], i, isNestedTable);
             }
         }
+
+        private class RichContent
+        {
+            public bool NoContent = false;
+            public List<SectionItem> Items;
+            public bool IsSingleLine = false;
+        }
+
     }
 }
