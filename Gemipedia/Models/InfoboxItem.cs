@@ -35,7 +35,7 @@ namespace Gemipedia.Models
                 return;
             }
 
-            if (item is IArticleLinks && !(item is NavSuggestionsItem))
+            if (item is IArticleLinks && ((IArticleLinks)item).Links != null && !(item is NavSuggestionsItem))
             {
                 Links.Add(((IArticleLinks)item).Links);
             }
