@@ -4,10 +4,8 @@ namespace Gemipedia.Cgi
 {
     class Program
     {
-
         static void Main(string[] args)
         {
-
             CommonUtils.Settings = DefaultSettings;
 
             CgiRouter router = new CgiRouter();
