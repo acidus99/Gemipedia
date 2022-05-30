@@ -43,6 +43,8 @@ namespace Gemipedia.Converter
             DomFilter.Global.AddRule("div.navbox");
             //geo
             DomFilter.Global.AddRule("span#coordinates");
+            //hidden content
+            DomFilter.Global.AddRule("div.mw-collapsed");
         }
 
 
