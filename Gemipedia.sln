@@ -9,7 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gemini.Cgi", "..\Gemini.Cgi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{519ED394-B5EA-433F-B298-27949E27193F}"
 	ProjectSection(SolutionItems) = preProject
-		dev-log.txt = dev-log.txt
+		TODOs.txt = TODOs.txt
+		Changelog.txt = Changelog.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gemipedia.Cgi", "Gemipedia.Cgi\Gemipedia.Cgi.csproj", "{678D5030-1D4C-4FF7-ACE3-D5E67DA5F9BA}"
