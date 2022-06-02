@@ -115,9 +115,13 @@ namespace Gemipedia.Converter.Special.Tables
         {
             try
             {
-                var match = Regex.Match(attribValue, @"^(\d+)");
-                return match.Success ? Convert.ToInt32(match.Groups[1].Value) : 1;
-            } catch(Exception)
+                if (attribValue != null)
+                {
+                    var match = Regex.Match(attribValue, @"^(\d+)");
+                    return match.Success ? Convert.ToInt32(match.Groups[1].Value) : 1;
+                }
+            }
+            catch (Exception)
             { }
             return 1;
         }
