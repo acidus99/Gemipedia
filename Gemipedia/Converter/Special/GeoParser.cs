@@ -19,22 +19,13 @@ namespace Gemipedia.Converter.Special
             string url = anchor.GetAttribute("href");
             url = CommonUtils.EnsureHttps(url);
 
-            try
+            GeohackParser geohack = new GeohackParser(url);
+
+            return new GeoItem
             {
-                GeohackParser geohack = new GeohackParser(url);
-
-                return new GeoItem
-                {
-                    Title = $"View Geographic Info: {geohack.GetPrettyName()} ({geohack.Coordinates})",
-                    Url = CommonUtils.GeoUrl(geohack.GeohackUrl)
-                };
-
-            } catch(Exception)
-            {
-
-            }
-
-            return null;
+                Title = $"View Geographic Info: {geohack.GetPrettyName()} ({geohack.Coordinates})",
+                Url = CommonUtils.GeoUrl(geohack.GeohackUrl)
+            };
         }
 
 	}
