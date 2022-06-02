@@ -74,6 +74,7 @@ namespace Gemipedia.Converter.Special
         }
 
 		Regex DegreeMinuteSecondDirection = new Regex(@"(\d+)_(\d+)_(\d+)_([NS])_(\d+)_(\d+)_(\d+)_([EW])", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		Regex DegreeMinuteDirection = new Regex(@"(\d+)_(\d+)_([NS])_(\d+)_(\d+)_([EW])", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		Regex DegreeDirection = new Regex(@"([\-\.\d]+)_([NS])_([\-\.\d]+)_([EW])", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 		NameValueCollection QueryString;
@@ -105,6 +106,10 @@ namespace Gemipedia.Converter.Special
 			if (DegreeMinuteSecondDirection.IsMatch(ParamString))
 			{
 				ParseDMSD(ParamString);
+			}
+			else if (DegreeMinuteDirection.IsMatch(ParamString))
+			{
+				ParseDMD(ParamString);
 			}
 			else if (DegreeDirection.IsMatch(ParamString))
 			{
@@ -142,10 +147,36 @@ namespace Gemipedia.Converter.Special
 				Longitude *= -1;
 			}
 
-			//30°42′32″N 84°51′50″WCoordinates: 30°42′32″N 84°51′50″W[1]
 			Coordinates = string.Format("{0}°{1}′{2}″{3} {4}°{5}′{6}″{7}",
 				match.Groups[1], match.Groups[2], match.Groups[3], match.Groups[4],
 				match.Groups[5], match.Groups[6], match.Groups[7], match.Groups[8]);
+		}
+
+		private void ParseDMD(string dms)
+		{
+			var match = DegreeMinuteDirection.Match(dms);
+
+			//DD = d + (min/60)
+			Latitude = Convert.ToDouble(match.Groups[1].ToString()) +
+						Convert.ToDouble(match.Groups[2].ToString()) / 60d;
+
+			if (match.Groups[4].ToString().ToLower() == "s")
+			{
+				Latitude *= -1;
+			}
+
+			Longitude = Convert.ToDouble(match.Groups[4].ToString()) +
+						Convert.ToDouble(match.Groups[5].ToString()) / 60d;
+
+			if (match.Groups[8].ToString().ToLower() == "w")
+			{
+				Longitude *= -1;
+			}
+
+			//30°42′32″N 84°51′50″WCoordinates: 30°42′32″N 84°51′50″W[1]
+			Coordinates = string.Format("{0}°{1}′{2} {3}°{4}′{5}",
+				match.Groups[1], match.Groups[2], match.Groups[3],
+				match.Groups[4], match.Groups[5], match.Groups[6]);
 		}
 
 		private void ParseDD(string dd)
