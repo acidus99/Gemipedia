@@ -213,10 +213,12 @@ namespace Gemipedia.Converter
                     buffer.AppendLine("```");
                     break;
 
+                case "sub":
+                    ProcessSub(element);
+                    break;
+
                 case "sup":
-                    buffer.Append("^(");
-                    ParseChildern(element);
-                    buffer.Append(")");
+                    ProcessSup(element);
                     break;
 
                 case "table":
@@ -366,6 +368,59 @@ namespace Gemipedia.Converter
             ParseChildern(element);
             listDepth--;
             buffer.EnsureAtLineStart();
+        }
+
+        private void ProcessSub(HtmlElement element)
+        {
+            var textExtractor = new TextExtractor
+            {
+                ShouldCollapseNewlines = true,
+                ShouldConvertImages = false,
+            };
+            textExtractor.Extract(element);
+            
+            var subConverter = new SubscriptConverter();
+            subConverter.Convert(textExtractor.Content);
+            //we don't really have an option for rendering
+            //subscripts beside the unicode conversion,
+            //so use whatever we can convert, regardless of
+            //whether every character could be converted
+            buffer.Append(subConverter.Converted);
+            buffer.Links.Add(textExtractor);
+        }
+
+        private void ProcessSup(HtmlElement element)
+        {
+            var textExtractor = new TextExtractor
+            {
+                ShouldCollapseNewlines = true,
+                ShouldConvertImages = false,
+            };
+            textExtractor.Extract(element);
+            var content = textExtractor.Content.Trim();
+
+            if (content.Length > 0)
+            {
+                var supConverter = new SuperscriptConverter();
+                if (supConverter.Convert(content))
+                {
+                    //we successfully converted everything
+                    buffer.Append(supConverter.Converted);
+                }
+                //couldn't convert, fall back to using ^...
+                else if (content.Length == 1)
+                {
+                    buffer.Append("^");
+                    buffer.Append(content);
+                }
+                else
+                {
+                    buffer.Append("^(");
+                    buffer.Append(content);
+                    buffer.Append(")");
+                }
+                buffer.Links.Add(textExtractor);
+            }
         }
 
         private void ProcessTable(HtmlElement table)
