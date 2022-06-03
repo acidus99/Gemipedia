@@ -21,6 +21,9 @@ namespace Gemipedia.Models
         public List<InfoboxItem> Infoboxes = new List<InfoboxItem>();
 
         //content and images
+        public List<GeoItem> GeoItems = new List<GeoItem>();
+
+        //content and images
         public List<SectionItem> GeneralContent = new List<SectionItem>();
 
         public bool HasNavSuggestions
@@ -48,6 +51,11 @@ namespace Gemipedia.Models
             else if (item is NavSuggestionsItem)
             {
                 NavSuggestions.Add((NavSuggestionsItem)item);
+            }
+            else if (item is GeoItem)
+            {
+                GeoItems.Add((GeoItem)item);
+
             }
             else
             {

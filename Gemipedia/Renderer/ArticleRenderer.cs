@@ -112,6 +112,11 @@ namespace Gemipedia.Renderer
                 buffer.AppendLine();
             }
 
+            foreach (var geo in section.GeoItems)
+            {
+                ContentRenderer.RenderGeo(buffer, geo);
+            }
+
             //other content below, in order
             foreach (SectionItem item in section.GeneralContent)
             {
