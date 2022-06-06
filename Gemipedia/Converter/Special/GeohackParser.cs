@@ -160,7 +160,7 @@ namespace Gemipedia.Converter.Special
 			Latitude = Convert.ToDouble(match.Groups[1].ToString()) +
 						Convert.ToDouble(match.Groups[2].ToString()) / 60d;
 
-			if (match.Groups[4].ToString().ToLower() == "s")
+			if (match.Groups[3].ToString().ToLower() == "s")
 			{
 				Latitude *= -1;
 			}
@@ -168,7 +168,7 @@ namespace Gemipedia.Converter.Special
 			Longitude = Convert.ToDouble(match.Groups[4].ToString()) +
 						Convert.ToDouble(match.Groups[5].ToString()) / 60d;
 
-			if (match.Groups[8].ToString().ToLower() == "w")
+			if (match.Groups[6].ToString().ToLower() == "w")
 			{
 				Longitude *= -1;
 			}
