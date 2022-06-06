@@ -41,3 +41,5 @@
 - Feature: Added Featured Content view from front page of Wikipedia. Contains Featured Article and most popular pages
 - Feature: Geographic view! Extracts coordinates and provides links to OpenStreetMaps and native Map apps
 - Feature: Find articles near another article
+- Feature: Support chemical and physics formulas by converting subscripts and superscript tags into Unicode Subscript/Superscript characters!
+- Feature: Support side-by-side comparisons in Infoboxes (basicaly any article about a conflict, .e.g. World War II)
