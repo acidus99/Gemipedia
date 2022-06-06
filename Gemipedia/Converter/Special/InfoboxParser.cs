@@ -114,24 +114,28 @@ namespace Gemipedia.Converter.Special
             var label = CleanLabel(textExtractor.Content);
 
             var valueContent = ParseRichCell(valueCell);
-            if(valueContent.NoContent)
+
+            if (label.Length > 0)
             {
-                //just a placeholder label
+                if (valueContent.NoContent)
+                {
+                    //just a placeholder label
+                    infobox.AddItem(new ContentItem
+                    {
+                        Links = textExtractor.Links,
+                        Content = label + ":" + "\n"
+                    });
+                    return;
+                }
+
+                //Should the label and content be on the same line or not?
+                var labelSuffix = valueContent.IsSingleLine ? ": " : ":\n";
                 infobox.AddItem(new ContentItem
                 {
                     Links = textExtractor.Links,
-                    Content = label + ":" + "\n"
+                    Content = label + labelSuffix
                 });
-                return;
             }
-
-            //Shoudl the label and content be on the same line or not?
-            var labelSuffix = valueContent.IsSingleLine ? ": " : ":\n";
-            infobox.AddItem(new ContentItem
-            {
-                Links = textExtractor.Links,
-                Content = label + labelSuffix
-            });
 
             infobox.AddItems(valueContent.Items);
         }
@@ -228,6 +232,8 @@ namespace Gemipedia.Converter.Special
 
         private string CleanLabel(string text)
         {
+            text = text.Trim();
+
             //some labels attempt to look like a bulleted list, even though
             //each entry is a different row, and use a "•" character. remove it
             if (text.StartsWith("•") && text.Length > 1)
@@ -240,11 +246,15 @@ namespace Gemipedia.Converter.Special
             {
                 text = text.Substring(0, text.Length - 1);
             }
-
-            text = text.Trim();
-            //capitalize the first letter
-            text = text.Substring(0, 1).ToUpper() + text.Substring(1);
-
+            if (text.Length > 1)
+            {
+                //capitalize the first letter
+                text = text.Substring(0, 1).ToUpper() + text.Substring(1);
+            }
+            else if (text.Length == 1)
+            {
+                text = text.ToUpper();
+            }
             return text;
         }
 
