@@ -24,6 +24,7 @@ namespace Gemipedia.Converter
         Buffer buffer = new Buffer();
 
         private bool inPreformatted = false;
+        private bool inMathformula = false;
 
         public bool HasGeminiFormatting { get; private set; } = false;
 
@@ -176,9 +177,16 @@ namespace Gemipedia.Converter
                     break;
 
                 case "i":
-                    buffer.Append("\"");
-                    ParseChildern(element);
-                    buffer.Append("\"");
+                    if (inMathformula)
+                    {
+                        ParseChildern(element);
+                    }
+                    else
+                    {
+                        buffer.Append("\"");
+                        ParseChildern(element);
+                        buffer.Append("\"");
+                    }
                     break;
 
                 case "li":
@@ -321,6 +329,17 @@ namespace Gemipedia.Converter
                 //math elements have to be displayed at the start of the like
                 buffer.EnsureAtLineStart();
                 buffer.AppendLine(MathConverter.ConvertMath(element));
+                return;
+            } 
+
+            if(element.ClassList.Contains("texhtml") && !inMathformula)
+            {
+                inMathformula = true;
+                buffer.Append("\"");
+                ParseChildern(element);
+                buffer.Append("\"");
+                inMathformula = false;
+                return;
             }
 
             if (ShouldDisplayAsBlock(element))
