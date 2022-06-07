@@ -87,6 +87,7 @@ namespace Gemipedia.Converter.Special
 				case ')':
 					return '\u207E';
 
+				//Lowercase
 				case 'a':
 					return '\u1D43';
 				case 'b':
@@ -121,7 +122,6 @@ namespace Gemipedia.Converter.Special
 					return '\u1D56';
 				// there is no widely support Q subscript
 				//case 'q':
-					
 				case 'r':
 					return '\u02B3';
 				case 's':
@@ -140,6 +140,47 @@ namespace Gemipedia.Converter.Special
 					return '\u02B8';
 				case 'z':
 					return '\u1DBB';
+
+				//uppercase
+				case 'A':
+					return '\u1D2C';
+				case 'B':
+					return '\u1D2E';
+				case 'D':
+					return '\u1D30';
+				case 'E':
+					return '\u1D31';
+				case 'G':
+					return '\u1D33';
+				case 'H':
+					return '\u1D34';
+				case 'I':
+					return '\u1D35';
+				case 'J':
+					return '\u1D36';
+				case 'K':
+					return '\u1D37';
+				case 'L':
+					return '\u1D38';
+				case 'M':
+					return '\u1D39';
+				case 'N':
+					return '\u1D3A';
+				case 'O':
+					return '\u1D3C';
+				case 'P':
+					return '\u1D3E';
+				case 'R':
+					return '\u1D3F';
+				case 'T':
+					return '\u1D40';
+				case 'U':
+					return '\u1D41';
+				case 'V':
+					return '\u2C7D';
+				case 'W':
+					return '\u1D42';
+
 			}
 			IsFullyConverted = false;
 			return c;
