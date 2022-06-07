@@ -31,6 +31,10 @@ Minor League Baseball
 Pablo Picasso
     Gallerys
 
+Physical constant
+    SUB that doesn't directly translate
+    <i> next to <sub> to be avoided
+
 Schitt's Creek
     table with colspans and rowspans
 
