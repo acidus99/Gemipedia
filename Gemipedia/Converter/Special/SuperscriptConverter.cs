@@ -181,6 +181,27 @@ namespace Gemipedia.Converter.Special
 				case 'W':
 					return '\u1D42';
 
+				//greek
+				case 'α':
+					return '\u1D45';
+				case 'β':
+					return '\u1D5D';
+				case 'γ':
+					return '\u1D5E';
+				case 'δ':
+					return '\u1D5F';
+				case '∊':
+					return '\u1D4B';
+				case 'θ':
+					return '\u1DBF';
+				case 'ι':
+					return '\u1DA5';
+				case 'Φ':
+					return '\u1DB2';
+				case 'φ':
+					return '\u1D60';
+				case 'χ':
+					return '\u1D61';
 			}
 			IsFullyConverted = false;
 			return c;

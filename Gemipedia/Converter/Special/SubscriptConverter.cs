@@ -136,6 +136,17 @@ namespace Gemipedia.Converter.Special
 				case 'X':
 					return '\u2093';
 
+				//greek
+				case 'β':
+					return '\u1D66';
+				case 'γ':
+					return '\u1D67';
+				case 'ρ':
+					return '\u1D68';
+				case 'φ':
+					return '\u1D69';
+				case 'χ':
+					return '\u1D6A';
 			}
 			IsFullyConverted = false;
 			return c;
