@@ -413,15 +413,29 @@ namespace Gemipedia.Converter
                 ShouldConvertImages = false,
             };
             textExtractor.Extract(element);
-            
-            var subConverter = new SubscriptConverter();
-            subConverter.Convert(textExtractor.Content);
-            //we don't really have an option for rendering
-            //subscripts beside the unicode conversion,
-            //so use whatever we can convert, regardless of
-            //whether every character could be converted
-            buffer.Append(subConverter.Converted);
-            buffer.Links.Add(textExtractor);
+
+            var content = textExtractor.Content.Trim();
+            if (content.Length > 0) {
+                var subConverter = new SubscriptConverter();
+                if (subConverter.Convert(content))
+                {
+                    //we successfully converted everything
+                    buffer.Append(subConverter.Converted);
+                }
+                //couldn't convert, fall back to using ⌄ ...
+                else if (content.Length == 1)
+                {
+                    buffer.Append("˅");
+                    buffer.Append(content);
+                }
+                else
+                {
+                    buffer.Append("˅(");
+                    buffer.Append(content);
+                    buffer.Append(")");
+                }
+                buffer.Links.Add(textExtractor);
+            }
         }
 
         private void ProcessSup(HtmlElement element)
