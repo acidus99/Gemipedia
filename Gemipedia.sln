@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		TODOs.txt = TODOs.txt
 		Changelog.txt = Changelog.txt
+		Test Cases.txt = Test Cases.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gemipedia.Cgi", "Gemipedia.Cgi\Gemipedia.Cgi.csproj", "{678D5030-1D4C-4FF7-ACE3-D5E67DA5F9BA}"

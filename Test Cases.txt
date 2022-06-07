@@ -1,13 +1,11 @@
-﻿Minor League Baseball
-    Image with overlays
-    tables
-    nested lists
+﻿Area of a circle
+    Math in MathML
+    Math in texhtml
+    SUP
+    SUB
 
-"Hello, World!" program
-    PRE tags
-
-Pablo Picasso
-    Gallerys
+Broadway theatre
+    image map
 
 Chip 'n Dale: Rescue Rangers (film)
     Montage images (also WW II)
@@ -16,3 +14,25 @@ Cohomology
     Math (in DIVs not spans)
     SUP
 
+"Hello, World!" program
+    PRE tags
+
+iPad
+    Multiple navigation suggestions
+    Timeline
+
+
+Minor League Baseball
+    Image with overlays
+    tables
+    tables for layout
+    nested lists
+
+Pablo Picasso
+    Gallerys
+
+Schitt's Creek
+    table with colspans and rowspans
+
+Unicode subscripts and superscripts
+    nested tables
