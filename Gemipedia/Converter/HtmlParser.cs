@@ -177,15 +177,15 @@ namespace Gemipedia.Converter
                     break;
 
                 case "i":
-                    if (inMathformula)
+                    if (ShouldUseItalics(element))
                     {
+                        buffer.Append("\"");
                         ParseChildern(element);
+                        buffer.Append("\"");
                     }
                     else
                     {
-                        buffer.Append("\"");
                         ParseChildern(element);
-                        buffer.Append("\"");
                     }
                     break;
 
@@ -270,6 +270,22 @@ namespace Gemipedia.Converter
                 return false;
             }
 
+            return true;
+        }
+
+        //should we use apply italic formatting around this element?
+        private bool ShouldUseItalics(HtmlElement element)
+        {
+            //if we are already inside a math formula, don't do italics
+            if(inMathformula)
+            {
+                return false;
+            }
+            var siblingTag = element.NextElementSibling?.NodeName?.ToLower() ?? "";
+            if(siblingTag == "sub" || siblingTag == "sup")
+            {
+                return false;
+            }
             return true;
         }
 
