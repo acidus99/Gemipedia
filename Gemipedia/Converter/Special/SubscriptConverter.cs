@@ -85,38 +85,55 @@ namespace Gemipedia.Converter.Special
 
 				//some letters
 				case 'a':
+				case 'A':
 					return '\u2090';
 				case 'e':
+				case 'E':
 					return '\u2091';
 				case 'h':
+				case 'H':
 					return '\u2095';
 				case 'i':
+				case 'I':
 					return '\u1D62';
 				case 'j':
+				case 'J':
 					return '\u2C7C';
 				case 'k':
+				case 'K':
 					return '\u2096';
 				case 'l':
+				case 'L':
 					return '\u2097';
 				case 'm':
+				case 'M':
 					return '\u2098';
 				case 'n':
+				case 'N':
 					return '\u2099';
 				case 'o':
+				case 'O':
 					return '\u2092';
 				case 'p':
+				case 'P':
 					return '\u209A';
 				case 'r':
+				case 'R':
 					return '\u1D63';
 				case 's':
+				case 'S':
 					return '\u209B';
 				case 't':
+				case 'T':
 					return '\u209C';
 				case 'u':
+				case 'U':
 					return '\u1D64';
 				case 'v':
+				case 'V':
 					return '\u1D65';
 				case 'x':
+				case 'X':
 					return '\u2093';
 
 			}
