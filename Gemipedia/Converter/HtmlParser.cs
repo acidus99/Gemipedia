@@ -298,6 +298,11 @@ namespace Gemipedia.Converter
             {
                 AddItem(GeoParser.ParseGeo(anchor));
             }
+            else if (IsWikiDataLink(anchor))
+            {
+                //we don't want to process the children if this links to Wikidata
+                return;
+            }
             else
             {
                 buffer.Links.Add(anchor);
@@ -525,6 +530,10 @@ namespace Gemipedia.Converter
                 element.Children[0].NodeName == "TBODY" &&
                 element.Children[0].HasChildNodes &&
                 element.Children[0].Children[0].NodeName == "TR";
+
+        //does an anchor point to Wikidata?
+        private bool IsWikiDataLink(HtmlElement element)
+            => element.GetAttribute("href")?.Contains("//www.wikidata.org/") ?? false;
 
         private void ParseMulticolmnTable(HtmlElement table)
         {
