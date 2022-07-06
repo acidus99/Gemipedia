@@ -38,5 +38,10 @@ Physical constant
 Schitt's Creek
     table with colspans and rowspans
 
+Signal (software)
+    nested tables in infobox
+    montage
+    links to wikidata
+
 Unicode subscripts and superscripts
     nested tables
