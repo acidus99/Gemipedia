@@ -26,6 +26,9 @@ namespace Gemipedia.Converter.Special
         public InfoboxItem Parse(HtmlElement table)
         {
             var tableBodyRows = table.QuerySelector("tbody")?.Children ?? null;
+
+            var check = tableBodyRows.ToArray();
+            
             infobox.CustomTitle = ExtractTitle(table, tableBodyRows);
             ParseTableRows(tableBodyRows);
 
@@ -214,13 +217,6 @@ namespace Gemipedia.Converter.Special
 
         private void AddWideValue(IElement valueCell)
         {
-            //some articles embed tables inside of infoboxes
-            if(IsNestedTable(valueCell))
-            {
-                ParseNestedTable(valueCell);
-                return;
-            }
-
             //step 1, extract out the name
             var parser = new HtmlParser
             {
@@ -294,16 +290,11 @@ namespace Gemipedia.Converter.Special
                 (row.Children[0].ChildElementCount >= 1) &&
                 (row.Children[0].Children?[0].QuerySelector("img") != null);
 
-        private bool IsNestedTable(IElement wideCell)
-            => wideCell.ChildElementCount == 1 && wideCell.Children[0].NodeName.ToLower() == "table" &&
-                wideCell.Children[0].QuerySelector("tr").ChildElementCount == 2;
+        private bool IsNestedTable(IElement row)
+            => row.QuerySelector("td table tbody") != null;
 
-        private void ParseNestedTable(IElement wideCell)
-        {
-            var table = wideCell.Children[0];
-            var tableBodyRows = table.QuerySelector("tbody")?.Children ?? null;
-            ParseTableRows(tableBodyRows, true);
-        }
+        private void ParseNestedTable(IElement row)
+            => ParseTableRows(row.QuerySelector("td table tbody")?.Children ?? null, true);
 
         private void ParseRow(IElement row, int index, bool isNestedTable)
         {
@@ -324,6 +315,10 @@ namespace Gemipedia.Converter.Special
             if (IsHeader(row, index))
             {
                 AddHeader(row);
+            }
+            else if(IsNestedTable(row))
+            {
+                ParseNestedTable(row);
             }
             else if (IsMedia(row))
             {
