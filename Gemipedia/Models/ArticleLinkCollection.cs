@@ -111,6 +111,5 @@ namespace Gemipedia.Models
 
             return true;
         }
-
     }
 }
