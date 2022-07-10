@@ -17,6 +17,7 @@ namespace Gemipedia.Cgi
             router.OnRequest("/featured", RouteHandler.ViewFeatured);
             router.OnRequest("/geo", RouteHandler.ViewGeo);
             router.OnRequest("/latlon", RouteHandler.SearchLatLon);
+            router.OnRequest("/", RouteHandler.Welcome);
             router.OnRequest("", RouteHandler.Welcome);
             router.ProcessRequest();
         }
