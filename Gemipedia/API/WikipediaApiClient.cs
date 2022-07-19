@@ -13,16 +13,18 @@ namespace Gemipedia.API
         static DiskCache Cache = new DiskCache();
 
         WebClient client;
+        string Language;
 
-        public WikipediaApiClient()
+        public WikipediaApiClient(string lang = "en")
         {
             client = new WebClient();
+            Language = lang;
             client.Headers.Add(HttpRequestHeader.UserAgent, "GeminiProxy/0.1 (gemini://gemi.dev/; acidus@gemi.dev) gemini-proxy/0.1");
         }
 
         public List<ArticleSummary> GeoSearch(double lat, double lon)
         {
-            var url = $"https://en.wikipedia.org/w/api.php?action=query&format=json&list=geosearch&gscoord={lat}%7C{lon}&gsradius=5000&gslimit=100";
+            var url = $"https://{Language}.wikipedia.org/w/api.php?action=query&format=json&list=geosearch&gscoord={lat}%7C{lon}&gsradius=5000&gslimit=100";
             return ResponseParser.ParseGeoSearch(FetchString(url));
         }
 
@@ -33,14 +35,14 @@ namespace Gemipedia.API
         /// <returns></returns>
         public Article GetArticle(string title)
         {
-            var url = $"https://en.wikipedia.org/w/api.php?action=parse&page={WebUtility.UrlEncode(title)}&prop=text&format=json";
+            var url = $"https://{Language}.wikipedia.org/w/api.php?action=parse&page={WebUtility.UrlEncode(title)}&prop=text&format=json";
             return ResponseParser.ParseArticleResponse(FetchString(url));
         }
 
         public FeaturedContent GetFeaturedContent()
         {
             //if you fetch the most popular content early in the day, there aren't any popular articles
-            var url = $"https://en.wikipedia.org/api/rest_v1/feed/featured/{DateTime.Now.ToString("yyyy/MM/dd")}";
+            var url = $"https://{Language}.wikipedia.org/api/rest_v1/feed/featured/{DateTime.Now.ToString("yyyy/MM/dd")}";
 
             var featured = ResponseParser.ParseFeaturedContentResponse(FetchString(url));
 
@@ -51,7 +53,7 @@ namespace Gemipedia.API
 
                 var yesterday = DateTime.Now.Subtract(new TimeSpan(24, 0, 0));
                 //fetch yesterdays most popular articles
-                url = $"https://en.wikipedia.org/api/rest_v1/feed/featured/{yesterday.ToString("yyyy/MM/dd")}";
+                url = $"https://{Language}.wikipedia.org/api/rest_v1/feed/featured/{yesterday.ToString("yyyy/MM/dd")}";
                 var oldFeatured = ResponseParser.ParseFeaturedContentResponse(FetchString(url));
 
                 featured.PopularArticles = oldFeatured.PopularArticles;
@@ -67,7 +69,7 @@ namespace Gemipedia.API
         /// <returns></returns>
         public List<ArticleSummary> Search(string query)
         {
-            var url = $"https://en.wikipedia.org/w/rest.php/v1/search/page?q={WebUtility.UrlEncode(query)}&limit=25";
+            var url = $"https://{Language}.wikipedia.org/w/rest.php/v1/search/page?q={WebUtility.UrlEncode(query)}&limit=25";
             return ResponseParser.ParseSearchResponse(FetchString(url));
         }
 
