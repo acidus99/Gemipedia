@@ -99,6 +99,7 @@ namespace Gemipedia.Cgi
             cgi.Writer.WriteLine("# Gemipedia");
             cgi.Writer.WriteLine("Welcome to Gemipedia: A Gemini frontend to Wikipedia, focused on providing a 1st class reading experience.");
             cgi.Writer.WriteLine("");
+            cgi.Writer.WriteLine($"Using {UserOptions.LangaugeName} Wikipedia. Change Language?");
             cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl()} Go to Article");
             cgi.Writer.WriteLine($"=> {RouteOptions.SearchUrl()} Search for Articles containing a phrase");
             cgi.Writer.WriteLine("");
