@@ -93,19 +93,41 @@ namespace Gemipedia.Cgi
             RenderFooter(cgi);
         }
 
+        public static void SelectLanguage(CgiWrapper cgi)
+        {
+            cgi.Success();
+            cgi.Writer.WriteLine("# Gemipedia");
+            cgi.Writer.WriteLine("Gemipedia supports all of the languages that have a Wikipedia. The Gemipedia interface will be in English, but all article content, references, images, and featured content will be in the choosen language. You can select a language below, or use a specific language by providing a 2 letter ISO 3166 code");
+            cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl("List of Wikipedias")} List of available Wikipedias");
+            cgi.Writer.WriteLine($"Current Language: {UserOptions.LangaugeName}");
+            cgi.Writer.WriteLine("");
+            var langs = new string[] { "ar", "bg", "ca", "ce", "cs", "da", "nl", "en", "eo", "fi", "fr", "de", "he", "hu", "id", "it", "ja", "ko", "ms", "zh", "no", "ga", "pl", "pt", "ro", "ru", "sr", "sh", "es", "sv", "tr", "uk", "vi" };
+            foreach(var lang in langs)
+            {
+                cgi.Writer.WriteLine($"=> {RouteOptions.WelcomeUrl(lang)} Read in {UserOptions.GetLangaugeName(lang)}");
+            }
+            RenderFooter(cgi);
+        }
+
         public static void Welcome(CgiWrapper cgi)
         {
             cgi.Success();
             cgi.Writer.WriteLine("# Gemipedia");
             cgi.Writer.WriteLine("Welcome to Gemipedia: A Gemini frontend to Wikipedia, focused on providing a 1st class reading experience.");
             cgi.Writer.WriteLine("");
-            cgi.Writer.WriteLine($"Using {UserOptions.LangaugeName} Wikipedia. Change Language?");
+            cgi.Writer.WriteLine($"=> {RouteOptions.SelectLanguageUrl()} Using {UserOptions.LangaugeName} Wikipedia. Change Language?");
             cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl()} Go to Article");
             cgi.Writer.WriteLine($"=> {RouteOptions.SearchUrl()} Search for Articles containing a phrase");
             cgi.Writer.WriteLine("");
 
             cgi.Writer.WriteLine("## Featured Content");
-            cgi.Writer.WriteLine($"=> {RouteOptions.FeaturedContent()} Featured Article and 25 most popular articles (updated daily)");
+            if (UserOptions.WikipediaVersion == "en")
+            {
+                cgi.Writer.WriteLine($"=> {RouteOptions.FeaturedContent()} Featured Article and 25 most popular articles (updated daily)");
+            } else
+            {
+                cgi.Writer.WriteLine($"=> {RouteOptions.FeaturedContent()} Featured Article and 25 most popular articles on {UserOptions.LangaugeName} Wikipedia (updated daily)");
+            }
 
             cgi.Writer.WriteLine("## Article Examples:");
             cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl("History of Apple Inc.")} History of Apple Inc.");
@@ -330,6 +352,7 @@ namespace Gemipedia.Cgi
             cgi.Writer.WriteLine("--");
             cgi.Writer.WriteLine($"=> {RouteOptions.WelcomeUrl()} Gemipedia Home");
             cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl()} Go to Article");
+            cgi.Writer.WriteLine($"=> {RouteOptions.SelectLanguageUrl()} Using {UserOptions.LangaugeName} Wikipedia. Change Language?");
             cgi.Writer.WriteLine($"=> mailto:acidus@gemi.dev?subject=Gemipedia+issue&body=URL%3A{WebUtility.UrlEncode(cgi.RequestUrl.ToString())} 🐛Report Bug");
             cgi.Writer.WriteLine("All Wikipedia content is licensed under CC BY-SA 3.0");
         }

@@ -23,6 +23,7 @@ namespace Gemipedia.Cgi
             router.OnRequest("/featured", RouteHandler.ViewFeatured);
             router.OnRequest("/geo", RouteHandler.ViewGeo);
             router.OnRequest("/latlon", RouteHandler.SearchLatLon);
+            router.OnRequest("/lang", RouteHandler.SelectLanguage);
             router.OnRequest("/", RouteHandler.Welcome);
             router.OnRequest("", RouteHandler.Welcome);
             router.ProcessRequest();
@@ -43,11 +44,12 @@ namespace Gemipedia.Cgi
             RouteOptions.BaseFeaturedContenteUrl = "/cgi-bin/wp.cgi/featured";
             RouteOptions.BaseGeoUrl = "/cgi-bin/wp.cgi/geo";
             RouteOptions.BaseImageGallerUrl = "/cgi-bin/wp.cgi/images";
+            RouteOptions.BaseLanguageUrl = "/cgi-bin/wp.cgi/lang";
             RouteOptions.BaseLonLatUrl = "/cgi-bin/wp.cgi/latlon";
             RouteOptions.BaseMediaProxyUrl = "/cgi-bin/wp.cgi/media/media";
             RouteOptions.BaseReferencesUrl = "/cgi-bin/wp.cgi/refs";
             RouteOptions.BaseSearchUrl = "/cgi-bin/wp.cgi/search";
-            RouteOptions.BaseWelcomeUrl = "cgi-bin/wp.cgi/welcome";
+            RouteOptions.BaseWelcomeUrl = "/cgi-bin/wp.cgi/welcome";
         }
     }
 }

@@ -22,6 +22,8 @@ namespace Gemipedia
 
         public static string BaseImageGallerUrl { get; set; }
 
+        public static string BaseLanguageUrl { get; set; }
+
         public static string BaseLonLatUrl { get; set; }
 
         /// <summary>
@@ -88,8 +90,14 @@ namespace Gemipedia
         public static string SearchUrl(string query)
             => $"{AddLanguage(BaseSearchUrl)}?{WebUtility.UrlEncode(query)}";
 
+        public static string SelectLanguageUrl()
+            => $"{AddLanguage(BaseLanguageUrl)}";
+
         public static string WelcomeUrl()
             => $"{AddLanguage(BaseWelcomeUrl)}";
+
+        public static string WelcomeUrl(string forceLang)
+            => $"{BaseWelcomeUrl}/{forceLang}";
 
         public static string WikipediaSourceUrl(string escapedTitle)
             => $"https://{UserOptions.WikipediaVersion}.wikipedia.org/wiki/{WebUtility.UrlEncode(escapedTitle)}";
