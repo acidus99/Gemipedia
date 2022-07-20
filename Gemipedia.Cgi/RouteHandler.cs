@@ -263,7 +263,7 @@ namespace Gemipedia.Cgi
             {
                 cgi.Success();
                 var page = ParsePage(resp);
-                var refs = new ReferencesRenderer(CommonUtils.Settings);
+                var refs = new ReferencesRenderer();
                 refs.RenderReferences(page, cgi.Writer, section);
             }
             else
@@ -300,13 +300,13 @@ namespace Gemipedia.Cgi
 
         private static ParsedPage ParsePage(Article resp)
         {
-            var newConverter = new WikiHtmlConverter(CommonUtils.Settings);
+            var newConverter = new WikiHtmlConverter();
             return newConverter.Convert(resp.Title, resp.HtmlText);
         }
 
         private static void RenderArticle(ParsedPage page, TextWriter output)
         {
-            var renderer = new ArticleRenderer(CommonUtils.Settings);
+            var renderer = new ArticleRenderer();
             renderer.RenderArticle(page, Console.Out);
         }
 
