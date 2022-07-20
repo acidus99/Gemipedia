@@ -9,20 +9,20 @@ namespace Gemipedia
         /// </summary>
         public static string WikipediaVersion { get; set; } = "en";
 
-        public static string LangaugeName => GetLangaugeName();
+        public static string LangaugeName => GetLangaugeName(WikipediaVersion);
 
-        static string GetLangaugeName()
+        public static string GetLangaugeName(string language)
         {
             try
             {
-                var ci = new CultureInfo(UserOptions.WikipediaVersion);
+                var ci = new CultureInfo(language);
                 return $"{ci.NativeName} ({ci.DisplayName})";
             }
             catch (Exception)
             {
 
             }
-            return $"'{UserOptions.WikipediaVersion}'";
+            return $"'{language}'";
         }
 
         //these will depend on the language
