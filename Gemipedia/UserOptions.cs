@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 namespace Gemipedia
 {
     public static class UserOptions
@@ -7,6 +8,22 @@ namespace Gemipedia
         /// Set which version of Wikipedia we should use
         /// </summary>
         public static string WikipediaVersion { get; set; } = "en";
+
+        public static string LangaugeName => GetLangaugeName();
+
+        static string GetLangaugeName()
+        {
+            try
+            {
+                var ci = new CultureInfo(UserOptions.WikipediaVersion);
+                return $"{ci.NativeName} ({ci.DisplayName})";
+            }
+            catch (Exception)
+            {
+
+            }
+            return $"'{UserOptions.WikipediaVersion}'";
+        }
 
         //these will depend on the language
 
