@@ -13,12 +13,16 @@ namespace Gemipedia
         /// </summary>
         public static string BaseArticleUrl { get; set; }
 
+        public static string BaseFeaturedContenteUrl { get; set; }
+
         /// <summary>
         /// BaseURL to use to view geographic data.
         /// </summary>
         public static string BaseGeoUrl { get; set; }
 
         public static string BaseImageGallerUrl { get; set; }
+
+        public static string BaseLonLatUrl { get; set; }
 
         /// <summary>
         /// URL to use to proxy media. actual media path passed via query string
@@ -33,14 +37,23 @@ namespace Gemipedia
 
         #endregion
 
+        public static string ArticleUrl()
+            => $"{AddLanguage(BaseArticleUrl)}";
+
         public static string ArticleUrl(string title)
            => $"{AddLanguage(BaseArticleUrl)}?{WebUtility.UrlEncode(title)}";
+
+        public static string FeaturedContent()
+            => $"{AddLanguage(BaseFeaturedContenteUrl)}";
 
         public static string GeoUrl(string geohackUrl)
             => $"{AddLanguage(BaseGeoUrl)}?{WebUtility.UrlEncode(geohackUrl)}";
 
         public static string ImageGalleryUrl(string title)
             => $"{AddLanguage(BaseImageGallerUrl)}?{WebUtility.UrlEncode(title)}";
+
+        public static string LonLatUrl(double latitude, double longitude, string articleTitle)
+            => $"{AddLanguage(BaseLonLatUrl)}?lat={latitude}&lon={longitude}&title={WebUtility.UrlEncode(articleTitle)}";
 
         public static string MediaProxyUrl(string url)
         {
@@ -69,8 +82,14 @@ namespace Gemipedia
         public static string ReferencesUrl(string title, int sectionNum)
              => $"{AddLanguage(BaseReferencesUrl)}?name={WebUtility.UrlEncode(title)}&section={sectionNum}";
 
+        public static string SearchUrl()
+            => $"{AddLanguage(BaseSearchUrl)}";
+
         public static string SearchUrl(string query)
             => $"{AddLanguage(BaseSearchUrl)}?{WebUtility.UrlEncode(query)}";
+
+        public static string WelcomeUrl()
+            => $"{AddLanguage(BaseWelcomeUrl)}";
 
         public static string WikipediaSourceUrl(string escapedTitle)
             => $"https://{UserOptions.WikipediaVersion}.wikipedia.org/wiki/{WebUtility.UrlEncode(escapedTitle)}";

@@ -59,7 +59,7 @@ namespace Gemipedia.Cgi
         {
             if(!cgi.HasQuery)
             {
-                cgi.Redirect("/cgi-bin/wp.cgi/");
+                cgi.Redirect(RouteOptions.WelcomeUrl());
                 return;
             }
 
@@ -85,7 +85,7 @@ namespace Gemipedia.Cgi
                 foreach (var result in searchResults)
                 {
                     counter++;
-                    cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(result.Title)} {counter}. {result.Title}");
+                    cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl(result.Title)} {counter}. {result.Title}");
                     cgi.Writer.WriteLine($"* Distance away: {result.Distance} m");
                     cgi.Writer.WriteLine();
                 }
@@ -99,12 +99,12 @@ namespace Gemipedia.Cgi
             cgi.Writer.WriteLine("# Gemipedia");
             cgi.Writer.WriteLine("Welcome to Gemipedia: A Gemini frontend to Wikipedia, focused on providing a 1st class reading experience.");
             cgi.Writer.WriteLine("");
-            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/view Go to Article");
-            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/search Search for Articles containing a phrase");
+            cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl()} Go to Article");
+            cgi.Writer.WriteLine($"=> {RouteOptions.SearchUrl()} Search for Articles containing a phrase");
             cgi.Writer.WriteLine("");
 
             cgi.Writer.WriteLine("## Featured Content");
-            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/featured Featured Article and 25 most popular articles (updated daily)");
+            cgi.Writer.WriteLine($"=> {RouteOptions.FeaturedContent()} Featured Article and 25 most popular articles (updated daily)");
 
             cgi.Writer.WriteLine("## Article Examples:");
             cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl("History of Apple Inc.")} History of Apple Inc.");
@@ -198,7 +198,7 @@ namespace Gemipedia.Cgi
                 {
                     if (RedirectParser.IsArticleRedirect(resp.HtmlText))
                     {
-                        cgi.Redirect($"/cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(RedirectParser.GetRedirectTitle(resp.HtmlText))}");
+                        cgi.Redirect(RouteOptions.ArticleUrl(RedirectParser.GetRedirectTitle(resp.HtmlText)));
                         return;
                     }
 
@@ -210,7 +210,7 @@ namespace Gemipedia.Cgi
                 else
                 {
                     //redirect to search...
-                    cgi.Redirect($"/cgi-bin/wp.cgi/search?{cgi.RawQuery}");
+                    cgi.Redirect(RouteOptions.SearchUrl(cgi.Query));
                     return;
                 }
             }
@@ -234,7 +234,7 @@ namespace Gemipedia.Cgi
             {
                 if (RedirectParser.IsArticleRedirect(resp.HtmlText))
                 {
-                    cgi.Redirect($"/cgi-bin/wp.cgi/images?{WebUtility.UrlEncode(RedirectParser.GetRedirectTitle(resp.HtmlText))}");
+                    cgi.Redirect(RouteOptions.ImageGalleryUrl(RedirectParser.GetRedirectTitle(resp.HtmlText)));
                     return;
                 }
 
@@ -327,10 +327,10 @@ namespace Gemipedia.Cgi
         {
             cgi.Writer.WriteLine();
             cgi.Writer.WriteLine("--");
-            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/ Gemipedia Home");
-            cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/view Go to Article");
+            cgi.Writer.WriteLine($"=> {RouteOptions.WelcomeUrl()} Gemipedia Home");
+            cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl()} Go to Article");
             cgi.Writer.WriteLine($"=> mailto:acidus@gemi.dev?subject=Gemipedia+issue&body=URL%3A{WebUtility.UrlEncode(cgi.RequestUrl.ToString())} 🐛Report Bug");
-            cgi.Writer.WriteLine("All content licensed under CC BY-SA 3.0");
+            cgi.Writer.WriteLine("All Wikipedia content is licensed under CC BY-SA 3.0");
         }
     }
 }

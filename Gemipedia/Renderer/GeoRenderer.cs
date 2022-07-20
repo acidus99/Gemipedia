@@ -46,7 +46,7 @@ namespace Gemipedia.Renderer
 
             Writer.WriteLine("## Extras");
             Writer.WriteLine($"=> {geohack.GeohackUrl} Open in GeoHack Launcher");
-            Writer.WriteLine($"=> /cgi-bin/wp.cgi/latlon?lat={geohack.Latitude}&lon={geohack.Longitude}&title={WebUtility.UrlEncode(geohack.ArticleName)} Search for nearby articles");
+            Writer.WriteLine($"=> {RouteOptions.LonLatUrl(geohack.Latitude, geohack.Longitude, geohack.ArticleName)} Search for nearby articles");
         }
 
         private string AppleMapsUrl(GeohackParser geohack)

@@ -37,13 +37,13 @@ namespace Gemipedia.Cgi
             }
         }
 
-        
-
         static void SetPaths()
         {
             RouteOptions.BaseArticleUrl = "/cgi-bin/wp.cgi/view";
+            RouteOptions.BaseFeaturedContenteUrl = "/cgi-bin/wp.cgi/featured";
             RouteOptions.BaseGeoUrl = "/cgi-bin/wp.cgi/geo";
             RouteOptions.BaseImageGallerUrl = "/cgi-bin/wp.cgi/images";
+            RouteOptions.BaseLonLatUrl = "/cgi-bin/wp.cgi/latlon";
             RouteOptions.BaseMediaProxyUrl = "/cgi-bin/wp.cgi/media/media";
             RouteOptions.BaseReferencesUrl = "/cgi-bin/wp.cgi/refs";
             RouteOptions.BaseSearchUrl = "/cgi-bin/wp.cgi/search";
