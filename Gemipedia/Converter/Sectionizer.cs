@@ -13,16 +13,11 @@ namespace Gemipedia.Converter
     /// </summary>
     public class Sectionizer
     {
-        ConverterSettings Settings;
-
         Stack<Section> SectionStack;
 
         ParsedPage ParsedPage;
-
-        public Sectionizer(ConverterSettings settings)
-        {
-            Settings = settings;
-        }
+        //grab once and cache
+        string[] excludedSections = UserOptions.ExcludedSections;
 
         public ParsedPage ParseContent(string title, INode contentRoot)
         {
@@ -151,7 +146,7 @@ namespace Gemipedia.Converter
         private bool ShouldSkipSection(INode node)
         {
             var id = ((HtmlElement)node).QuerySelector("span.mw-headline").GetAttribute("id")?.ToLower() ?? "";
-            return Settings.ExcludedSections.Contains(id);
+            return excludedSections.Contains(id);
         }
 
         /// <summary>

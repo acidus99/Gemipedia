@@ -35,7 +35,7 @@ namespace Gemipedia.Renderer
             if (links.Count == 1)
             {
                 buffer.EnsureAtLineStart();
-                buffer.AppendLine($"=> {CommonUtils.ArticleUrl(links[0])} {nav.Content}");
+                buffer.AppendLine($"=> {RouteOptions.ArticleUrl(links[0])} {nav.Content}");
             }
             else
             {
@@ -43,7 +43,7 @@ namespace Gemipedia.Renderer
                 buffer.AppendLine($"({nav.Content})");
                 foreach (var linkTitle in links)
                 {
-                    buffer.AppendLine($"=> {CommonUtils.ArticleUrl(linkTitle)} {linkTitle}");
+                    buffer.AppendLine($"=> {RouteOptions.ArticleUrl(linkTitle)} {linkTitle}");
                 }
             }
         }

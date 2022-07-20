@@ -18,13 +18,8 @@ namespace Gemipedia.Converter
     /// </summary>
 	public class WikiHtmlConverter
 	{
-        ConverterSettings Settings;
-
-        public WikiHtmlConverter(ConverterSettings settings)
+        public WikiHtmlConverter()
         {
-            Settings = settings;
-            CommonUtils.Settings = settings;
-
             LoadDomFilters();
         }
 
@@ -53,7 +48,7 @@ namespace Gemipedia.Converter
 
             var contentRoot = Preparer.PrepareHtml(wikiHtml);
 
-            Sectionizer sectionizer = new Sectionizer(Settings);
+            Sectionizer sectionizer = new Sectionizer();
 
             var parsedPage = sectionizer.ParseContent(title, contentRoot);
 

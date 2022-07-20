@@ -24,7 +24,7 @@ namespace Gemipedia.Converter.Special
             return new GeoItem
             {
                 Title = $"View Geographic Info: {geohack.GetPrettyName()} ({geohack.Coordinates})",
-                Url = CommonUtils.GeoUrl(geohack.GeohackUrl)
+                Url = RouteOptions.GeoUrl(geohack.GeohackUrl)
             };
         }
 

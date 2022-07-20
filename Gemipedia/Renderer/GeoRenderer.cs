@@ -19,7 +19,7 @@ namespace Gemipedia.Renderer
             Writer = writer;
 
             Writer.WriteLine($"# Geographic Info for {geohack.GetPrettyName()}");
-            Writer.WriteLine($"=> {CommonUtils.ArticleUrl(geohack.ArticleName)} Back to article");
+            Writer.WriteLine($"=> {RouteOptions.ArticleUrl(geohack.ArticleName)} Back to article");
             Writer.WriteLine();
             Writer.WriteLine($"Place: {geohack.GetPrettyName()}");
             if(!geohack.IsEarth)

@@ -21,7 +21,7 @@ namespace Gemipedia.Converter.Special
             if (url.Length > 0 && caption.Length > 0)
             {
                 //not a media item, since it shouldn't be moved
-                return $"=> {CommonUtils.MediaProxyUrl(MathSvgUrlAsPng(url))} Math Formula: {CleanLatex(caption)}";
+                return $"=> {RouteOptions.MediaProxyUrl(MathSvgUrlAsPng(url))} Math Formula: {CleanLatex(caption)}";
             }
             return "";
         }

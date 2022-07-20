@@ -558,7 +558,7 @@ namespace Gemipedia.Converter
                 {
                     HasGeminiFormatting = true;
                     buffer.EnsureAtLineStart();
-                    buffer.SetLineStart($"=> {CommonUtils.ArticleUrl(links[0].GetAttribute("title"))} ");
+                    buffer.SetLineStart($"=> {RouteOptions.ArticleUrl(links[0].GetAttribute("title"))} ");
                     ParseChildern(li);
                     buffer.EnsureAtLineStart();
                     return true;

@@ -11,15 +11,9 @@ namespace Gemipedia.Renderer
 {
     public class ReferencesRenderer
     {
-        ConverterSettings Settings;
         TextWriter Writer;
         ParsedPage Page;
-
-        public ReferencesRenderer(ConverterSettings settings)
-        {
-            Settings = settings;
-        }
-
+     
         public void RenderReferences(ParsedPage parsedPage, TextWriter writer, int section)
         {
             Writer = writer;
@@ -42,13 +36,13 @@ namespace Gemipedia.Renderer
                 var title = SectionName(section);
 
                 Writer.WriteLine($"# References for {Page.Title}: {title}");
-                Writer.WriteLine($"=> {CommonUtils.ArticleUrl(Page.Title)} Back to article");
-                Writer.WriteLine($"=> {CommonUtils.ReferencesUrl(Page.Title)} See all references for article");
+                Writer.WriteLine($"=> {RouteOptions.ArticleUrl(Page.Title)} Back to article");
+                Writer.WriteLine($"=> {RouteOptions.ReferencesUrl(Page.Title)} See all references for article");
                 Writer.WriteLine();
                 Writer.WriteLine($"References to other articles in the '{title}' section");
                 foreach (var linkTitle in section.Links.GetLinks())
                 {
-                    Writer.WriteLine($"=> {CommonUtils.ArticleUrl(linkTitle)} {linkTitle}");
+                    Writer.WriteLine($"=> {RouteOptions.ArticleUrl(linkTitle)} {linkTitle}");
                 }
             }
             Writer.WriteLine();
@@ -61,7 +55,7 @@ namespace Gemipedia.Renderer
         private void RenderAllReferences()
         {
             Writer.WriteLine($"# References for {Page.Title}");
-            Writer.WriteLine($"=> {CommonUtils.ArticleUrl(Page.Title)} Back to article");
+            Writer.WriteLine($"=> {RouteOptions.ArticleUrl(Page.Title)} Back to article");
             Writer.WriteLine();
             Writer.WriteLine("References to other articles, organized by section");
             foreach (var subSection in Page.Sections.Where(x => !ShouldExcludeSectionIndex(x)))
@@ -91,7 +85,7 @@ namespace Gemipedia.Renderer
                 }
                 foreach (var linkTitle in section.Links.GetLinks())
                 {
-                    Writer.WriteLine($"=> {CommonUtils.ArticleUrl(linkTitle)} {linkTitle}");
+                    Writer.WriteLine($"=> {RouteOptions.ArticleUrl(linkTitle)} {linkTitle}");
                 }
             }
             if (section.HasSubSections)
@@ -108,6 +102,6 @@ namespace Gemipedia.Renderer
             => section.Links.HasLinks;
 
         private bool ShouldExcludeSectionIndex(Section section)
-            => Settings.ArticleLinkSections.Contains(section.Title?.ToLower());
+            => UserOptions.ArticleLinkSections.Contains(section.Title?.ToLower());
     }
 }

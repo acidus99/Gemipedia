@@ -1,14 +1,20 @@
-﻿using Gemini.Cgi;
+﻿using System;
+using System.Text.RegularExpressions;
+
+using Gemini.Cgi;
+using Gemipedia;
 
 namespace Gemipedia.Cgi
 {
     class Program
     {
+        private static readonly Regex regexLang = new Regex("([a-z]{2})", RegexOptions.Compiled);
+
         static void Main(string[] args)
         {
-            CommonUtils.Settings = DefaultSettings;
+            SetPaths();
 
-            CgiRouter router = new CgiRouter();
+            CgiRouter router = new CgiRouter(ParseWikiLanguage);
             router.OnRequest("/search", RouteHandler.Search);
             router.OnRequest("/view", RouteHandler.ViewArticle);
             router.OnRequest("/images", RouteHandler.ViewImages);
@@ -22,17 +28,26 @@ namespace Gemipedia.Cgi
             router.ProcessRequest();
         }
 
-        static ConverterSettings DefaultSettings
-            => new ConverterSettings
+        static void ParseWikiLanguage(CgiWrapper cgi)
+        {
+            var parts = cgi.PathInfo.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (parts.Length == 2 && regexLang.IsMatch(parts[1]))
             {
-                ExcludedSections = new string []{ "bibliography", "citations", "external_links", "notes", "references", "further_reading" },
-                ArticleLinkSections = new string[] {"see also"},
-                ArticleUrl = "/cgi-bin/wp.cgi/view",
-                GeoUrl = "/cgi-bin/wp.cgi/geo",
-                ImageGallerUrl = "/cgi-bin/wp.cgi/images",
-                MediaProxyUrl = "/cgi-bin/wp.cgi/media/media",
-                ReferencesUrl = "/cgi-bin/wp.cgi/refs",
-                SearchUrl = "/cgi-bin/wp.cgi/search",
-            };
+                UserOptions.WikipediaVersion = parts[1].ToLower();
+            }
+        }
+
+        
+
+        static void SetPaths()
+        {
+            RouteOptions.BaseArticleUrl = "/cgi-bin/wp.cgi/view";
+            RouteOptions.BaseGeoUrl = "/cgi-bin/wp.cgi/geo";
+            RouteOptions.BaseImageGallerUrl = "/cgi-bin/wp.cgi/images";
+            RouteOptions.BaseMediaProxyUrl = "/cgi-bin/wp.cgi/media/media";
+            RouteOptions.BaseReferencesUrl = "/cgi-bin/wp.cgi/refs";
+            RouteOptions.BaseSearchUrl = "/cgi-bin/wp.cgi/search";
+            RouteOptions.BaseWelcomeUrl = "cgi-bin/wp.cgi/welcome";
+        }
     }
 }

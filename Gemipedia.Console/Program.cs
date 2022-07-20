@@ -14,16 +14,15 @@ namespace Gemipedia.Console
     {
         static void Main(string[] args)
         {
-            CommonUtils.Settings = DefaultSettings;
 
             var title = (args.Length > 0) ? args[0] : "Statue of Liberty";
 
             var article = GetArticle(title);
-            var newConverter = new WikiHtmlConverter(CommonUtils.Settings);
+            var newConverter = new WikiHtmlConverter();
 
             ParsedPage page = newConverter.Convert(article.Title, article.HtmlText);
 
-            var renderer = new ArticleRenderer(CommonUtils.Settings);
+            var renderer = new ArticleRenderer();
             renderer.RenderArticle(page, System.Console.Out);
 
         }
@@ -50,17 +49,7 @@ namespace Gemipedia.Console
             return ret;
         }
 
-        static ConverterSettings DefaultSettings
-            => new ConverterSettings
-            {
-                ExcludedSections = new string[] { "bibliography", "citations", "external_links", "notes", "references", "further_reading" },
-                ArticleLinkSections = new string[] { "see also" },
-                ArticleUrl = "/cgi-bin/wp.cgi/view",
-                ImageGallerUrl = "/cgi-bin/wp.cgi/images",
-                MediaProxyUrl = "/cgi-bin/wp.cgi/media/media",
-                ReferencesUrl = "/cgi-bin/wp.cgi/refs",
-                SearchUrl = "/cgi-bin/wp.cgi/search",
-            };
+       
 
     }
 }

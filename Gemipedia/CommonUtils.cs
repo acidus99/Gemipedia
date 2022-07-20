@@ -16,50 +16,6 @@ namespace Gemipedia
 {
     public static class CommonUtils
     {
-        static public ConverterSettings Settings { get;  set; }
-
-        public static string ArticleUrl(string title)
-            => $"{Settings.ArticleUrl}?{WebUtility.UrlEncode(title)}";
-
-        public static string GeoUrl(string geohackUrl)
-            => $"{Settings.GeoUrl}?{WebUtility.UrlEncode(geohackUrl)}";
-
-        public static string ImageGalleryUrl(string title)
-            => $"{Settings.ImageGallerUrl}?{WebUtility.UrlEncode(title)}";
-
-        public static string MediaProxyUrl(string url)
-        {
-            //we need to have an extension on the filename of the media proxy URL, so clients
-            //will render it as an inline image. Try and figure out what to use, but fall back
-            //to a dummy "jpg" if nothing works
-            string ext = ".jpg";
-            try
-            {
-                var uri = new Uri(url);
-                ext = Path.GetExtension(uri.AbsolutePath);
-            }
-            catch (Exception)
-            {
-                ext = ".jpg";
-            }
-            return $"{Settings.MediaProxyUrl}{ext}?{WebUtility.UrlEncode(url)}";
-        }
-
-        public static string PdfUrl(string escapedTitle)
-            => $"https://en.wikipedia.org/api/rest_v1/page/pdf/{WebUtility.UrlEncode(escapedTitle)}";
-
-        public static string ReferencesUrl(string title)
-             => $"{Settings.ReferencesUrl}?name={WebUtility.UrlEncode(title)}";
-
-        public static string ReferencesUrl(string title, int sectionNum)
-             => $"{Settings.ReferencesUrl}?name={WebUtility.UrlEncode(title)}&section={sectionNum}";
-
-        public static string SearchUrl(string query)
-            => $"{Settings.SearchUrl}?{WebUtility.UrlEncode(query)}";
-
-        public static string WikipediaSourceUrl(string escapedTitle)
-            => $"https://en.wikipedia.org/wiki/{WebUtility.UrlEncode(escapedTitle)}";
-
         public static string PrepareTextContent(string s)
             => s.Trim().Replace("\n", "");
 

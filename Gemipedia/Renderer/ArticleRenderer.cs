@@ -11,16 +11,11 @@ namespace Gemipedia.Renderer
 {
     public class ArticleRenderer
     {
-        ConverterSettings Settings;
         TextWriter Writer;
         ParsedPage Page;
-        int sectionID;
-
-        public ArticleRenderer(ConverterSettings settings)
-        {
-            Settings = settings;
-            sectionID = 0;
-        }
+        int sectionID = 0;
+        //grab and cache it
+        string[] articleLinkSections = UserOptions.ArticleLinkSections;
 
         public void RenderArticle(ParsedPage parsedPage, TextWriter writer)
         {
@@ -41,10 +36,10 @@ namespace Gemipedia.Renderer
             int count = Page.GetAllImages().Count;
             if (count > 0)
             {
-                Writer.WriteLine($"=> {CommonUtils.ImageGalleryUrl(Page.Title)} Gallery: {count} images");
+                Writer.WriteLine($"=> {RouteOptions.ImageGalleryUrl(Page.Title)} Gallery: {count} images");
             }
             //TODO: Geo here!
-            Writer.WriteLine($"=> {CommonUtils.SearchUrl(Page.Title)} Other articles that mention '{Page.Title}'");
+            Writer.WriteLine($"=> {RouteOptions.SearchUrl(Page.Title)} Other articles that mention '{Page.Title}'");
             Writer.WriteLine();
         }
 
@@ -52,10 +47,10 @@ namespace Gemipedia.Renderer
         {
             Writer.WriteLine();
             Writer.WriteLine("## Article Resources");
-            Writer.WriteLine($"=> {CommonUtils.ReferencesUrl(Page.Title)} List of all {parsedPage.GetReferenceCount()} referenced articles");
-            Writer.WriteLine($"=> {CommonUtils.SearchUrl(Page.Title)} Search for articles that mention '{Page.Title}'");
-            Writer.WriteLine($"=> {CommonUtils.PdfUrl(Page.EscapedTitle)} Download article PDF for offline access");
-            Writer.WriteLine($"=> {CommonUtils.WikipediaSourceUrl(Page.EscapedTitle)} Read '{Page.Title}' on Wikipedia");
+            Writer.WriteLine($"=> {RouteOptions.ReferencesUrl(Page.Title)} List of all {parsedPage.GetReferenceCount()} referenced articles");
+            Writer.WriteLine($"=> {RouteOptions.SearchUrl(Page.Title)} Search for articles that mention '{Page.Title}'");
+            Writer.WriteLine($"=> {RouteOptions.PdfUrl(Page.EscapedTitle)} Download article PDF for offline access");
+            Writer.WriteLine($"=> {RouteOptions.WikipediaSourceUrl(Page.EscapedTitle)} Read '{Page.Title}' on Wikipedia");
         }
 
         public void RenderInfobox(SimpleBuffer buffer, InfoboxItem infobox)
@@ -137,7 +132,7 @@ namespace Gemipedia.Renderer
             if (section.Links.HasLinks && !ShouldExcludeSectionIndex(section))
             {
                 buffer.EnsureAtLineStart();
-                buffer.AppendLine($"=> {CommonUtils.ReferencesUrl(Page.Title, sectionID)} Section links: ({section.Links.Count} Articles)");
+                buffer.AppendLine($"=> {RouteOptions.ReferencesUrl(Page.Title, sectionID)} Section links: ({section.Links.Count} Articles)");
             }
 
             foreach (var subSection in section.SubSections)
@@ -166,7 +161,7 @@ namespace Gemipedia.Renderer
             return buffer.Content;
         }
 
-        private static bool ShouldExcludeSectionIndex(Section section)
-            => CommonUtils.Settings.ArticleLinkSections.Contains(section.Title?.ToLower());
+        private bool ShouldExcludeSectionIndex(Section section)
+            => articleLinkSections.Contains(section.Title?.ToLower());
     }
 }

@@ -19,7 +19,7 @@ namespace Gemipedia.Renderer
             Writer = writer;
             Page = parsedPage;
             Writer.WriteLine($"# Image Gallery: {Page.Title}");
-            Writer.WriteLine($"=> {CommonUtils.ArticleUrl(Page.Title)} Back to article");
+            Writer.WriteLine($"=> {RouteOptions.ArticleUrl(Page.Title)} Back to article");
             Writer.WriteLine();
             foreach(var media in Page.GetAllImages())
             {

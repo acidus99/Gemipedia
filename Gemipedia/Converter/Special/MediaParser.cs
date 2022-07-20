@@ -42,7 +42,7 @@ namespace Gemipedia.Converter.Special
             {
                 var media = new MediaItem
                 {
-                    Url = CommonUtils.MediaProxyUrl(CommonUtils.GetImageUrl(img)),
+                    Url = RouteOptions.MediaProxyUrl(CommonUtils.GetImageUrl(img)),
                     Caption = title
                 };
                 //add anything from
@@ -93,7 +93,7 @@ namespace Gemipedia.Converter.Special
             {
                 Links = textExtractor.Links,
                 Caption = description,
-                Url = CommonUtils.MediaProxyUrl(url),
+                Url = RouteOptions.MediaProxyUrl(url),
             };
             //if this is an image map, extract those links too
             if (imgTag.HasAttribute("usemap"))
@@ -137,7 +137,7 @@ namespace Gemipedia.Converter.Special
             {
                 Links = textExtractor.Links,
                 Caption = description,
-                Url = CommonUtils.MediaProxyUrl(imageUrl),
+                Url = RouteOptions.MediaProxyUrl(imageUrl),
                 VideoUrl = videoUrl,
                 VideoDescription = GetVideoDescription(videoElement)
             };

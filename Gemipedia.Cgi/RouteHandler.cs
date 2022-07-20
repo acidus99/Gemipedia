@@ -43,10 +43,10 @@ namespace Gemipedia.Cgi
                 foreach (var result in searchResults)
                 {
                     counter++;
-                    cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(result.Title)} {counter}. {result.Title}");
+                    cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl(result.Title)} {counter}. {result.Title}");
                     if (!string.IsNullOrEmpty(result.ThumbnailUrl))
                     {
-                        cgi.Writer.WriteLine($"=> {CommonUtils.MediaProxyUrl(result.ThumbnailUrl)} Featured Image: {result.Title}");
+                        cgi.Writer.WriteLine($"=> {RouteOptions.MediaProxyUrl(result.ThumbnailUrl)} Featured Image: {result.Title}");
                     }
                     cgi.Writer.WriteLine($">{ result.SummaryText}");
                     cgi.Writer.WriteLine();
@@ -107,12 +107,12 @@ namespace Gemipedia.Cgi
             cgi.Writer.WriteLine("=> /cgi-bin/wp.cgi/featured Featured Article and 25 most popular articles (updated daily)");
 
             cgi.Writer.WriteLine("## Article Examples:");
-            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("History of Apple Inc.")} History of Apple Inc.");
-            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Blue Poles")} Blue Poles");
-            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Gemini (protocol)")} Gemini (protocol)");
-            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Computer network")} Computer network");
-            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("Interface Message Processor")} Interface Message Processor");
-            cgi.Writer.WriteLine($"=> {CommonUtils.ArticleUrl("ALOHAnet")} ALOHAnet");
+            cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl("History of Apple Inc.")} History of Apple Inc.");
+            cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl("Blue Poles")} Blue Poles");
+            cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl("Gemini (protocol)")} Gemini (protocol)");
+            cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl("Computer network")} Computer network");
+            cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl("Interface Message Processor")} Interface Message Processor");
+            cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl("ALOHAnet")} ALOHAnet");
         }
 
         public static void ViewFeatured(CgiWrapper cgi)
@@ -128,10 +128,10 @@ namespace Gemipedia.Cgi
 
             if (featured.FeaturedArticle != null)
             {
-                cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(featured.FeaturedArticle.Title)} {featured.FeaturedArticle.Title}");
+                cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl(featured.FeaturedArticle.Title)} {featured.FeaturedArticle.Title}");
                 if (!string.IsNullOrEmpty(featured.FeaturedArticle.ThumbnailUrl))
                 {
-                    cgi.Writer.WriteLine($"=> {CommonUtils.MediaProxyUrl(featured.FeaturedArticle.ThumbnailUrl)} Featured Image: {featured.FeaturedArticle.Title}");
+                    cgi.Writer.WriteLine($"=> {RouteOptions.MediaProxyUrl(featured.FeaturedArticle.ThumbnailUrl)} Featured Image: {featured.FeaturedArticle.Title}");
                 }
                 cgi.Writer.WriteLine($">{ featured.FeaturedArticle.Excerpt}");
                 cgi.Writer.WriteLine();
@@ -149,10 +149,10 @@ namespace Gemipedia.Cgi
                 foreach (var article in featured.PopularArticles)
                 {
                     counter++;
-                    cgi.Writer.WriteLine($"=> /cgi-bin/wp.cgi/view?{WebUtility.UrlEncode(article.Title)} {counter}. {article.Title}");
+                    cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl(article.Title)} {counter}. {article.Title}");
                     if (!string.IsNullOrEmpty(article.ThumbnailUrl))
                     {
-                        cgi.Writer.WriteLine($"=> {CommonUtils.MediaProxyUrl(article.ThumbnailUrl)} Featured Image: {article.Title}");
+                        cgi.Writer.WriteLine($"=> {RouteOptions.MediaProxyUrl(article.ThumbnailUrl)} Featured Image: {article.Title}");
                     }
                     cgi.Writer.WriteLine($">{article.SummaryText}");
                     cgi.Writer.WriteLine();
