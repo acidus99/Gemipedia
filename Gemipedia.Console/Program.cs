@@ -30,7 +30,7 @@ namespace Gemipedia.Console
         static Article GetArticle(string title)
         {
 
-            var client = new WikipediaApiClient();
+            var client = new WikipediaApiClient(UserOptions.WikipediaVersion);
             Article ret;
 
             bool gotArticle = true;

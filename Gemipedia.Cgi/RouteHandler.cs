@@ -290,7 +290,7 @@ namespace Gemipedia.Cgi
 
         #endregion
 
-        static WikipediaApiClient client = new WikipediaApiClient();
+        static WikipediaApiClient client = new WikipediaApiClient(UserOptions.WikipediaVersion);
 
         private static Article GetArticle(CgiWrapper cgi)
             => GetArticle(cgi.SantiziedQuery);
