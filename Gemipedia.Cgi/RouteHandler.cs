@@ -274,6 +274,29 @@ namespace Gemipedia.Cgi
             RenderFooter(cgi);
         }
 
+        public static void ViewOtherLanguages(CgiWrapper cgi)
+        {
+            var title = cgi.SantiziedQuery;
+            var otherLangs = client.GetOtherLanguages(title);
+            cgi.Success();
+            cgi.Writer.WriteLine($"# Other Languages");
+            cgi.Writer.WriteLine($"The article '{title}' is available in {otherLangs.Count} other languages");
+            if (otherLangs.Count == 0)
+            {
+                cgi.Writer.WriteLine("No languages foundfound.");
+                return;
+            }
+            else
+            {
+                foreach (var lang in otherLangs)
+                {
+                    cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl(lang.Title, lang.LanguageCode)} {UserOptions.GetLangaugeName(lang.LanguageCode)} - {lang.Title}");
+                }
+            }
+            RenderFooter(cgi);
+        }
+
+
         public static void ViewRefs(CgiWrapper cgi)
         {
             var query = HttpUtility.ParseQueryString(cgi.RawQuery);

@@ -11,6 +11,9 @@ namespace Gemipedia.API.Models
         //distance in meters from where you were searching
         public int Distance { get; set; } = -1;
 
+        //only used when looking for same article on other Wikipedias
+        public string LanguageCode { get; set; }
+
         /// <summary>
         /// Snippet of text where search term was found. Usually less helpful than description
         /// </summary>

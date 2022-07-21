@@ -70,6 +70,21 @@ namespace Gemipedia.API
             return ret;
         }
 
+        public static List<ArticleSummary> ParseOtherLanguagesResponse(string json)
+        {
+            var response = JArray.Parse(json);
+            List<ArticleSummary> ret = new List<ArticleSummary>();
+            foreach (JObject result in response)
+            {
+                ret.Add(new ArticleSummary
+                {
+                    Title = Cleanse(result["title"]),
+                    LanguageCode = Cleanse(result["code"])
+                });
+            }
+            return ret;
+        }
+
         public static FeaturedContent ParseFeaturedContentResponse(string json)
         {
             var response = ParseJson(json);

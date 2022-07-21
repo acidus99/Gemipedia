@@ -62,6 +62,14 @@ namespace Gemipedia.API
             return featured;
         }
 
+        public List<ArticleSummary> GetOtherLanguages(string title)
+        {
+            //API wants this underscore encoded
+            title = title.Replace(" ", "_");
+            var url = $"https://{Language}.wikipedia.org/w/rest.php/v1/page/{WebUtility.UrlEncode(title)}/links/language";
+            return ResponseParser.ParseOtherLanguagesResponse(FetchString(url));
+        }
+
         /// <summary>
         /// Performance a search using the "rest.php/v1/search/page" endpoint
         /// </summary>

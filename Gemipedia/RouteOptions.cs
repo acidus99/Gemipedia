@@ -25,11 +25,12 @@ namespace Gemipedia
         public static string BaseLanguageUrl { get; set; }
 
         public static string BaseLonLatUrl { get; set; }
-
         /// <summary>
         /// URL to use to proxy media. actual media path passed via query string
         /// </summary>
         public static string BaseMediaProxyUrl { get; set; }
+
+        public static string BaseOtherLanguagesUrl { get; set; }
 
         public static string BaseReferencesUrl { get; set; }
 
@@ -44,6 +45,9 @@ namespace Gemipedia
 
         public static string ArticleUrl(string title)
            => $"{AddLanguage(BaseArticleUrl)}?{WebUtility.UrlEncode(title)}";
+
+        public static string ArticleUrl(string title, string forceInLang)
+           => $"{BaseArticleUrl}/{forceInLang}?{WebUtility.UrlEncode(title)}";
 
         public static string FeaturedContent()
             => $"{AddLanguage(BaseFeaturedContenteUrl)}";
@@ -74,6 +78,9 @@ namespace Gemipedia
             }
             return $"{BaseMediaProxyUrl}{ext}?{WebUtility.UrlEncode(url)}";
         }
+
+        public static string OtherLanguagesUrl(string title)
+         => $"{AddLanguage(BaseOtherLanguagesUrl)}?{WebUtility.UrlEncode(title)}";
 
         public static string PdfUrl(string escapedTitle)
             => $"https://{UserOptions.WikipediaVersion}.wikipedia.org/api/rest_v1/page/pdf/{WebUtility.UrlEncode(escapedTitle)}";
