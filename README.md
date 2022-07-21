@@ -11,7 +11,7 @@ Gemipedia  is a [Gemini](https://en.wikipedia.org/wiki/Gemini_(protocol)) fronte
 *Accessing Polish Wikipedia*
 
 ## Demo 
-Visit `gemini://gemini://gemi.dev/cgi-bin/wp.cgi/` with a [Gemini client](https://github.com/kr1sp1n/awesome-gemini) or [via an HTTP-to-Gemini proxy](https://portal.mozz.us/gemini/gemi.dev/cgi-bin/wp.cgi/)
+Visit `gemini://gemi.dev/cgi-bin/wp.cgi/` with a [Gemini client](https://github.com/kr1sp1n/awesome-gemini) or [via an HTTP-to-Gemini proxy](https://portal.mozz.us/gemini/gemi.dev/cgi-bin/wp.cgi/)
 
 ## Features
 
