@@ -1,5 +1,5 @@
 # Gemipedia
-Gemipedia  is a [Gemini](https://en.wikipedia.org/wiki/Gemini_(protocol)) frontend to Wikipedia, focused on providing a delightful class reading experience. Gemipedia supports accessing all language-specific Wikipedias.
+Gemipedia  is a [Gemini](https://en.wikipedia.org/wiki/Gemini_(protocol)) frontend to Wikipedia, focused on providing a delightful reading experience. Gemipedia supports accessing all language-specific Wikipedias.
 
 ![Gemipedia in Lagrange](imgs/history-of-apple.png)
 *Rendering main article with navigation suggestions*
