@@ -49,9 +49,9 @@ namespace Gemipedia.Renderer
             Writer.WriteLine("## Article Resources");
             Writer.WriteLine($"=> {RouteOptions.ReferencesUrl(Page.Title)} List of all {parsedPage.GetReferenceCount()} referenced articles");
             Writer.WriteLine($"=> {RouteOptions.SearchUrl(Page.Title)} Search for articles that mention '{Page.Title}'");
-            Writer.WriteLine($"=> {RouteOptions.OtherLanguagesUrl(Page.Title)} Read this article on other language Wikipedias");
+            Writer.WriteLine($"=> {RouteOptions.OtherLanguagesUrl(Page.Title)} Read this article in another language");
             Writer.WriteLine($"=> {RouteOptions.PdfUrl(Page.EscapedTitle)} Download article PDF for offline access");
-            Writer.WriteLine($"=> {RouteOptions.WikipediaSourceUrl(Page.EscapedTitle)} Read '{Page.Title}' on Wikipedia website");
+            Writer.WriteLine($"=> {RouteOptions.WikipediaSourceUrl(Page.EscapedTitle)} Source on Wikipedia website");
         }
 
         public void RenderInfobox(SimpleBuffer buffer, InfoboxItem infobox)
