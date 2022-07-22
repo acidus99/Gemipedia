@@ -258,6 +258,11 @@ namespace Gemipedia.Converter
                 return false;
             }
 
+            if(element.ClassName?.Contains("navigation") ?? false)
+            {
+                return false;
+            }
+
             //see if we are explicitly filtering
             if (!DomFilter.Global.IsElementAllowed(element, normalizedTagName))
             {
@@ -479,7 +484,7 @@ namespace Gemipedia.Converter
 
         private void ProcessTable(HtmlElement table)
         {
-            if (table.ClassList.Contains("infobox"))
+            if (InfoboxParser.IsInfobox(table))
             {
                 InfoboxParser parser = new InfoboxParser();
                 AddItem(parser.Parse(table));

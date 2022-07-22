@@ -35,6 +35,10 @@ namespace Gemipedia.Converter.Special
             return infobox;
         }
 
+        public static bool IsInfobox(HtmlElement table)
+            //fr wikipedia uses infobox_v2
+            => table.ClassName?.Contains("infobox") ?? false;
+
         //=====================================================================
 
         private void AddHeader(IElement row)
