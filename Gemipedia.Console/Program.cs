@@ -15,7 +15,7 @@ namespace Gemipedia.Console
         static void Main(string[] args)
         {
 
-            var title = (args.Length > 0) ? args[0] : "Statue of Liberty";
+            var title = (args.Length > 0) ? args[0] : "Area of a circle";
 
             var article = GetArticle(title);
             var newConverter = new WikiHtmlConverter();

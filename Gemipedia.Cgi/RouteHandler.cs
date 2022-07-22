@@ -97,16 +97,34 @@ namespace Gemipedia.Cgi
         {
             cgi.Success();
             cgi.Writer.WriteLine("# Gemipedia");
-            cgi.Writer.WriteLine("Gemipedia supports all of the languages that have a Wikipedia. The Gemipedia interface will be in English, but all article content, references, images, and featured content will be in the choosen language. You can select a language below, or use a specific language by providing a 2 letter ISO 3166 code");
-            cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl("List of Wikipedias")} List of available Wikipedias");
-            cgi.Writer.WriteLine($"Current Language: {UserOptions.LangaugeName}");
+            cgi.Writer.WriteLine("Gemipedia supports all of the languages that have a Wikipedia. The Gemipedia interface will be in English, and all article content, references, images, and featured content will be in the choosen language. You can select a language below, or use a specific language by providing a 2 letter ISO 3166 code");
+            //force englist for this list
+            cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl("List of Wikipedias", "en")} List of available Wikipedias");
             cgi.Writer.WriteLine("");
-            var langs = new string[] { "ar", "bg", "ca", "ce", "cs", "da", "nl", "en", "eo", "fi", "fr", "de", "he", "hu", "id", "it", "ja", "ko", "ms", "zh", "no", "ga", "pl", "pt", "ro", "ru", "sr", "sh", "es", "sv", "tr", "uk", "vi" };
-            foreach(var lang in langs)
+            cgi.Writer.WriteLine($"Current Language: {UserOptions.LangaugeName}");
+            
+            foreach(var lang in LanguageUtils.CommonLanguages)
             {
-                cgi.Writer.WriteLine($"=> {RouteOptions.WelcomeUrl(lang)} Read in {UserOptions.GetLangaugeName(lang)}");
+                cgi.Writer.WriteLine($"=> {RouteOptions.WelcomeUrl(lang)} Use {LanguageUtils.GetName(lang)}");
             }
+            cgi.Writer.WriteLine($"=> {RouteOptions.SetLanguageUrl()} Set specific language");
+
             RenderFooter(cgi);
+        }
+
+        public static void SetLanguage(CgiWrapper cgi)
+        {
+            if (cgi.HasQuery)
+            {
+                //see if its valid
+                if (LanguageUtils.IsValidCode(cgi.Query))
+                {
+                    cgi.Redirect(RouteOptions.WelcomeUrl(cgi.Query));
+                    return;
+                }
+            }
+            cgi.Input("Enter 2 letter ISO 3166 language code to use");
+            return;
         }
 
         public static void Welcome(CgiWrapper cgi)
@@ -290,12 +308,11 @@ namespace Gemipedia.Cgi
             {
                 foreach (var lang in otherLangs)
                 {
-                    cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl(lang.Title, lang.LanguageCode)} {UserOptions.GetLangaugeName(lang.LanguageCode)} - {lang.Title}");
+                    cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl(lang.Title, lang.LanguageCode)} {LanguageUtils.GetName(lang.LanguageCode)} - {lang.Title}");
                 }
             }
             RenderFooter(cgi);
         }
-
 
         public static void ViewRefs(CgiWrapper cgi)
         {

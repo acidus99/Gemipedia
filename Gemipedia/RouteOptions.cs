@@ -36,6 +36,8 @@ namespace Gemipedia
 
         public static string BaseSearchUrl { get; set; }
 
+        public static string BaseSetLanguageUrl { get; set; }
+
         public static string BaseWelcomeUrl { get; set; }
 
         #endregion
@@ -71,6 +73,7 @@ namespace Gemipedia
             {
                 var uri = new Uri(url);
                 ext = Path.GetExtension(uri.AbsolutePath);
+                ext = String.IsNullOrEmpty(ext) ? ".jpg" : ext;
             }
             catch (Exception)
             {
@@ -99,6 +102,9 @@ namespace Gemipedia
 
         public static string SelectLanguageUrl()
             => $"{AddLanguage(BaseLanguageUrl)}";
+
+        public static string SetLanguageUrl()
+            => BaseSetLanguageUrl;
 
         public static string WelcomeUrl()
             => $"{AddLanguage(BaseWelcomeUrl)}";

@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Text.RegularExpressions;
-
 using Gemini.Cgi;
-using Gemipedia;
 
 namespace Gemipedia.Cgi
 {
     class Program
     {
-        private static readonly Regex regexLang = new Regex("([a-z]{2})", RegexOptions.Compiled);
 
         static void Main(string[] args)
         {
@@ -25,6 +21,7 @@ namespace Gemipedia.Cgi
             router.OnRequest("/latlon", RouteHandler.SearchLatLon);
             router.OnRequest("/lang", RouteHandler.SelectLanguage);
             router.OnRequest("/otherlang", RouteHandler.ViewOtherLanguages);
+            router.OnRequest("/setlang", RouteHandler.SetLanguage);
             router.OnRequest("/", RouteHandler.Welcome);
             router.OnRequest("", RouteHandler.Welcome);
             router.ProcessRequest();
@@ -33,7 +30,7 @@ namespace Gemipedia.Cgi
         static void ParseWikiLanguage(CgiWrapper cgi)
         {
             var parts = cgi.PathInfo.Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            if (parts.Length == 2 && regexLang.IsMatch(parts[1]))
+            if (parts.Length == 2 && LanguageUtils.IsValidCode(parts[1]))
             {
                 UserOptions.WikipediaVersion = parts[1].ToLower();
             }
@@ -51,6 +48,7 @@ namespace Gemipedia.Cgi
             RouteOptions.BaseOtherLanguagesUrl = "/cgi-bin/wp.cgi/otherlang";
             RouteOptions.BaseReferencesUrl = "/cgi-bin/wp.cgi/refs";
             RouteOptions.BaseSearchUrl = "/cgi-bin/wp.cgi/search";
+            RouteOptions.BaseSetLanguageUrl = "/cgi-bin/wp.cgi/setlang";
             RouteOptions.BaseWelcomeUrl = "/cgi-bin/wp.cgi/welcome";
         }
     }
