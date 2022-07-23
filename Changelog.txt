@@ -45,3 +45,4 @@
 - Feature: Support side-by-side comparisons in Infoboxes (basicaly any article about a conflict, .e.g. World War II)
 - Fix: Better handling of nested tables in Infoboxes
 - Fix: Ignore links to Wikidata
+- Feature: Support multiple Wikipedia languages
