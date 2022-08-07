@@ -28,7 +28,7 @@ namespace Gemipedia.Cgi
                 return;
             }
 
-            cgi.Success();
+            cgi.Success($"text/gemini;lang={UserOptions.WikipediaVersion}");
             cgi.Writer.WriteLine($"Articles containing '{cgi.SantiziedQuery}'.");
             var searchResults = client.Search(cgi.SantiziedQuery);
             if (searchResults.Count == 0)
@@ -65,7 +65,7 @@ namespace Gemipedia.Cgi
 
             var query = HttpUtility.ParseQueryString(cgi.Query);
 
-            cgi.Success();
+            cgi.Success($"text/gemini;lang={UserOptions.WikipediaVersion}");
 
             var lat = Convert.ToDouble(query["lat"] ?? "0");
             var lon = Convert.ToDouble(query["lon"] ?? "0");
@@ -129,7 +129,7 @@ namespace Gemipedia.Cgi
 
         public static void Welcome(CgiWrapper cgi)
         {
-            cgi.Success();
+            cgi.Success($"text/gemini;lang={UserOptions.WikipediaVersion}");
             cgi.Writer.WriteLine("# Gemipedia");
             cgi.Writer.WriteLine("Welcome to Gemipedia: A Gemini frontend to Wikipedia, focused on providing a 1st class reading experience.");
             cgi.Writer.WriteLine("");
@@ -158,7 +158,7 @@ namespace Gemipedia.Cgi
 
         public static void ViewFeatured(CgiWrapper cgi)
         {
-            cgi.Success();
+            cgi.Success($"text/gemini;lang={UserOptions.WikipediaVersion}");
 
             cgi.Writer.WriteLine($"# Gemipedia Featured Content {DateTime.Now.ToString("yyyy-MM-dd")}");
             cgi.Writer.WriteLine("Compelling content pulled every day from the from page of Wikipedia");
@@ -217,8 +217,8 @@ namespace Gemipedia.Cgi
                 cgi.BadRequest("Invalid geo information");
                 return;
             }
-            cgi.Success();
 
+            cgi.Success($"text/gemini;lang={UserOptions.WikipediaVersion}");
             var renderer  = new GeoRenderer();
             renderer.RenderGeo(geoparser, cgi.Writer);
             RenderFooter(cgi);
@@ -243,8 +243,7 @@ namespace Gemipedia.Cgi
                         return;
                     }
 
-                    cgi.Success();
-
+                    cgi.Success($"text/gemini;lang={UserOptions.WikipediaVersion}");
                     var parsedPage = ParsePage(resp);
                     RenderArticle(parsedPage, cgi.Writer);
                 }
@@ -279,7 +278,7 @@ namespace Gemipedia.Cgi
                     return;
                 }
 
-                cgi.Success();
+                cgi.Success($"text/gemini;lang={UserOptions.WikipediaVersion}");
                 var page = ParsePage(resp);
                 var gallery = new GalleryRenderer();
                 gallery.RenderGallery(page, cgi.Writer);
@@ -324,7 +323,7 @@ namespace Gemipedia.Cgi
 
             if (resp != null)
             {
-                cgi.Success();
+                cgi.Success($"text/gemini;lang={UserOptions.WikipediaVersion}");
                 var page = ParsePage(resp);
                 var refs = new ReferencesRenderer();
                 refs.RenderReferences(page, cgi.Writer, section);
