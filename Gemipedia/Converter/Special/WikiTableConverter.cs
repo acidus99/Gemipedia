@@ -25,12 +25,15 @@ namespace Gemipedia.Converter.Special
             var table = tableParser.ParseTable(element);
 
             var contents = TableRenderer.RenderTable(table);
-
-            return new ContentItem
+            if (contents.Length > 0)
             {
-                Content = contents,
-                Links = tableParser.Links
-            };
+                return new ContentItem
+                {
+                    Content = contents,
+                    Links = tableParser.Links
+                };
+            }
+            return null;
         }
     }
 }

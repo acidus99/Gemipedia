@@ -17,7 +17,7 @@ namespace Gemipedia.Converter.Special.Tables
             buffer = new StringBuilder();
         }
 
-        public string Render()
+        private string Render()
         {
             if (Table.HasCaption)
             {
@@ -193,6 +193,10 @@ namespace Gemipedia.Converter.Special.Tables
 
         public static string RenderTable(Table Table)
         {
+            if(Table.IsEmpty)
+            {
+                return "";
+            }
             var renderer = new TableRenderer(Table);
             renderer.FormatContents();
             return renderer.Render();
