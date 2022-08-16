@@ -27,7 +27,10 @@ namespace Gemipedia.Converter.Special
         {
             var tableBodyRows = table.QuerySelector("tbody")?.Children ?? null;
 
-            var check = tableBodyRows.ToArray();
+            if (tableBodyRows == null)
+            {
+                return null;
+            }
             
             infobox.CustomTitle = ExtractTitle(table, tableBodyRows);
             ParseTableRows(tableBodyRows);
