@@ -46,3 +46,8 @@
 - Fix: Better handling of nested tables in Infoboxes
 - Fix: Ignore links to Wikidata
 - Feature: Support multiple Wikipedia languages
+- Fix: Handle empty infoboxes
+- Fix: Handle empty rows/empty tables
+- Fix: handle malformed colspans
+- Fix: handle incorrect nested headers (H1 in output)
+- Fix: handle geo coordinates with missing levels of precision
