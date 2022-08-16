@@ -14,6 +14,9 @@ namespace Gemipedia.Converter.Special.Tables
         public bool HasCaption
             => Caption.Length > 0;
 
+        public bool IsEmpty
+            => (Rows.Count == 0);
+
         /// <summary>
         /// How many column units wide is this table. Many tables have rows with
         /// a mismatched number of columns, or too many colspans. Assume that
@@ -30,8 +33,10 @@ namespace Gemipedia.Converter.Special.Tables
     {
         public List<Cell> Cells = new List<Cell>();
 
-        public int LineHeight =>
-            Cells.Max(x => x.LineHeight);
+        public bool IsEmpty => (Cells.Count == 0);
+
+        public int LineHeight => IsEmpty
+            ? 0 : Cells.Max(x => x.LineHeight);
     }
 
     public class Cell
