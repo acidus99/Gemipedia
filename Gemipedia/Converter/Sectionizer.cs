@@ -52,6 +52,11 @@ namespace Gemipedia.Converter
                     int depthOnStack = SectionStack.Peek().SectionDepth;
                     //what level is this?
                     int level = (int)(currNode.NodeName[1] - 48);
+                    //normalize to H2
+                    if(level < 2)
+                    {
+                        level = 2;
+                    }
                     if (level > depthOnStack)
                     {
                         //ok push a new section
