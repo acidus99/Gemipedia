@@ -95,6 +95,12 @@ namespace Gemipedia.API
             };
         }
 
+        public static string ParseRandomArticle(string json)
+        {
+            var response = ParseJson(json);
+            return response["query"]["random"][0]["title"].Value<string>();
+        }
+
         private static List<ArticleSummary> ParsePopularArticles(JObject articles)
         {
             List<ArticleSummary> ret = new List<ArticleSummary>();

@@ -28,6 +28,14 @@ namespace Gemipedia.API
             return ResponseParser.ParseGeoSearch(FetchString(url));
         }
 
+        //Gets the title of a random article
+        public string GetRandomArticleTitle()
+        {
+            var url = $"https://{Language}.wikipedia.org/w/api.php?action=query&format=json&list=random&rnnamespace=0&rnlimit=1";
+            //bypass the cache
+            return ResponseParser.ParseRandomArticle(client.DownloadString(url));
+        }
+
         /// <summary>
         /// Gets an article
         /// </summary>
