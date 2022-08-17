@@ -20,14 +20,16 @@ namespace Gemipedia.Converter.Special
             url = CommonUtils.EnsureHttps(url);
 
             GeohackParser geohack = new GeohackParser(url);
-
-            return new GeoItem
+            if (geohack.IsValid)
             {
-                Title = $"View Geographic Info: {geohack.GetPrettyName()} ({geohack.Coordinates})",
-                Url = RouteOptions.GeoUrl(geohack.GeohackUrl)
-            };
+                return new GeoItem
+                {
+                    Title = $"View Geographic Info: {geohack.GetPrettyName()} ({geohack.Coordinates})",
+                    Url = RouteOptions.GeoUrl(geohack.GeohackUrl)
+                };
+            }
+            return null;
         }
-
 	}
 }
 

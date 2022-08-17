@@ -208,20 +208,18 @@ namespace Gemipedia.Cgi
         public static void ViewGeo(CgiWrapper cgi)
         {
             GeohackParser geoparser = null;
-            try
+            geoparser = new GeohackParser(cgi.Query);
+            if(geoparser.IsValid)
             {
-                geoparser = new GeohackParser(cgi.Query);
-            }
-            catch (Exception)
-            {
-                cgi.BadRequest("Invalid geo information");
+                cgi.Success($"text/gemini;lang={UserOptions.WikipediaVersion}");
+                var renderer = new GeoRenderer();
+                renderer.RenderGeo(geoparser, cgi.Writer);
+                RenderFooter(cgi);
                 return;
             }
 
-            cgi.Success($"text/gemini;lang={UserOptions.WikipediaVersion}");
-            var renderer  = new GeoRenderer();
-            renderer.RenderGeo(geoparser, cgi.Writer);
-            RenderFooter(cgi);
+            cgi.BadRequest("Invalid geo information");
+            return;
         }
 
         public static void ViewArticle(CgiWrapper cgi)

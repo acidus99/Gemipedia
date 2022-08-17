@@ -14,6 +14,8 @@ namespace Gemipedia.Converter.Special
 		public bool IsEarth
 			=> (Globe.ToLower() == "earth");
 
+		public bool IsValid { get; private set; }
+
 		public string Globe { get; private set; }
 
 		public string GeohackUrl { get; private set; }
@@ -92,7 +94,7 @@ namespace Gemipedia.Converter.Special
 
 			QueryString = HttpUtility.ParseQueryString(url.Query);
 
-			ParseLatLon();
+			IsValid = ParseLatLon();
 			ArticleName = ParseArticleName();
 			Globe = ExtractParam("globe") ?? "earth";
 			Language = QueryString["language"] ?? "en";
@@ -100,20 +102,19 @@ namespace Gemipedia.Converter.Special
 			Type = ExtractParam("type");
 		}
 
-		private void ParseLatLon()
+		private bool ParseLatLon()
         {
 			if (DegreeMinuteSecondDirection.IsMatch(ParamString))
 			{
 				ParseDMSD(ParamString);
+				return true;
 			}
-			else if (DegreeDirection.IsMatch(ParamString))
+			if (DegreeDirection.IsMatch(ParamString))
 			{
 				ParseDD(ParamString);
+				return true;
 			}
-			else
-			{
-				throw new ApplicationException("Unknown lat/lon format");
-			}
+			return false;
         }
 
 		private string ParseArticleName()
