@@ -73,7 +73,7 @@ namespace Gemipedia.Converter.Special
 			}
         }
 
-		Regex DegreeMinuteSecondDirection = new Regex(@"([\d\.]+)_([\d\.]*)_([\d\.]*)_([NS])_([\d\.]+)_([\d\.]*)_([\d\.]*)_([EW])", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		Regex DegreeMinuteSecondDirection = new Regex(@"([\d\.]+)_+(?:([\d\.]+)_)?(?:([\d\.]+)_+)?([NS])_([\d\.]+)_+(?:([\d\.]+)_+)?(?:([\d\.]+)_)?([EW])", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		Regex DegreeDirection = new Regex(@"([\-\.\d]+)_([NS])_([\-\.\d]+)_([EW])", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 		NameValueCollection QueryString;
