@@ -20,7 +20,7 @@ namespace Gemipedia.Console
 
         static void Main(string[] args)
         {
-            StressTest();
+            //StressTest();
 
             do {
                 System.Console.WriteLine("Article?");
@@ -43,7 +43,7 @@ namespace Gemipedia.Console
         
         static void StressTest()
         {
-            int workers = 10;
+            int workers = 20;
             for(int i =0; i < workers; i++)
             {
                 var thread = new Thread(new ThreadStart(DoStressWork));
@@ -78,12 +78,11 @@ namespace Gemipedia.Console
                     renderer.RenderArticle(page, fout);
                 } catch(Exception ex)
                 {
-                    System.IO.File.AppendAllText("/Users/billy/tmp/ERRORS.txt", $"\"{title}\"\t{ex.Message}\n");
+                    System.IO.File.AppendAllText("/Users/billy/tmp/ERRORS.txt", $"\"{title}\"\t{ex.Message} - {ex.Source}\n==={ex.StackTrace}===");
                 }
                 System.Threading.Thread.Sleep(100);
             }
         }
-
 
         static Article GetArticle(string title)
         {
