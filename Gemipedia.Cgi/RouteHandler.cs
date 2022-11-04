@@ -390,7 +390,8 @@ namespace Gemipedia.Cgi
             cgi.Writer.WriteLine($"=> {RouteOptions.WelcomeUrl()} Gemipedia Home");
             cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl()} Go to Article");
             cgi.Writer.WriteLine($"=> {RouteOptions.SelectLanguageUrl()} Using {UserOptions.LangaugeName} Wikipedia. Change Language?");
-            cgi.Writer.WriteLine($"=> mailto:acidus@gemi.dev?subject=Gemipedia+issue&body=URL%3A{WebUtility.UrlEncode(cgi.RequestUrl.ToString())} 🐛Report Bug");
+            cgi.Writer.WriteLine("--");
+            cgi.Writer.WriteLine("=> mailto:acidus@gemi.dev Made with 📚 and ❤️ by Acidus");
             cgi.Writer.WriteLine("All Wikipedia content is licensed under CC BY-SA 3.0");
         }
     }
