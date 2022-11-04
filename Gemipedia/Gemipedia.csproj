@@ -18,11 +18,13 @@
     <None Remove="Renderer\" />
     <None Remove="Models\" />
     <None Remove="Converter\Special\Tables\" />
+    <None Remove="Wcwidth" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="AngleSharp" Version="0.16.1" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="11.1.2" />
+    <PackageReference Include="Wcwidth" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="API\" />

@@ -3,6 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 
+using Wcwidth;
+
 namespace Gemipedia.Converter.Special.Tables
 {
 
@@ -65,7 +67,7 @@ namespace Gemipedia.Converter.Special.Tables
             => FormattedLines?.Count ?? 0;
 
         public int FormattedWidth
-            => (FormattedLines?.Count > 0) ? FormattedLines[0].Length : 0;
+            => (FormattedLines?.Count > 0) ? UnicodeString.GetWidth(FormattedLines[0]) : 0;
 
         /// <summary>
         /// removes any zero-width unicode characters from the string

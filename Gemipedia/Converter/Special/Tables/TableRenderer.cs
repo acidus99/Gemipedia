@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Wcwidth;
 
 namespace Gemipedia.Converter.Special.Tables
 {
@@ -116,40 +117,47 @@ namespace Gemipedia.Converter.Special.Tables
             string[] words = input.Split(' ');
 
             string line = "";
+            int lineLength = 0;
             foreach (string word in words)
             {
 
+                int wordLength = UnicodeString.GetWidth(word);
+
                 //can the word fit?
-                if(word.Length >maxWidth)
+                if(wordLength >maxWidth)
                 {
                     //flush anything still in the buffer
-                    if (line.Length > 0)
+                    if (lineLength > 0)
                     {
                         lines.Add(PadCell(line.Trim(), maxWidth, cell.IsHeader));
                         line = "";
+                        lineLength = 0;
                     }
                     int start = 0;
-                    while (start < word.Length)
+                    while (start < wordLength)
                     {
-                        lines.Add(PadCell(word.Substring(start, Math.Min(maxWidth, word.Length - start)), maxWidth, cell.IsHeader));
+                        lines.Add(PadCell(word.Substring(start, Math.Min(maxWidth, wordLength - start)), maxWidth, cell.IsHeader));
                         start += maxWidth;
                     }
                     continue;
                 }
                 //will the buffer be to big? if so, flush it
-                if ((line + word).Length > maxWidth)
+                if ((lineLength + wordLength) > maxWidth)
                 {
                     lines.Add(PadCell(line.Trim(), maxWidth, cell.IsHeader));
                     line = "";
+                    lineLength = 0;
                 }
                 line += word;
-                if(word.Length + 1 <= maxWidth)
+                lineLength += wordLength;
+                if(wordLength + 1 <= maxWidth)
                 {
                     line += " ";
+                    lineLength += 1;
                 }
             }
             //flush any remaining in buffer
-            if (line.Length > 0)
+            if (lineLength > 0)
             {
                 lines.Add(PadCell(line.Trim(), maxWidth, cell.IsHeader));
             }
@@ -167,7 +175,9 @@ namespace Gemipedia.Converter.Special.Tables
         private string PadCell(string s, int length, bool center)
         {
             int counter = 0;
-            for (; s.Length < length;)
+            int initialLength = UnicodeString.GetWidth(s);
+            int addedLength = 0;
+            for (; initialLength + addedLength < length;)
             {
                 counter++;
                 if (center && counter % 2 == 1)
@@ -178,6 +188,7 @@ namespace Gemipedia.Converter.Special.Tables
                 {
                     s += " ";
                 }
+                addedLength++;
             }
             return s;
         }
@@ -201,5 +212,7 @@ namespace Gemipedia.Converter.Special.Tables
             renderer.FormatContents();
             return renderer.Render();
         }
+
+
     }
 }
