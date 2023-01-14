@@ -30,13 +30,18 @@ namespace Gemipedia.Console
                     return;
                 }
                 var article = GetArticle(name);
-                var newConverter = new WikiHtmlConverter();
+                if (article != null)
+                {
+                    var newConverter = new WikiHtmlConverter();
 
-                ParsedPage page = newConverter.Convert(article.Title, article.HtmlText);
+                    ParsedPage page = newConverter.Convert(article.Title, article.HtmlText);
 
-                var renderer = new ArticleRenderer();
-                renderer.RenderArticle(page, System.Console.Out);
-
+                    var renderer = new ArticleRenderer();
+                    renderer.RenderArticle(page, System.Console.Out);
+                } else
+                {
+                    System.Console.WriteLine("error fetching article");
+                }
 
             } while (true) ;
         }
@@ -95,6 +100,10 @@ namespace Gemipedia.Console
             {
                 gotArticle = true;
                 ret = client.GetArticle(title);
+                if(ret == null)
+                {
+                    return ret;
+                }
 
                 if (RedirectParser.IsArticleRedirect(ret.HtmlText))
                 {
