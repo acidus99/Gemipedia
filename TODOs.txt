@@ -19,6 +19,11 @@ Rendering bugs:
     - Empty list entries (Karl Marx infobox)
     - tables nested inside tables (Vietnam administrative districts)
 
+
+Montage but no caption:
+	Hercule Poirot
+
+
 Infobox:
     - handle places that use single row tables as multi columns (band album chronologies use this to show prev, curren and next album
 
@@ -26,4 +31,7 @@ Crashing bugs:
 both having to do with wrapping unicode characters to fit in text columns. There unicode width is 22, but the string length is only 11
     gemini://gemi.dev/cgi-bin/wp.cgi/view/ja?ダイオウイカ
     gemini://gemi.dev/cgi-bin/wp.cgi/view/en?List+of+Wikipedias
+
+
+
 
