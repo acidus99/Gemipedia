@@ -51,3 +51,4 @@
 - Fix: handle malformed colspans
 - Fix: handle incorrect nested headers (H1 in output)
 - Fix: handle geo coordinates with missing levels of precision
+- Feature: Add support for Simple English Wikipedia
