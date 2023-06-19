@@ -23,7 +23,6 @@ namespace Gemipedia.Cgi
             router.OnRequest("/otherlang", RouteHandler.ViewOtherLanguages);
             router.OnRequest("/setlang", RouteHandler.SetLanguage);
             router.OnRequest("/", RouteHandler.Welcome);
-            router.OnRequest("", RouteHandler.Welcome);
             router.ProcessRequest();
         }
 
