@@ -22,6 +22,7 @@ namespace Gemipedia.Cgi
             router.OnRequest("/lang", RouteHandler.SelectLanguage);
             router.OnRequest("/otherlang", RouteHandler.ViewOtherLanguages);
             router.OnRequest("/setlang", RouteHandler.SetLanguage);
+            router.OnRequest("/random", RouteHandler.ViewRandomArticle);
             router.OnRequest("/", RouteHandler.Welcome);
             router.ProcessRequest();
         }
@@ -45,6 +46,7 @@ namespace Gemipedia.Cgi
             RouteOptions.BaseLonLatUrl = "/cgi-bin/wp.cgi/latlon";
             RouteOptions.BaseMediaProxyUrl = "/cgi-bin/wp.cgi/media/media";
             RouteOptions.BaseOtherLanguagesUrl = "/cgi-bin/wp.cgi/otherlang";
+            RouteOptions.BaseRandomArticleUrl = "/cgi-bin/wp.cgi/random";
             RouteOptions.BaseReferencesUrl = "/cgi-bin/wp.cgi/refs";
             RouteOptions.BaseSearchUrl = "/cgi-bin/wp.cgi/search";
             RouteOptions.BaseSetLanguageUrl = "/cgi-bin/wp.cgi/setlang";

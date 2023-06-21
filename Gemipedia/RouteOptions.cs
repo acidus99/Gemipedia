@@ -32,6 +32,8 @@ namespace Gemipedia
 
         public static string BaseOtherLanguagesUrl { get; set; }
 
+        public static string BaseRandomArticleUrl { get; set; }
+
         public static string BaseReferencesUrl { get; set; }
 
         public static string BaseSearchUrl { get; set; }
@@ -83,10 +85,13 @@ namespace Gemipedia
         }
 
         public static string OtherLanguagesUrl(string title)
-         => $"{AddLanguage(BaseOtherLanguagesUrl)}?{WebUtility.UrlEncode(title)}";
+            => $"{AddLanguage(BaseOtherLanguagesUrl)}?{WebUtility.UrlEncode(title)}";
 
         public static string PdfUrl(string escapedTitle)
             => $"https://{UserOptions.WikipediaVersion}.wikipedia.org/api/rest_v1/page/pdf/{WebUtility.UrlEncode(escapedTitle)}";
+
+        public static string RandomArticleUrl()
+            => $"{AddLanguage(BaseRandomArticleUrl)}";
 
         public static string ReferencesUrl(string title)
              => $"{AddLanguage(BaseReferencesUrl)}?name={WebUtility.UrlEncode(title)}";

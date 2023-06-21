@@ -136,6 +136,7 @@ namespace Gemipedia.Cgi
             cgi.Writer.WriteLine($"=> {RouteOptions.SelectLanguageUrl()} Using {UserOptions.LangaugeName} Wikipedia. Change Language?");
             cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl()} Go to Article");
             cgi.Writer.WriteLine($"=> {RouteOptions.SearchUrl()} Search for Articles containing a phrase");
+            cgi.Writer.WriteLine($"=> {RouteOptions.RandomArticleUrl()} 🎲 Random Article");
             cgi.Writer.WriteLine("");
 
             cgi.Writer.WriteLine("## Featured Content");
@@ -220,6 +221,12 @@ namespace Gemipedia.Cgi
 
             cgi.BadRequest("Invalid geo information");
             return;
+        }
+
+        public static void ViewRandomArticle(CgiWrapper cgi)
+        {
+            string title = client.GetRandomArticleTitle();
+            cgi.Redirect(RouteOptions.ArticleUrl(title));
         }
 
         public static void ViewArticle(CgiWrapper cgi)
