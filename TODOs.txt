@@ -20,9 +20,14 @@ Rendering bugs:
     - tables nested inside tables (Vietnam administrative districts)
 
 
+"Sources" section not removed
+    - "apollo" article
+
+Blockquote bug:
+    "Hercule Poirot" in "Appearance and proclivities"
+
 Montage but no caption:
 	Hercule Poirot
-
 
 Infobox:
     - handle places that use single row tables as multi columns (band album chronologies use this to show prev, curren and next album
@@ -31,7 +36,5 @@ Crashing bugs:
 both having to do with wrapping unicode characters to fit in text columns. There unicode width is 22, but the string length is only 11
     gemini://gemi.dev/cgi-bin/wp.cgi/view/ja?ダイオウイカ
     gemini://gemi.dev/cgi-bin/wp.cgi/view/en?List+of+Wikipedias
-
-
 
 
