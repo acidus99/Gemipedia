@@ -61,9 +61,9 @@ namespace Gemipedia.API
             {
                 ret.Add(new ArticleSummary
                 {
-                    Title = Cleanse(result["title"]),
-                    Excerpt = StripHtml(Cleanse(result["excerpt"])),
-                    Description = Cleanse(result["description"]),
+                    Title = StripNewlines(Cleanse(result["title"])),
+                    Excerpt = StripNewlines(StripHtml(Cleanse(result["excerpt"]))),
+                    Description = StripNewlines(Cleanse(result["description"])),
                     ThumbnailUrl = GetThumbnailUrl(result["thumbnail"] as JObject)
                 });
             }
@@ -119,10 +119,10 @@ namespace Gemipedia.API
             => (summary != null) ?
                 new ArticleSummary
                 {
-                    Title = Cleanse(summary["normalizedtitle"]),
-                    Description = Cleanse(summary["description"]),
+                    Title = StripNewlines(Cleanse(summary["normalizedtitle"])),
+                    Description = StripNewlines(Cleanse(summary["description"])),
                     //already text formatted!
-                    Excerpt = Cleanse(summary["extract"]),
+                    Excerpt = StripNewlines(Cleanse(summary["extract"])),
                     ThumbnailUrl = GetThumbnailUrl(summary["thumbnail"] as JObject)
                 } : null;
         
@@ -142,7 +142,10 @@ namespace Gemipedia.API
             return "";
         }
 
-        private static string Cleanse(JToken token)
+        private static string StripNewlines(string s)
+            => s.Replace("\r\n", " ").Replace("\r", " ").Replace("\n", " ").Trim();
+
+        private static string Cleanse(JToken token) 
             => token?.ToString() ?? "";
 
         private static JObject ParseJson(string json)
