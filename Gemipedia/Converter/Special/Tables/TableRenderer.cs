@@ -122,26 +122,39 @@ namespace Gemipedia.Converter.Special.Tables
             {
 
                 int wordLength = UnicodeString.GetWidth(word);
-
+                //do we have extra-wide characters?
+                bool hasWideCharacters = (wordLength != word.Length);
                 //can the word fit?
                 if(wordLength >maxWidth)
                 {
-                    //flush anything still in the buffer
+                    //nope, we are going to need to hard slice this word to fit to the width
+                    //this is complex if we have wide characters
+
+                    //Step 1: flush anything still in the buffer
                     if (lineLength > 0)
                     {
                         lines.Add(PadCell(line.Trim(), maxWidth, cell.IsHeader));
                         line = "";
                         lineLength = 0;
                     }
-                    int start = 0;
-                    while (start < wordLength)
+
+                    //step 2: determine the amount of characters to use in each hard slice
+                    int substringLength = maxWidth;
+                    if(hasWideCharacters && word.Length < maxWidth)
                     {
-                        lines.Add(PadCell(word.Substring(start, Math.Min(maxWidth, wordLength - start)), maxWidth, cell.IsHeader));
-                        start += maxWidth;
+                        //if we have wide characters, we need to do a smaller
+                        substringLength = word.Length / 2;
+                    }
+
+                    int start = 0;
+                    while (start < word.Length)
+                    {
+                        lines.Add(PadCell(word.Substring(start, Math.Min(substringLength, word.Length - start)), maxWidth, cell.IsHeader));
+                        start += substringLength;
                     }
                     continue;
                 }
-                //will the buffer be to big? if so, flush it
+                //will the buffer be too big? if so, flush it
                 if ((lineLength + wordLength) > maxWidth)
                 {
                     lines.Add(PadCell(line.Trim(), maxWidth, cell.IsHeader));

@@ -55,4 +55,4 @@
 - Fix: Added support for new media HTML structure. See: https://www.mediawiki.org/wiki/Parsoid/Parser_Unification/Media_structure/FAQ
 - Fix: Better detection of geohack URLs allowed for more links to be displayed
 - Feature: Better captions on galleries and montages
-
+- Fix: Crashing on wide unicode in tables

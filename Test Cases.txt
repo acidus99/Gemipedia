@@ -40,8 +40,11 @@ Schitt's Creek
 
 Signal (software)
     nested tables in infobox
-    montage
+    montage with single caption
     links to wikidata
 
 Unicode subscripts and superscripts
     nested tables
+
+List of Wikipedias
+    Has table with wide unicode characters
