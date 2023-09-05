@@ -176,6 +176,10 @@ namespace Gemipedia.Converter
                     }
                     break;
 
+                case "figure":
+                    ProcessFigure(element);
+                    break;
+
                 case "i":
                     if (ShouldUseItalics(element))
                     {
@@ -317,7 +321,9 @@ namespace Gemipedia.Converter
 
         private void ProcessDiv(HtmlElement div)
         {
-            //is it a media div?
+            // Is this a legacy media div, that is also not a location map
+            // https://www.mediawiki.org/wiki/Parsoid/Parser_Unification/Media_structure/FAQ
+            // is it a media div?
             if (div.ClassList.Contains("thumb") && !div.ClassList.Contains("locmap"))
             {
                 if (div.ClassList.Contains("tmulti"))
@@ -344,6 +350,17 @@ namespace Gemipedia.Converter
 
             //fall through to generic handling
             ProcessGenericTag(div);
+        }
+
+        private void ProcessFigure(HtmlElement figure)
+        {
+            //Support the new markup output for images
+            //see: https://www.mediawiki.org/wiki/Parsoid/Parser_Unification/Media_structure/FAQ
+            if (figure.GetAttribute("typeof") == "mw:File/Thumb")
+            {
+                AddItem(MediaParser.ConvertMedia(figure, figure.QuerySelector("figcaption")));
+            }
+            return;
         }
 
         private void ProcessGenericTag(HtmlElement element)
