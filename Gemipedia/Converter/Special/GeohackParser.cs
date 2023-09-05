@@ -84,13 +84,13 @@ namespace Gemipedia.Converter.Special
 
 		public GeohackParser(string geohackUrl)
 		{
-			Uri url = new Uri(geohackUrl);
-			if(url.Host != "geohack.toolforge.org")
-            {
-				throw new ArgumentException("Not a Geohack url");
+			if(!GeoParser.IsGeohackUrl(geohackUrl))
+			{
+                throw new ArgumentException("Not a Geohack url");
             }
 
-			GeohackUrl = geohackUrl;
+			Uri url = new Uri(geohackUrl);
+			GeohackUrl = url.AbsoluteUri;
 
 			QueryString = HttpUtility.ParseQueryString(url.Query);
 

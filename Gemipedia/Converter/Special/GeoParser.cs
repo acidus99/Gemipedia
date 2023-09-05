@@ -10,9 +10,35 @@ namespace Gemipedia.Converter.Special
 {
 	public static class GeoParser
 	{
+        public const string GeohackHostname = "geohack.toolforge.org";
+
         public static bool IsGeoLink(IElement anchor)
-            => ((anchor.GetAttribute("class")?.Contains("external") ?? false) &&
-                (anchor.GetAttribute("href")?.StartsWith("//geohack.toolforge.org/") ?? false));
+            =>  (anchor.HasAttribute("href")) ?
+                IsGeohackUrl(anchor.GetAttribute("href")) :
+                false;
+
+        /// <summary>
+        /// Is this url a valid link to the Wikipedia Geohack server?
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static bool IsGeohackUrl(string? url)
+        {
+            if(url == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                Uri parsedUrl = new Uri(url);
+                return (parsedUrl.IsAbsoluteUri && parsedUrl.Host == GeohackHostname);
+            }
+            catch (Exception)
+            {
+            }
+            return false;
+        }
 
         public static GeoItem ParseGeo(IElement anchor)
         {
