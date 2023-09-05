@@ -8,14 +8,20 @@ using Gemipedia.Models;
 
 namespace Gemipedia.Converter.Special
 {
-	public static class GeoParser
-	{
+    public static class GeoParser
+    {
         public const string GeohackHostname = "geohack.toolforge.org";
 
         public static bool IsGeoLink(IElement anchor)
-            =>  (anchor.HasAttribute("href")) ?
-                IsGeohackUrl(anchor.GetAttribute("href")) :
-                false;
+        {
+            //only external links can be a link to geohack.
+            //This fast-fails so we don't parse a bunch of relative, local, URLs
+            if (!(anchor.GetAttribute("class")?.Contains("external") ?? false))
+            {
+                return false;
+            }
+            return IsGeohackUrl(anchor.GetAttribute("href"));
+        }
 
         /// <summary>
         /// Is this url a valid link to the Wikipedia Geohack server?
