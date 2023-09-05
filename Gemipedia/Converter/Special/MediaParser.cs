@@ -10,6 +10,9 @@ namespace Gemipedia.Converter.Special
     /// </summary>
     public static class MediaParser
     {
+        static int montageNumber = 1;
+        static int galleryNumber = 1;
+
         static TextExtractor textExtractor = new TextExtractor
         {
             ShouldCollapseNewlines = true
@@ -63,18 +66,23 @@ namespace Gemipedia.Converter.Special
         public static IEnumerable<MediaItem> ConvertGallery(IElement gallery)
         {
             List<MediaItem> ret = new List<MediaItem>();
+            int imageNumber = 0;
             foreach(var galleryItem in gallery.QuerySelectorAll("li.gallerybox"))
             {
+                imageNumber++;
                 var media = ConvertImage(galleryItem, galleryItem.QuerySelector(".gallerytext"));
                 if(media != null)
                 {
+                    //prefix it
+                    media.Caption = $"Gallery {galleryNumber}, Image {imageNumber}: {media.Caption}";
                     ret.Add(media);
                 }
             }
+            galleryNumber++;
             return ret;
         }
 
-        private static MediaItem ConvertImage(IElement imageContainer, IElement captionContainer, string defaultText = "Article Image")
+        private static MediaItem ConvertImage(IElement imageContainer, IElement? captionContainer, string defaultText = "Article Image")
         {
             //some image holders can contain <canvas> graphs, charts, etc. So escape if you don't find an img
             var imgTag = imageContainer.QuerySelector("img");
@@ -88,7 +96,7 @@ namespace Gemipedia.Converter.Special
                 return null;
             }
 
-            var description = GetDescription(imageContainer, captionContainer, defaultText);
+            var description = GetImageDescrption(imageContainer, captionContainer, defaultText);
             var media = new MediaItem
             {
                 Links = textExtractor.Links,
@@ -106,17 +114,23 @@ namespace Gemipedia.Converter.Special
             return media;
         }
 
-        public static IEnumerable<MediaItem> ConvertMultiple(IElement tmulti)
+        public static IEnumerable<MediaItem> ConvertMontage(IElement tmulti, IElement? captionContainer = null)
         {
             List<MediaItem> ret = new List<MediaItem>();
+
+            int imageNumber = 0;
             foreach (var thumb in tmulti.QuerySelectorAll(".thumbimage"))
             {
-                var media = ConvertImage(thumb, null, "Image from Montage");
+                imageNumber++;
+                var media = ConvertImage(thumb, captionContainer);
                 if (media != null)
                 {
+                    //prefix it
+                    media.Caption = $"Montage {montageNumber}, Image {imageNumber}: {media.Caption}";
                     ret.Add(media);
                 }
             }
+            montageNumber++;
             return ret;
         }
 
@@ -131,7 +145,7 @@ namespace Gemipedia.Converter.Special
                 return null;
             }
 
-            var description = GetDescription(imageContainer, captionContainer);
+            var description = GetImageDescrption(imageContainer, captionContainer);
 
             return new VideoItem
             {
@@ -158,18 +172,28 @@ namespace Gemipedia.Converter.Special
         private static string GetVideoDescription(IElement videoElement)
             => "🎦 " + (videoElement?.QuerySelector("source").GetAttribute("data-title") ?? "Video File");
 
-        private static string GetDescription(IElement imageContainer, IElement captionContainer, string defaultText = "Article Image")
+        /// <summary>
+        /// Attempts to get an image's description using a caption element, alt text, or a default string
+        /// </summary>
+        /// <param name="imageContainer"></param>
+        /// <param name="captionContainer"></param>
+        /// <param name="defaultText"></param>
+        /// <returns></returns>
+        private static string GetImageDescrption(IElement imageContainer, IElement? captionContainer, string defaultText = "Article Image")
         {
-            //first see if there is a caption
-            textExtractor.Extract(captionContainer);
-            var text = textExtractor.Content;
-            if (!string.IsNullOrEmpty(text))
+            if (captionContainer != null)
             {
-                return text;
+                //first see if there is a caption
+                textExtractor.Extract(captionContainer);
+                string text = textExtractor.Content;
+                if (text.Length > 0)
+                {
+                    return text;
+                }
             }
             //fall back to the ALT text
-            text = GetImageAlt(imageContainer);
-            return (text.Length > 0) ? text : defaultText;
+            string description = GetImageAlt(imageContainer);
+            return (description.Length > 0) ? description : defaultText;
         }
 
         private static string GetImageAlt(IElement element)

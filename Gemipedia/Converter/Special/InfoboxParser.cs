@@ -60,7 +60,7 @@ namespace Gemipedia.Converter.Special
             var multi = row.QuerySelector("div.thumb.tmulti");
             if (multi != null)
             {
-                infobox.AddItems(MediaParser.ConvertMultiple(multi));
+                infobox.AddItems(MediaParser.ConvertMontage(multi));
                 return;
             }
 

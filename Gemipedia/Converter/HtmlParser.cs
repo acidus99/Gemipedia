@@ -328,7 +328,7 @@ namespace Gemipedia.Converter
             {
                 if (div.ClassList.Contains("tmulti"))
                 {
-                    AddItems(MediaParser.ConvertMultiple(div));
+                    AddItems(MediaParser.ConvertMontage(div, div.QuerySelector(".thumbcaption")));
                     return;
                 }
                 AddItem(MediaParser.ConvertMedia(div, div.QuerySelector(".thumbcaption")));
