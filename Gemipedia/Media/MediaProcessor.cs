@@ -34,17 +34,23 @@ namespace Gemipedia.Media
                     return new MediaContent
                     {
                         Data = data,
-                        MimeType = image.FormatInfo.MimeType
+                        MimeType = GetMime(image)
                     };
                 }
             }
+        }
+
+        private static string GetMime(MagickImage image)
+        {
+            string? mimeType = MagickFormatInfo.Create(image.Format)?.MimeType;
+            return mimeType ?? "image/png";
         }
 
         private static MediaContent ToContent(MagickImage image)
             => new MediaContent
             {
                 Data = image.ToByteArray(),
-                MimeType = image.FormatInfo.MimeType
+                MimeType = GetMime(image)
             };
     }
 }
