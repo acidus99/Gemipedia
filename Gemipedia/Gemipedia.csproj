@@ -27,9 +27,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="AngleSharp" Version="1.0.4" />
-    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.2.0" />
-    <PackageReference Include="Wcwidth" Version="1.0.0" />
+    <PackageReference Include="AngleSharp" Version="1.1.2" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.6.0" />
+    <PackageReference Include="Wcwidth" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="API\" />
