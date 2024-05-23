@@ -18,7 +18,6 @@
     <None Remove=".gitignore" />
     <None Remove=".gitattributes" />
     <None Remove="Magick.NET-Q8-AnyCPU" />
-    <None Remove="Cache\" />
     <None Remove="Media\" />
     <None Remove="Renderer\" />
     <None Remove="Models\" />
@@ -34,7 +33,6 @@
   <ItemGroup>
     <Folder Include="API\" />
     <Folder Include="API\Models\" />
-    <Folder Include="Cache\" />
     <Folder Include="Media\" />
     <Folder Include="Renderer\" />
     <Folder Include="Models\" />
@@ -42,5 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gemini.Cgi\Gemini.Cgi.csproj" />
+    <ProjectReference Include="..\..\CacheComms\CacheComms.csproj" />
   </ItemGroup>
 </Project>

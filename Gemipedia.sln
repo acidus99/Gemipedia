@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gemipedia.Cgi", "Gemipedia.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gemipedia.Console", "Gemipedia.Console\Gemipedia.Console.csproj", "{FF353EC3-647B-40A2-9055-2E96AE127AB2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CacheComms", "..\CacheComms\CacheComms.csproj", "{88AB92F5-A6BD-49DD-BCD3-6766FA2A2EC2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{FF353EC3-647B-40A2-9055-2E96AE127AB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF353EC3-647B-40A2-9055-2E96AE127AB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF353EC3-647B-40A2-9055-2E96AE127AB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88AB92F5-A6BD-49DD-BCD3-6766FA2A2EC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88AB92F5-A6BD-49DD-BCD3-6766FA2A2EC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88AB92F5-A6BD-49DD-BCD3-6766FA2A2EC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88AB92F5-A6BD-49DD-BCD3-6766FA2A2EC2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
