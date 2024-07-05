@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,8 +19,15 @@ namespace Gemipedia.Converter
     /// </summary>
 	public class WikiHtmlConverter
 	{
+
+        public long ConvertTimeMs
+            => convertTimer.ElapsedMilliseconds;
+
+        Stopwatch convertTimer;
+
         public WikiHtmlConverter()
         {
+            convertTimer = new Stopwatch();
             LoadDomFilters();
         }
 
@@ -42,10 +50,9 @@ namespace Gemipedia.Converter
             DomFilter.Global.AddRule("div.mw-collapsed");
         }
 
-
         public ParsedPage Convert(string title, string wikiHtml)
         {
-
+            convertTimer.Start();
             var contentRoot = Preparer.PrepareHtml(wikiHtml);
 
             Sectionizer sectionizer = new Sectionizer();
@@ -53,7 +60,7 @@ namespace Gemipedia.Converter
             var parsedPage = sectionizer.ParseContent(title, contentRoot);
 
             ConvertSections(parsedPage.Sections);
-
+            convertTimer.Stop();
             return parsedPage;
         }
 

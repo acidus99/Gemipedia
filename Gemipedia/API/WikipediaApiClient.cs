@@ -11,6 +11,8 @@ namespace Gemipedia.API
         HttpRequestor Requestor;
         string Language;
 
+        public long DownloadTimeMs => Requestor.DownloadTimeMs;
+
         public WikipediaApiClient(string lang = "en")
         {
             Requestor = new HttpRequestor();
