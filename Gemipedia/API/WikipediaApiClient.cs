@@ -13,6 +13,8 @@ namespace Gemipedia.API
 
         public long DownloadTimeMs => Requestor.DownloadTimeMs;
 
+        public int DownloadSize => Requestor.BodySize ?? 0;
+
         public WikipediaApiClient(string lang = "en")
         {
             Requestor = new HttpRequestor();
