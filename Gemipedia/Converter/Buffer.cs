@@ -1,95 +1,92 @@
-﻿using System;
-using System.Text;
-
+﻿using System.Text;
 using Gemipedia.Models;
 
-namespace Gemipedia.Converter
+namespace Gemipedia.Converter;
+
+public class Buffer : ITextContent
 {
-    public class Buffer : ITextContent
+    public ArticleLinkCollection Links { get; private set; }
+
+    public string Content => sb.ToString();
+
+    public bool HasContent => (sb.Length > 0);
+
+    public bool AtLineStart
+        => !HasContent || Content.EndsWith('\n');
+
+    public bool InBlockquote { get; set; } = false;
+
+    private StringBuilder sb;
+
+    private string lineStart = null;
+
+    public Buffer()
     {
-        public ArticleLinkCollection Links { get; private set; }
+        sb = new StringBuilder();
+        Links = new ArticleLinkCollection();
+    }
 
-        public string Content => sb.ToString();
+    public void Reset()
+    {
+        sb.Clear();
+        Links = new ArticleLinkCollection();
+        lineStart = null;
+    }
 
-        public bool HasContent => (sb.Length > 0);
+    public void SetLineStart(string s)
+    {
+        lineStart = s;
+    }
 
-        public bool AtLineStart
-            => !HasContent || Content.EndsWith('\n');
+    public void Append(ITextContent textContent)
+    {
+        //start consume the data
+        sb.Append(textContent.Content);
+        Links.Add(textContent.Links);
+    }
 
-        public bool InBlockquote { get; set; } = false;
+    public void Append(string s)
+    {
+        HandleLineStart(s);
+        HandleBlockQuote(s);
+        sb.Append(s);
+    }
 
-        private StringBuilder sb;
+    public void AppendLine(string s = "")
+    {
+        HandleLineStart(s);
+        HandleBlockQuote(s);
+        sb.AppendLine(s);
+    }
 
-        private string lineStart = null;
-
-        public Buffer()
+    public void EnsureAtLineStart()
+    {
+        if (AtLineStart && lineStart != null)
         {
-            sb = new StringBuilder();
-            Links = new ArticleLinkCollection();
-        }
-
-        public void Reset()
-        {
-            sb.Clear();
-            Links = new ArticleLinkCollection();
             lineStart = null;
         }
 
-        public void SetLineStart(string s)
+        if (!AtLineStart)
         {
-            lineStart = s;
+            sb.AppendLine();
         }
+    }
 
-        public void Append(ITextContent textContent)
+    public void HandleLineStart(string s)
+    {
+        //if we are adding something that is not whitespace, and we have a prefix
+        if (lineStart != null)
         {
-            //start consume the data
-            sb.Append(textContent.Content);
-            Links.Add(textContent.Links);
+            sb.Append(lineStart);
+            lineStart = null;
         }
+    }
 
-        public void Append(string s)
+    private void HandleBlockQuote(string s)
+    {
+        if (InBlockquote && AtLineStart && s.Trim().Length > 0)
         {
-            HandleLineStart(s);
-            HandleBlockQuote(s);
-            sb.Append(s);
-        }
-
-        public void AppendLine(string s = "")
-        {
-            HandleLineStart(s);
-            HandleBlockQuote(s);
-            sb.AppendLine(s);
-        }
-
-        public void EnsureAtLineStart()
-        {
-            if(AtLineStart && lineStart != null)
-            {
-                lineStart = null;
-            }
-
-            if (!AtLineStart)
-            {
-                sb.AppendLine();
-            }
-        }
-
-        public void HandleLineStart(string s)
-        {
-            //if we are adding something that is not whitespace, and we have a prefix
-            if(lineStart != null)
-            {
-                sb.Append(lineStart);
-                lineStart = null;
-            }
-        }
-
-        private void HandleBlockQuote(string s)
-        {
-            if (InBlockquote && AtLineStart && s.Trim().Length > 0)
-            {
-                sb.Append(">");
-            }
+            sb.Append(">");
         }
     }
 }

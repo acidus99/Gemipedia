@@ -1,11 +1,7 @@
-﻿using System;
-namespace Gemipedia.Models
+﻿namespace Gemipedia.Models;
+
+public class VideoItem : MediaItem, IArticleLinks
 {
-    public class VideoItem : MediaItem, IArticleLinks
-    {
-        public string VideoUrl { get; set; }
-        public string VideoDescription { get; set; }
-    }
-
+    public string VideoUrl { get; set; }
+    public string VideoDescription { get; set; }
 }
-

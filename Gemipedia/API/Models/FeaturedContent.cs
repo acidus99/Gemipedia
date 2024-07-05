@@ -1,13 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Gemipedia.API.Models
+namespace Gemipedia.API.Models;
+
+/// <summary>
+/// Represents the featured content for the day
+/// </summary>
+public class FeaturedContent
 {
-	public class FeaturedContent
-	{
-		public ArticleSummary FeaturedArticle { get; set; }
+    /// <summary>
+    /// The featured article of the day
+    /// </summary>
+    public ArticleSummary FeaturedArticle { get; set; }
 
-		public List<ArticleSummary> PopularArticles { get; set; }
-	}
+    /// <summary>
+    /// The most popular articles of the previous day
+    /// </summary>
+    public List<ArticleSummary> PopularArticles { get; set; }
 }
-

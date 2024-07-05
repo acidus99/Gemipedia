@@ -1,56 +1,53 @@
-﻿using System;
+﻿using ImageMagick;
 
-using ImageMagick;
+namespace Gemipedia.Media;
 
-namespace Gemipedia.Media
+/// <summary>
+/// Reformats media from Wikipedia to better suit Gemini clients
+/// </summary>
+public static class MediaProcessor
 {
-    /// <summary>
-    /// Reformats media from Wikipedia to better suit Gemini clients
-    /// </summary>
-    public static class MediaProcessor
+    public static MediaContent ProcessImage(byte[] data)
     {
-        public static MediaContent ProcessImage(byte[] data)
+        using (var image = new MagickImage(data))
         {
-            using (var image = new MagickImage(data))
+
+            if (image.Format == MagickFormat.Svg)
             {
-             
-                if(image.Format == MagickFormat.Svg)
+                //convert it to PNG
+                image.Format = MagickFormat.Png;
+                return ToContent(image);
+            }
+            else if (!image.IsOpaque)
+            {
+                //add a white background to transparent images to
+                //make them visible on clients with a dark theme
+                image.BackgroundColor = new MagickColor("white");
+                image.Alpha(AlphaOption.Remove);
+                return ToContent(image);
+            }
+            else
+            {
+                //nothing needed (e.g. JPG, etc) so pass it through
+                return new MediaContent
                 {
-                    //convert it to PNG
-                    image.Format = MagickFormat.Png;
-                    return ToContent(image);
-                }
-                else if(!image.IsOpaque)
-                {
-                    //add a white background to transparent images to
-                    //make them visible on clients with a dark theme
-                    image.BackgroundColor = new MagickColor("white");
-                    image.Alpha(AlphaOption.Remove);
-                    return ToContent(image);
-                }
-                else
-                {
-                    //nothing needed (e.g. JPG, etc) so pass it through
-                    return new MediaContent
-                    {
-                        Data = data,
-                        MimeType = GetMime(image)
-                    };
-                }
+                    Data = data,
+                    MimeType = GetMime(image)
+                };
             }
         }
-
-        private static string GetMime(MagickImage image)
-        {
-            string? mimeType = MagickFormatInfo.Create(image.Format)?.MimeType;
-            return mimeType ?? "image/png";
-        }
-
-        private static MediaContent ToContent(MagickImage image)
-            => new MediaContent
-            {
-                Data = image.ToByteArray(),
-                MimeType = GetMime(image)
-            };
     }
+
+    private static string GetMime(MagickImage image)
+    {
+        string? mimeType = MagickFormatInfo.Create(image.Format)?.MimeType;
+        return mimeType ?? "image/png";
+    }
+
+    private static MediaContent ToContent(MagickImage image)
+        => new MediaContent
+        {
+            Data = image.ToByteArray(),
+            MimeType = GetMime(image)
+        };
 }

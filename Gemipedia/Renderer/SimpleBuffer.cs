@@ -1,49 +1,45 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
-using Gemipedia.Models;
+namespace Gemipedia.Renderer;
 
-namespace Gemipedia.Renderer
+public class SimpleBuffer
 {
-    public class SimpleBuffer
+    public string Content => sb.ToString();
+
+    public bool HasContent => (sb.Length > 0);
+
+    public bool AtLineStart
+        => !HasContent || Content.EndsWith('\n');
+
+    private StringBuilder sb;
+
+    public SimpleBuffer()
     {
-        public string Content => sb.ToString();
+        sb = new StringBuilder();
+    }
 
-        public bool HasContent => (sb.Length > 0);
+    public void Reset()
+        => sb.Clear();
 
-        public bool AtLineStart
-            => !HasContent || Content.EndsWith('\n');
+    public void Append(string s)
+        => sb.Append(s);
 
-        private StringBuilder sb;
+    public void AppendLine(string s = "")
+        => sb.AppendLine(s);
 
-        public SimpleBuffer()
+    public void PrependLine(string s = "")
+    {
+        var existing = sb.ToString();
+        sb.Clear();
+        sb.AppendLine(s);
+        sb.Append(existing);
+    }
+
+    public void EnsureAtLineStart()
+    {
+        if (!AtLineStart)
         {
-            sb = new StringBuilder();
-        }
-
-        public void Reset()
-            => sb.Clear();
-
-        public void Append(string s)
-            => sb.Append(s);
-
-        public void AppendLine(string s = "")
-            => sb.AppendLine(s);
-
-        public void PrependLine(string s = "")
-        {
-            var existing = sb.ToString();
-            sb.Clear();
-            sb.AppendLine(s);
-            sb.Append(existing);
-        }
-
-        public void EnsureAtLineStart()
-        {
-            if (!AtLineStart)
-            {
-                sb.AppendLine();
-            }
+            sb.AppendLine();
         }
     }
 }

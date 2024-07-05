@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace Gemipedia.Renderer;
+namespace Gemipedia.Cgi;
 
 public class CountingTextWriter : TextWriter
 {

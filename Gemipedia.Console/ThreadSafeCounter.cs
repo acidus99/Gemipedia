@@ -1,45 +1,31 @@
-﻿using System;
+﻿using System.Threading;
 
-using System.Threading;
-namespace Gemipedia.Console
+namespace Gemipedia.Console;
+
+/// <summary>
+/// Simple, thread safe counter
+/// </summary>
+public class ThreadSafeCounter
 {
-    /// <summary>
-    /// Simple, thread safe counter
-    /// </summary>
-    public class ThreadSafeCounter
+    private int counter;
+
+    public ThreadSafeCounter(int initialValue = 0)
     {
-
-        private int counter;
-
-        public ThreadSafeCounter()
-            : this(0) { }
-
-        public ThreadSafeCounter(int initialValue)
-        {
-            this.counter = initialValue;
-        }
-
-        public int Increment()
-        {
-            int tmp = Interlocked.Increment(ref counter);
-            return tmp;
-        }
-
-        public int Decrement()
-        {
-            int tmp = Interlocked.Decrement(ref counter);
-            return tmp;
-        }
-
-        public int Count
-        {
-            get
-            {
-                return this.counter;
-            }
-        }
-
-
+        counter = initialValue;
     }
-}
 
+    public int Increment()
+    {
+        int tmp = Interlocked.Increment(ref counter);
+        return tmp;
+    }
+
+    public int Decrement()
+    {
+        int tmp = Interlocked.Decrement(ref counter);
+        return tmp;
+    }
+
+    public int Count
+        => counter;
+}

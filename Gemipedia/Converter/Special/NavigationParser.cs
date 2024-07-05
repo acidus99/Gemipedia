@@ -1,27 +1,25 @@
-﻿using System;
-using AngleSharp.Html.Dom;
+﻿using AngleSharp.Html.Dom;
 using Gemipedia.Models;
 
-namespace Gemipedia.Converter.Special
+namespace Gemipedia.Converter.Special;
+
+/// <summary>
+/// parses navigation notes 
+/// </summary>
+public class NavigationParser
 {
     /// <summary>
-    /// parses navigation notes 
+    /// Convert a navigation note in a section
     /// </summary>
-    public class NavigationParser
+    /// <param name="element"></param>
+    /// <returns></returns>
+    public static NavSuggestionsItem ConvertNavigationNote(HtmlElement element)
     {
-        /// <summary>
-        /// Convert a navigation note in a section
-        /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        public static NavSuggestionsItem ConvertNavigationNote(HtmlElement element)
+        var textExtractor = new TextExtractor
         {
-            var textExtractor = new TextExtractor
-            {
-                ShouldCollapseNewlines = true
-            };
-            textExtractor.Extract(element);
-            return new NavSuggestionsItem(textExtractor);
-        }
+            ShouldCollapseNewlines = true
+        };
+        textExtractor.Extract(element);
+        return new NavSuggestionsItem(textExtractor);
     }
 }

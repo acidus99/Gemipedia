@@ -1,8 +1,6 @@
-﻿
-namespace Gemipedia.Models
+﻿namespace Gemipedia.Models;
+
+public interface IArticleLinks
 {
-    public interface IArticleLinks
-    {
-        ArticleLinkCollection Links { get; }
-    }
+    ArticleLinkCollection Links { get; }
 }

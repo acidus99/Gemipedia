@@ -1,122 +1,116 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-
 using Gemipedia.API;
 using Gemipedia.API.Models;
 using Gemipedia.Converter;
 using Gemipedia.Converter.Special;
 using Gemipedia.Models;
-using Gemipedia.Media;
 using Gemipedia.Renderer;
 
+namespace Gemipedia.Console;
 
-namespace Gemipedia.Console
+class Program
 {
-    class Program
+    static ThreadSafeCounter counter = new ThreadSafeCounter();
+
+    static void Main(string[] args)
     {
-        static ThreadSafeCounter counter = new ThreadSafeCounter();
+        //StressTest();
 
-        static void Main(string[] args)
+        do
         {
-            //StressTest();
-
-            do {
-                System.Console.WriteLine("Article?");
-                string name = System.Console.ReadLine();
-                if(name == "")
-                {
-                    return;
-                }
-                var article = GetArticle(name);
-                if (article != null)
-                {
-                    var newConverter = new WikiHtmlConverter();
-
-                    ParsedPage page = newConverter.Convert(article.Title, article.HtmlText);
-
-                    var renderer = new ArticleRenderer();
-                    renderer.RenderArticle(page, System.Console.Out);
-                } else
-                {
-                    System.Console.WriteLine("error fetching article");
-                }
-
-            } while (true) ;
-        }
-        
-        static void StressTest()
-        {
-            int workers = 20;
-            for(int i =0; i < workers; i++)
+            System.Console.WriteLine("Article?");
+            string name = System.Console.ReadLine();
+            if (name == "")
             {
-                var thread = new Thread(new ThreadStart(DoStressWork));
-                thread.Start();
+                return;
+            }
+            var article = GetArticle(name);
+            if (article != null)
+            {
+                var newConverter = new WikiHtmlConverter();
+
+                ParsedPage page = newConverter.Convert(article.Title, article.HtmlText);
+
+                var renderer = new ArticleRenderer();
+                renderer.RenderArticle(page, System.Console.Out);
+            }
+            else
+            {
+                System.Console.WriteLine("error fetching article");
             }
 
-            while(true)
-            {
-                Thread.Sleep(30000);
-            }
-        }
+        } while (true);
+    }
 
-        static void DoStressWork()
+    static void StressTest()
+    {
+        int workers = 20;
+        for (int i = 0; i < workers; i++)
         {
-            var converter = new WikiHtmlConverter();
-
-            var client = new WikipediaApiClient(UserOptions.WikipediaVersion);
-
-            while (true)
-            {
-                var count = counter.Increment();
-                var title = client.GetRandomArticleTitle();
-
-                try
-                {
-                    var article = GetArticle(title);
-                    System.Console.WriteLine($"{count}\t{title}");
-                    ParsedPage page = converter.Convert(article.Title, article.HtmlText);
-
-                    StringWriter fout = new StringWriter();
-                    var renderer = new ArticleRenderer();
-                    renderer.RenderArticle(page, fout);
-                } catch(Exception ex)
-                {
-                    System.IO.File.AppendAllText("/Users/billy/tmp/ERRORS.txt", $"\"{title}\"\t{ex.Message} - {ex.Source}\n==={ex.StackTrace}===");
-                }
-                System.Threading.Thread.Sleep(100);
-            }
+            var thread = new Thread(new ThreadStart(DoStressWork));
+            thread.Start();
         }
 
-        static Article GetArticle(string title)
+        while (true)
         {
-
-            var client = new WikipediaApiClient(UserOptions.WikipediaVersion);
-            Article ret;
-
-            bool gotArticle = true;
-            do
-            {
-                gotArticle = true;
-                ret = client.GetArticle(title);
-                if(ret == null)
-                {
-                    return ret;
-                }
-
-                if (RedirectParser.IsArticleRedirect(ret.HtmlText))
-                {
-                    gotArticle = false;
-                    title = RedirectParser.GetRedirectTitle(ret.HtmlText);
-                }
-            } while (!gotArticle);
-
-            return ret;
+            Thread.Sleep(30000);
         }
+    }
 
-       
+    static void DoStressWork()
+    {
+        var converter = new WikiHtmlConverter();
 
+        var client = new WikipediaApiClient(UserOptions.WikipediaVersion);
+
+        while (true)
+        {
+            var count = counter.Increment();
+            var title = client.GetRandomArticleTitle();
+
+            try
+            {
+                var article = GetArticle(title);
+                System.Console.WriteLine($"{count}\t{title}");
+                ParsedPage page = converter.Convert(article.Title, article.HtmlText);
+
+                StringWriter fout = new StringWriter();
+                var renderer = new ArticleRenderer();
+                renderer.RenderArticle(page, fout);
+            }
+            catch (Exception ex)
+            {
+                System.IO.File.AppendAllText("/Users/billy/tmp/ERRORS.txt", $"\"{title}\"\t{ex.Message} - {ex.Source}\n==={ex.StackTrace}===");
+            }
+            System.Threading.Thread.Sleep(100);
+        }
+    }
+
+    static Article GetArticle(string title)
+    {
+
+        var client = new WikipediaApiClient(UserOptions.WikipediaVersion);
+        Article ret;
+
+        bool gotArticle = true;
+        do
+        {
+            gotArticle = true;
+            ret = client.GetArticle(title);
+            if (ret == null)
+            {
+                return ret;
+            }
+
+            if (RedirectParser.IsArticleRedirect(ret.HtmlText))
+            {
+                gotArticle = false;
+                title = RedirectParser.GetRedirectTitle(ret.HtmlText);
+            }
+        } while (!gotArticle);
+
+        return ret;
     }
 }
-
