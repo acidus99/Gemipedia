@@ -52,7 +52,7 @@ namespace Gemipedia.Cgi
                     cgi.Writer.WriteLine();
                 }
             }
-            RenderFooter(cgi);
+            RenderFooter(cgi, client.DownloadTimeMs);
         }
 
         public static void SearchLatLon(CgiWrapper cgi)
@@ -90,7 +90,7 @@ namespace Gemipedia.Cgi
                     cgi.Writer.WriteLine();
                 }
             }
-            RenderFooter(cgi);
+            RenderFooter(cgi, client.DownloadTimeMs);
         }
 
         public static void SelectLanguage(CgiWrapper cgi)
@@ -203,7 +203,7 @@ namespace Gemipedia.Cgi
             {
                 cgi.Writer.WriteLine("(Daily popular articles were unavailable)");
             }
-            RenderFooter(cgi);
+            RenderFooter(cgi, client.DownloadTimeMs);
         }
 
         public static void ViewGeo(CgiWrapper cgi)
@@ -237,19 +237,19 @@ namespace Gemipedia.Cgi
                 return;
             }
 
-            var resp = GetArticle(cgi);
+            Article article = GetArticle(cgi);
             try
             {
-                if (resp != null)
+                if (article != null)
                 {
-                    if (RedirectParser.IsArticleRedirect(resp.HtmlText))
+                    if (RedirectParser.IsArticleRedirect(article.HtmlText))
                     {
-                        cgi.Redirect(RouteOptions.ArticleUrl(RedirectParser.GetRedirectTitle(resp.HtmlText)));
+                        cgi.Redirect(RouteOptions.ArticleUrl(RedirectParser.GetRedirectTitle(article.HtmlText)));
                         return;
                     }
 
                     cgi.Success($"text/gemini;lang={UserOptions.WikipediaVersion}");
-                    var parsedPage = ParsePage(resp);
+                    ParsedPage parsedPage = converter.Convert(article.Title, article.HtmlText);
                     RenderArticle(parsedPage, cgi.Writer);
                 }
                 else
@@ -268,23 +268,23 @@ namespace Gemipedia.Cgi
                 cgi.Writer.WriteLine(ex.StackTrace);
                 cgi.Writer.WriteLine("```");
             }
-            RenderFooter(cgi);
+            RenderFooter(cgi, client.DownloadTimeMs, converter.ConvertTimeMs);
         }
 
         public static void ViewImages(CgiWrapper cgi)
         {
-            var resp = GetArticle(cgi);
+            Article article = GetArticle(cgi);
 
-            if (resp != null)
+            if (article != null)
             {
-                if (RedirectParser.IsArticleRedirect(resp.HtmlText))
+                if (RedirectParser.IsArticleRedirect(article.HtmlText))
                 {
-                    cgi.Redirect(RouteOptions.ImageGalleryUrl(RedirectParser.GetRedirectTitle(resp.HtmlText)));
+                    cgi.Redirect(RouteOptions.ImageGalleryUrl(RedirectParser.GetRedirectTitle(article.HtmlText)));
                     return;
                 }
 
                 cgi.Success($"text/gemini;lang={UserOptions.WikipediaVersion}");
-                var page = ParsePage(resp);
+                ParsedPage page = converter.Convert(article.Title, article.HtmlText);
                 var gallery = new GalleryRenderer();
                 gallery.RenderGallery(page, cgi.Writer);
             }
@@ -293,7 +293,7 @@ namespace Gemipedia.Cgi
                 cgi.Success();
                 cgi.Writer.WriteLine("We could not access that article");
             }
-            RenderFooter(cgi);
+            RenderFooter(cgi, client.DownloadTimeMs, converter.ConvertTimeMs);
         }
 
         public static void ViewOtherLanguages(CgiWrapper cgi)
@@ -315,7 +315,7 @@ namespace Gemipedia.Cgi
                     cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl(lang.Title, lang.LanguageCode)} {LanguageUtils.GetName(lang.LanguageCode)} - {lang.Title}");
                 }
             }
-            RenderFooter(cgi);
+            RenderFooter(cgi, client.DownloadTimeMs);
         }
 
         public static void ViewRefs(CgiWrapper cgi)
@@ -324,21 +324,21 @@ namespace Gemipedia.Cgi
             var title = query["name"] ?? "";
             var section = Convert.ToInt32(query["section"] ?? "-1");
 
-            var resp = GetArticle(title);
+            Article article = GetArticle(title);
 
-            if (resp != null)
+            if (article != null)
             {
                 cgi.Success($"text/gemini;lang={UserOptions.WikipediaVersion}");
-                var page = ParsePage(resp);
+                ParsedPage parsedPage = converter.Convert(article.Title, article.HtmlText);
                 var refs = new ReferencesRenderer();
-                refs.RenderReferences(page, cgi.Writer, section);
+                refs.RenderReferences(parsedPage, cgi.Writer, section);
             }
             else
             {
                 cgi.Success();
                 cgi.Writer.WriteLine("We could not access that article");
             }
-            RenderFooter(cgi);
+            RenderFooter(cgi, client.DownloadTimeMs, converter.ConvertTimeMs);
         }
 
         public static void ProxyMedia(CgiWrapper cgi)
@@ -358,18 +358,13 @@ namespace Gemipedia.Cgi
         #endregion
 
         static WikipediaApiClient client = new WikipediaApiClient(UserOptions.WikipediaVersion);
+        static WikiHtmlConverter converter = new WikiHtmlConverter();
 
         private static Article GetArticle(CgiWrapper cgi)
             => GetArticle(cgi.SantiziedQuery);
 
         private static Article GetArticle(string title)
             => client.GetArticle(title);
-
-        private static ParsedPage ParsePage(Article resp)
-        {
-            var newConverter = new WikiHtmlConverter();
-            return newConverter.Convert(resp.Title, resp.HtmlText);
-        }
 
         private static void RenderArticle(ParsedPage page, TextWriter output)
         {
@@ -390,7 +385,7 @@ namespace Gemipedia.Cgi
             return false;
         }
 
-        static void RenderFooter(CgiWrapper cgi)
+        static void RenderFooter(CgiWrapper cgi, long? downloadTimeMs = null, long? convertTimeMs = null)
         {
             cgi.Writer.WriteLine();
             cgi.Writer.WriteLine("--");
@@ -398,6 +393,18 @@ namespace Gemipedia.Cgi
             cgi.Writer.WriteLine($"=> {RouteOptions.ArticleUrl()} Go to Article");
             cgi.Writer.WriteLine($"=> {RouteOptions.SelectLanguageUrl()} Using {UserOptions.LangaugeName} Wikipedia. Change Language?");
             cgi.Writer.WriteLine("--");
+            if(downloadTimeMs != null || convertTimeMs != null)
+            {
+                if(downloadTimeMs != null)
+                {
+                    cgi.Writer.Write($"Fetched: {downloadTimeMs} ms. ");
+                }
+                if(convertTimeMs != null)
+                {
+                    cgi.Writer.Write($"Converted: {convertTimeMs} ms. ");
+                }
+                cgi.Writer.WriteLine("🐇");
+            }
             cgi.Writer.WriteLine("=> mailto:acidus@gemi.dev Made with 📚 and ❤️ by Acidus");
             cgi.Writer.WriteLine("All Wikipedia content is licensed under CC BY-SA 3.0");
         }
