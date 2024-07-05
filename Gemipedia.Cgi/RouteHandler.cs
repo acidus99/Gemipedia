@@ -305,7 +305,7 @@ namespace Gemipedia.Cgi
             cgi.Writer.WriteLine($"The article '{title}' is available in {otherLangs.Count} other languages");
             if (otherLangs.Count == 0)
             {
-                cgi.Writer.WriteLine("No languages foundfound.");
+                cgi.Writer.WriteLine("No languages found.");
                 return;
             }
             else
