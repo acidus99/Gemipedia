@@ -26,3 +26,5 @@ Blockquote bug:
 Infobox:
     - handle places that use single row tables as multi columns (band album chronologies use this to show prev, curren and next album
 
+Eve Jobs
+    -> photo seems small
