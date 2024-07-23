@@ -341,7 +341,7 @@ public static class RouteHandler
         var section = Convert.ToInt32(query["section"] ?? "-1");
 
         Article article = GetArticle(title);
-        var outWriter = new CountingTextWriter(cgi.Writer); cgi.Success();
+        var outWriter = new CountingTextWriter(cgi.Writer);
 
         if (article != null)
         {
