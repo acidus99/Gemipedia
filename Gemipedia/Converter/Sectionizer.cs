@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using Gemipedia.Models;
@@ -38,43 +39,45 @@ public class Sectionizer
         for (int currIndex = 0, len = nodeList.Length; currIndex < len; currIndex++)
         {
             INode currNode = contentRoot.ChildNodes[currIndex];
+
+            HeadingInfo? headingInfo = GetIfHeading(currNode);
+
             //is it a normal node
-            if (IsHeader(currNode))
+            if (headingInfo != null)
             {
+
                 //we are supposed to skip this?
-                if (ShouldSkipSection(currNode))
+                if (ShouldSkipSection(headingInfo))
                 {
                     currIndex = FastForward(currNode, nodeList, currIndex);
                     continue;
                 }
 
                 int depthOnStack = SectionStack.Peek().SectionDepth;
-                //what level is this?
-                int level = (int)(currNode.NodeName[1] - 48);
                 //normalize to H2
-                if (level < 2)
+                if (headingInfo.Level < 2)
                 {
-                    level = 2;
+                    headingInfo.Level = 2;
                 }
-                if (level > depthOnStack)
+                if (headingInfo.Level > depthOnStack)
                 {
                     //ok push a new section
-                    PushNewSection(currNode, level);
+                    PushNewSection(headingInfo);
                     continue;
                 }
-                else if (level == depthOnStack)
+                else if (headingInfo.Level == depthOnStack)
                 {
                     //pop the current section off
                     AddCompletedSection(SectionStack.Pop());
                     //push the new section
-                    PushNewSection(currNode, level);
+                    PushNewSection(headingInfo);
                 }
                 else
                 {
                     //new section is
                     //found one lower!
                     //while the top of ths stacck is > the next one
-                    while (SectionStack.Peek().SectionDepth > level)
+                    while (SectionStack.Peek().SectionDepth > headingInfo.Level)
                     {
                         var tmpSection = SectionStack.Pop();
                         //add that as a subsection for the section of the top
@@ -83,7 +86,7 @@ public class Sectionizer
                     //pop the current section off
                     AddCompletedSection(SectionStack.Pop());
                     //push the new section
-                    PushNewSection(currNode, level);
+                    PushNewSection(headingInfo);
                 }
             }
             else if (ShouldAddNode(currNode))
@@ -112,21 +115,58 @@ public class Sectionizer
         }
     }
 
-    private bool IsHeader(INode node)
-        => node.NodeType == NodeType.Element &&
-            node.NodeName.Length == 2 &&
-            node.NodeName[0] == 'H' &&
-            char.IsDigit(node.NodeName[1]);
+    private HeadingInfo? GetIfHeading(INode node)
+    {
 
-    private void PushNewSection(INode node, int level)
+        if (node is not HtmlElement)
+        {
+            return null;
+        }
+
+        var htmlElement = node as HtmlElement;
+
+        if (htmlElement.NodeName.Length == 2 &&
+            htmlElement.NodeName[0] == 'H' &&
+            char.IsDigit(htmlElement.NodeName[1]))
+        {
+            //traditional HTML used for a heading
+            return new HeadingInfo
+            {
+                ID = htmlElement.QuerySelector("span.mw-headline").GetAttribute("id")?.ToLower() ?? "",
+                Level = node.NodeName[1] - 48,
+                Title = htmlElement.QuerySelector("span.mw-headline").TextContent.Trim().Replace("\n", "")
+            };
+        }
+        //2024-07-21 : Sometime recently MediaWiki started output HTML with the header tags
+        //wrapped in DIVs
+        //TODO: I really should junk all this and operate on the WikiText directly...
+        else if (htmlElement.NodeName == "DIV" &&
+            htmlElement.ClassName != null &&
+            htmlElement.ClassName.Contains("mw-heading") &&
+            htmlElement.FirstElementChild != null &&
+            htmlElement.FirstElementChild.NodeName.Length == 2 &&
+            htmlElement.FirstElementChild.NodeName[0] == 'H' &&
+            char.IsDigit(htmlElement.FirstElementChild.NodeName[1]))
+        {
+            //modern header
+
+            return new HeadingInfo
+            {
+                ID = htmlElement.FirstElementChild.GetAttribute("id")?.ToLower() ?? "",
+                Level = htmlElement.FirstElementChild.NodeName[1] - 48,
+                Title = htmlElement.FirstElementChild.TextContent.Trim().Replace("\n", "")
+            };
+        }
+        return null;
+    }
+
+    private void PushNewSection(HeadingInfo headingInfo)
         => SectionStack.Push(new Section
         {
-            Title = GetHeaderText(node),
-            SectionDepth = level
+            Title = headingInfo.Title,
+            SectionDepth = headingInfo.Level
         });
 
-    public string GetHeaderText(INode node)
-        => ((HtmlElement)node).QuerySelector("span.mw-headline").TextContent.Trim().Replace("\n", "");
 
     private bool ShouldAddNode(INode node)
     {
@@ -147,11 +187,8 @@ public class Sectionizer
         }
     }
 
-    private bool ShouldSkipSection(INode node)
-    {
-        var id = ((HtmlElement)node).QuerySelector("span.mw-headline").GetAttribute("id")?.ToLower() ?? "";
-        return excludedSections.Contains(id);
-    }
+    private bool ShouldSkipSection(HeadingInfo headingInfo)
+        => excludedSections.Contains(headingInfo.ID);
 
     /// <summary>
     /// Fast forwards to the next element of the type as the provided element
@@ -172,4 +209,11 @@ public class Sectionizer
         }
         return skipIndex - 1;
     }
+}
+
+internal class HeadingInfo
+{
+    public string Title { get; set; }
+    public string ID { get; set; }
+    public int Level { get; set; }
 }
