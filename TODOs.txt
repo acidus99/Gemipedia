@@ -28,3 +28,8 @@ Infobox:
 
 Eve Jobs
     -> photo seems small
+
+
+
+
+https://www.mediawiki.org/wiki/Specs/HTML/2.7.0#Wiki_links
