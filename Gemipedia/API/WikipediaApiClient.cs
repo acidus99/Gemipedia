@@ -35,7 +35,7 @@ public class WikipediaApiClient
     public string GetRandomArticleTitle()
     {
         var url = new Uri($"https://{Language}.wikipedia.org/w/api.php?action=query&format=json&list=random&rnnamespace=0&rnlimit=1");
-        string json = FetchString(url);
+        string json = FetchString(url, false);
         return ResponseParser.ParseRandomArticle(json);
     }
 
