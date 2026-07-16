@@ -109,7 +109,9 @@ public class HtmlParser
                 }
                 else
                 {
-                    buffer.Append(textNode.TextContent);
+                    //replace new lines inside it
+                    string newText = textNode.TextContent.Replace("\n", " ");
+                    buffer.Append(newText);
                 }
             }
             //if its whitepsace, but doesn't have a newline
