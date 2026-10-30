@@ -25,10 +25,10 @@
     <None Remove="Wcwidth" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="AngleSharp" Version="1.1.2" />
-    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.9.0" />
-    <PackageReference Include="Wcwidth" Version="2.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="AngleSharp" Version="1.8.6" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.17.2" />
+    <PackageReference Include="Wcwidth" Version="4.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="API\" />
